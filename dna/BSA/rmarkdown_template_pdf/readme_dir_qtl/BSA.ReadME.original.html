@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+	<META NAME="Author" CONTENT="liuruolin@novogene.cn">
+    <META NAME="Version" CONTENT="20171224" "Silent Night ^_^">
+    <title>ReadMe Meta</title>
+	<!--tree/start-->
+	<script src="https://cdn.bootcss.com/jquery-treetable/3.2.0/jquery.treetable.min.js"></script>
+	<link href="https://cdn.bootcss.com/jquery-treetable/3.2.0/css/jquery.treetable.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/jquery-treetable/3.2.0/css/jquery.treetable.theme.default.css" rel="stylesheet">
+	<!--tree/end-->
+	<style type='text/css'>
+	.task-list { list-style-type: none; }
+    .task-list-item { position: relative; padding-left: 2em; }
+    .task-list-item input { position: absolute; top: 0px; left: 0px; }
+   </style>
+  </head>
+  <body>
+    <div id="main">
+      <p><h3 align="center"  style="color:#696969" >BSA Readme</h3></p>
+      <table id="example-advanced">
+        <caption>
+          <a href="#" onclick="jQuery('#example-advanced').treetable('expandAll'); return false;">Expand all</a>
+          <a href="#" onclick="jQuery('#example-advanced').treetable('collapseAll'); return false;">Collapse all</a>
+        </caption>
+        <thead>
+          <tr>
+            <th>Result</th>
+            <th>Contents</th>
+			<th>Type</th>
+          </tr>
+        </thead>
+      <tbody>
+      <tr data-tt-id='2'><td><span class='folder'>1.OriginalData</a></span></td><td>【测序数据格式说明】</td><td>folder</td></tr>
+      <tr data-tt-id='2-1' data-tt-parent-id='2'><td><span class='file'><a href='./1.OriginalData/1.OriginalData.README.txt'>1.OriginalData.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+      <tr data-tt-id='2-2' data-tt-parent-id='2'><td><span class='file'><a href='./1.OriginalData/example.fq.txt'>example.fq.txt</a></span></td><td>【数据示例】</td><td>table</td></tr>
+      <tr data-tt-id='3'><td><span class='folder'>2.QualityControl</a></span></td><td>【测序数据质控结果】</td><td>folder</td></tr>
+	  <tr data-tt-id='3-1' data-tt-parent-id='3'><td><span  class='folder'>2.1.QualityDistribution</td><td>【测序质量分布结果】</td><td>folder</td></tr>
+	  <tr data-tt-id='3-1-1' data-tt-parent-id='3-1'><td><span class='file'><a href='./2.QualityControl/2.1.QualityDistribution/2.1.QualityDistribution.README.txt'>2.1.QualityDistribution.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+	  <tr data-tt-id='3-1-2' data-tt-parent-id='3-1'><td><span class='file'>*.QM.png</td><td>【测序质量分布图，png 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='3-2' data-tt-parent-id='3'><td><span  class='folder'>2.2.ErrorRate</td><td>【测序错误率分布结果】</td><td>folder</td></tr>
+	  <tr data-tt-id='3-2-1' data-tt-parent-id='3-2'><td><span class='file'><a href='./2.QualityControl/2.2.ErrorRate/2.2.ErrorRate.README.txt'>2.2.ErrorRate.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+	  <tr data-tt-id='3-2-2' data-tt-parent-id='3-2'><td><span class='file'>*.Error.png</td><td>【测序错误率分布图，png 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='3-3' data-tt-parent-id='3'><td><span  class='folder'>2.3.ReadsClassification</td><td>【测序数据过滤分布结果】</td><td>folder</td></tr>
+	  <tr data-tt-id='3-3-1' data-tt-parent-id='3-3'><td><span class='file'><a href='./2.QualityControl/2.3.ReadsClassification/2.3.ReadsClassification.README.txt'>2.3.ReadsClassification.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+	  <tr data-tt-id='3-3-2' data-tt-parent-id='3-3'><td><span class='file'>*.raw_reads_classification.png</td><td>【原始数据组成分布图，png 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='3-4' data-tt-parent-id='3'><td><span  class='folder'>2.4.CleanData_QCsummary</td><td>【测序数据质控统计结果】</td><td>folder</td></tr>
+	  <tr data-tt-id='3-4-1' data-tt-parent-id='3-4'><td><span class='file'><a href='./2.QualityControl/2.4.CleanData_QCsummary/2.4.CleanData_QCsummary.README.txt'>2.4.CleanData_QCsummary.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+	  <tr data-tt-id='3-4-1' data-tt-parent-id='3-4'><td><span class='file'><a href='./2.QualityControl/2.4.CleanData_QCsummary/CleanData_QCsummary.xls'>CleanData_QCsummary.xls</a></span></td><td>【质控数据汇总表】</td><td>file</td></tr>
+	  <tr data-tt-id='4'><td><span class='folder'>3.Mapping</a></span></td><td>【样本与参考基因组的比对统计结果】</td><td>folder</td></tr>
+	  <tr data-tt-id='4-2' data-tt-parent-id='4'><td><span  class='folder'>3.2.MapStat</td><td>【测序深度及覆盖度统计】</td><td>folder</td></tr>
+	  <tr data-tt-id='4-2-1' data-tt-parent-id='4-2'><td><span class='file'><a href='./3.Mapping/3.2.MapStat/3.2.MapStat.README.txt'>3.2.MapStat.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+ 	  <tr data-tt-id='4-2-2' data-tt-parent-id='4-2'><td><span class='file'><a href='./3.Mapping/3.2.MapStat/Allsample_alninfo.xls'>Allsample_alninfo.xls</a></span></td><td>【测序深度统计表】</td><td>file</td></tr>
+	  <tr data-tt-id='4-2-3' data-tt-parent-id='4-2'><td><span class='file'>*.Sequencing-depth.png/pdf</td><td>【测序深度统计图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='5'><td><span class='folder'>4.SNP_VarDetect</a></span></td><td>【变异位点、统计、注释结果】</td><td>folder</td></tr>
+      <tr data-tt-id='5-1' data-tt-parent-id='5'><td><span class='file'><a href='./4.SNP_VarDetect/4.SNP_VarDetect.README.txt'>4.SNP_VarDetect.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+      <tr data-tt-id='5-2' data-tt-parent-id='5'><td><span class='file'><a href='./4.SNP_VarDetect/SNP.vcf'>SNP.vcf</a></span></td><td>【SNP变异vcf文件】</td><td>file</td></tr>
+      <tr data-tt-id='5-3' data-tt-parent-id='5'><td><span class='file'><a href='./4.SNP_VarDetect/snp.avinput.exonic_variant_function'>snp.avinput.exonic_variant_function</a></span></td><td>【SNP外显子注释结果】</td><td>file</td></tr>
+      <tr data-tt-id='5-4' data-tt-parent-id='5'><td><span class='file'><a href='./4.SNP_VarDetect/snp.avinput.variant_function'>snp.avinput.variant_function</a></span></td><td>【SNP全基因组注释结果】</td><td>file</td></tr>
+      <tr data-tt-id='5-5' data-tt-parent-id='5'><td><span class='file'><a href='./4.SNP_VarDetect/SNP_Annotation_Statistics.xls'>SNP_Annotation_Statistics.xls</a></span></td><td>【SNP注释统计】</td><td>table</td></tr>
+	  <tr data-tt-id='6'><td><span class='folder'>5.indel_VarDetect</a></span></td><td>【变异位点、统计、注释结果】</td><td>folder</td></tr>
+      <tr data-tt-id='6-1' data-tt-parent-id='6'><td><span class='file'><a href='./5.indel_VarDetect/5.indel_VarDetect.README.txt'>5.indel_VarDetect.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+      <tr data-tt-id='6-2' data-tt-parent-id='6'><td><span class='file'><a href='./5.indel_VarDetect/Indel.vcf'>Indel.vcf</a></span></td><td>【InDel变异vcf文件】</td><td>file</td></tr>
+      <tr data-tt-id='6-3' data-tt-parent-id='6'><td><span class='file'><a href='./5.indel_VarDetect/indel.avinput.exonic_variant_function'>indel.avinput.exonic_variant_function</a></span></td><td>【InDel外显子注释结果】</td><td>file</td></tr>
+      <tr data-tt-id='6-4' data-tt-parent-id='6'><td><span class='file'><a href='./5.indel_VarDetect/indel.avinput.variant_function'>indel.avinput.variant_function</a></span></td><td>【InDel全基因组注释结果】</td><td>file</td></tr>
+      <tr data-tt-id='6-5' data-tt-parent-id='6'><td><span class='file'><a href='./5.indel_VarDetect/InDel_Annotation_Statistics.xls'>InDel_Annotation_Statistics.xls</a></span></td><td>【InDel注释统计】</td><td>table</td></tr>
+ 	  <tr data-tt-id='7'><td><span class='folder'>6.SNP_index_indel_index_analysis</a></span></td><td>【变异位点的index值分析】</td><td>folder</td></tr>
+      <tr data-tt-id='7-1' data-tt-parent-id='7'><td><span class='file'><a href='./6.SNP_index_indel_index_analysis/6.SNPindex_analysis.README.txt'>6.SNPindex_analysis.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+ 	  <tr data-tt-id='7-2' data-tt-parent-id='7'><td><span  class='folder'>6.1.SNPindex_analysis</td><td>【SNP测序深度及覆盖度统计】</td><td>folder</td></tr>
+	  <tr data-tt-id='7-2-1' data-tt-parent-id='7-2'><td><span class='file'>S1.SNP_index.manhattan.pdf/png</td><td>【子代池1的SNP index manhattan图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-2-2' data-tt-parent-id='7-2'><td><span class='file'>S2.SNP_index.manhattan.pdf/png</td><td>【子代池2的SNP index manhattan图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-2-3' data-tt-parent-id='7-2'><td><span class='file'>Delta_SNPindex.manhattan.pdf/png</td><td>【DeltaSNPindex的manhattan图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-2-4' data-tt-parent-id='7-2'><td><span class='file'>S1.SNP_index.*.png</td><td>【子代池1的SNP index分布图，png 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-2-5' data-tt-parent-id='7-2'><td><span class='file'>S2.SNP_index.*.png</td><td>【子代池2的SNP index分布图，png 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-2-6' data-tt-parent-id='7-2'><td><span class='file'>Delta_SNPindex.*.png</td><td>【delta SNP index分布图，png/pdf 格式】</td><td>figure</td></tr>
+      <tr data-tt-id='7-2-7' data-tt-parent-id='7-2'><td><span class='file'><a href='./6.SNP_index_indel_index_analysis/6.1.SNPindex_analysis/Delta_SNPindex.xls'>Delta_SNPindex.xls</a></span></td><td>【SNPindex差值列表（2个子代池的释放）】</td><td>table</td></tr>
+ 	  <tr data-tt-id='7-2-8' data-tt-parent-id='7-2'><td><span class='file'><a href='./6.SNP_index_indel_index_analysis/6.1.SNPindex_analysis/Filter_SNP_index.xls'>Filter_SNP_index.xls</a></span></td><td>【过滤后的SNPindex列表（1个子代池的释放)】</td><td>table</td></tr>
+ 	  <tr data-tt-id='7-2-9' data-tt-parent-id='7-2'><td><span class='file'><a href='./6.SNP_index_indel_index_analysis/6.1.SNPindex_analysis/candidateSNPindex.xls'>candidateSNPindex.xls</a></span></td><td>【候选SNP位点】</td><td>table</td></tr>
+ 	  <tr data-tt-id='7-3' data-tt-parent-id='7'><td><span  class='folder'>6.2.indel_index_analysis</td><td>【InDel 测序深度及覆盖度统计】</td><td>folder</td></tr>
+	  <tr data-tt-id='7-3-1' data-tt-parent-id='7-3'><td><span class='file'>S1.InDel_index.manhattan.pdf/png</td><td>【子代池1的InDel index manhattan图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-3-2' data-tt-parent-id='7-3'><td><span class='file'>S2.InDel_index.manhattan.pdf/png</td><td>【子代池2的InDel index manhattan图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-3-3' data-tt-parent-id='7-3'><td><span class='file'>Delta_InDelindex.manhattan.pdf/png</td><td>【DeltaInDelindex的manhattan图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-3-4' data-tt-parent-id='7-3'><td><span class='file'>S1.InDel_index.*.png</td><td>【子代池1的InDel index分布图，png 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-3-5' data-tt-parent-id='7-3'><td><span class='file'>S2.InDel_index.*.png</td><td>【子代池2的InDel index分布图，png 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-3-6' data-tt-parent-id='7-3'><td><span class='file'>Delta_InDelindex.*.png</td><td>【delta InDel index分布图，png/pdf 格式】</td><td>figure</td></tr>
+      <tr data-tt-id='7-3-7' data-tt-parent-id='7-3'><td><span class='file'><a href='./6.SNP_index_indel_index_analysis/6.2.indel_index_analysis/Delta_InDelindex.xls'>Delta_InDelindex.xls</a></span></td><td>【InDelindex差值列表（2个子代池的释放）】</td><td>table</td></tr>
+ 	  <tr data-tt-id='7-3-8' data-tt-parent-id='7-3'><td><span class='file'><a href='./6.SNP_index_indel_index_analysis/6.2.indel_index_analysis/Filter_InDel_index.xls'>Filter_InDel_index.xls</a></span></td><td>【过滤后的InDelindex列表（1个子代池的释放)】</td><td>table</td></tr>
+ 	  <tr data-tt-id='7-3-9' data-tt-parent-id='7-3'><td><span class='file'><a href='./6.SNP_index_indel_index_analysis/6.2.indel_index_analysis/candidateInDelindex.xls'>candidateInDelindex.xls</a></span></td><td>【候选InDel位点】</td><td>table</td></tr>
+ 	  <tr data-tt-id='7-4' data-tt-parent-id='7'><td><span  class='folder'>6.3.all_index_analysis</td><td>【All 测序深度及覆盖度统计】</td><td>folder</td></tr>
+	  <tr data-tt-id='7-4-1' data-tt-parent-id='7-4'><td><span class='file'>S1.All_index.manhattan.pdf/png</td><td>【子代池1的All index manhattan图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-4-2' data-tt-parent-id='7-4'><td><span class='file'>S2.All_index.manhattan.pdf/png</td><td>【子代池2的All index manhattan图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-4-3' data-tt-parent-id='7-4'><td><span class='file'>Delta_Allindex.manhattan.pdf/png</td><td>【DeltaAllindex的manhattan图，png/pdf 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-4-4' data-tt-parent-id='7-4'><td><span class='file'>S1.All_index.*.png</td><td>【子代池1的All index分布图，png 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-4-5' data-tt-parent-id='7-4'><td><span class='file'>S2.All_index.*.png</td><td>【子代池2的All index分布图，png 格式】</td><td>figure</td></tr>
+	  <tr data-tt-id='7-4-6' data-tt-parent-id='7-4'><td><span class='file'>Delta_Allindex.*.png</td><td>【delta All index分布图，png/pdf 格式】</td><td>figure</td></tr>
+      <tr data-tt-id='7-4-7' data-tt-parent-id='7-4'><td><span class='file'><a href='./6.3.all_index_analysis/6.3.all_index_analysis/Delta_Allindex.xls'>Delta_Allindex.xls</a></span></td><td>【Allindex差值列表（2个子代池的释放）】</td><td>table</td></tr>
+ 	  <tr data-tt-id='7-4-8' data-tt-parent-id='7-4'><td><span class='file'><a href='./6.3.all_index_analysis/6.3.all_index_analysis/Filter_All_index.xls'>Filter_All_index.xls</a></span></td><td>【过滤后的Allindex列表（1个子代池的释放)】</td><td>table</td></tr>
+ 	  <tr data-tt-id='7-4-9' data-tt-parent-id='7-4'><td><span class='file'><a href='./6.3.all_index_analysis/6.3.all_index_analysis/candidateAllindex.xls'>candidateAllindex.xls</a></span></td><td>【候选All位点】</td><td>table</td></tr>
+	  <tr data-tt-id='8'><td><span class='folder'>7.Trait_loci</a></span></td><td>【定位结果】</td><td>folder</td></tr>
+      <tr data-tt-id='8-1' data-tt-parent-id='8'><td><span class='file'><a href='./7.Trait_loci/7.Trait_loci.README.txt'>5.indel_VarDetect.README.txt</a></span></td><td>【说明文档】</td><td>file</td></tr>
+      <tr data-tt-id='8-2' data-tt-parent-id='8'><td><span class='file'><a href='./7.Trait_loci/candidate_SNP_gene.xls'>candidate_SNP_gene.xls</a></span></td><td>【候选基因列表】</td><td>table</td></tr>
+      <tr data-tt-id='8-3' data-tt-parent-id='8'><td><span class='file'><a href='./7.Trait_loci/candidateSNP_Annotation_Statistics.xls'>candidateSNP_Annotation_Statistics.xls</a></span></td><td>【候选SNP位点注释统计】</td><td>table</td></tr>
+      <tr data-tt-id='8-4' data-tt-parent-id='8'><td><span class='file'><a href='./7.Trait_loci/candidateSNPindex.avinput_variant_function'>candidateSNPindex.avinput_variant_function</a></span></td><td>【候选SNP位点注释】</td><td>file</td></tr>
+      <tr data-tt-id='8-5' data-tt-parent-id='8'><td><span class='file'><a href='./7.Trait_loci/candidateSNPindex.exonic_variant_function'>InDel_Annotation_Statistics.xls</a></span></td><td>【候选SNP位点外显子注释,gff3中需有外显子】</td><td>file</td></tr>
+      <tr data-tt-id='8-6' data-tt-parent-id='8'><td><span class='file'>candidateAllindex_SNP*</td><td>【allindex分析的候选SNP位点注释及候选基因】</td><td>table</td></tr>
+      <tr data-tt-id='8-7' data-tt-parent-id='8'><td><span class='file'>candidateAllindex_InDel*</td><td>【allindex分析的候选indel位点注释及候选基因】</td><td>table</td></tr>	  
+ 	  
+	   </tbody>
+      </table>    
+    </div>
+	
+    <script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-treetable/3.2.0/jquery.treetable.js"></script>
+    <script>
+      $("#example-basic").treetable({ expandable: true });
+
+      $("#example-basic-static").treetable();
+
+      $("#example-basic-expandable").treetable({ expandable: true });
+
+      $("#example-advanced").treetable({ expandable: true });
+
+      // Highlight selected row
+      $("#example-advanced tbody").on("mousedown", "tr", function() {
+        $(".selected").not(this).removeClass("selected");
+        $(this).toggleClass("selected");
+      });
+
+      // Drag & Drop Example Code
+      $("#example-advanced .file, #example-advanced .folder").draggable({
+        helper: "clone",
+        opacity: .75,
+        refreshPositions: true, // Performance?
+        revert: "invalid",
+        revertDuration: 300,
+        scroll: true
+      });
+
+      $("#example-advanced .folder").each(function() {
+        $(this).parents("#example-advanced tr").droppable({
+          accept: ".file, .folder",
+          drop: function(e, ui) {
+            var droppedEl = ui.draggable.parents("tr");
+            $("#example-advanced").treetable("move", droppedEl.data("ttId"), $(this).data("ttId"));
+          },
+          hoverClass: "accept",
+          over: function(e, ui) {
+            var droppedEl = ui.draggable.parents("tr");
+            if(this != droppedEl[0] && !$(this).is(".expanded")) {
+              $("#example-advanced").treetable("expandNode", $(this).data("ttId"));
+            }
+          }
+        });
+      });
+
+      $("form#reveal").submit(function() {
+        var nodeId = $("#revealNodeId").val()
+
+        try {
+          $("#example-advanced").treetable("reveal", nodeId);
+        }
+        catch(error) {
+          alert(error.message);
+        }
+
+        return false;
+      });
+    </script>
+	
+	<form action="">
+	<fieldset>
+	<legend><p><button type="button" class="btn btn-default btn-sm">
+          <span class="glyphicon glyphicon-exclamation-sign"></span>Tip:</button></p></legend>
+	<ul class='task-list'>
+		<li class='task-list-item task-list-done' >
+	    <input type='checkbox' disabled='disabled' checked> </input><p>点击该目录中文件名，可以直接链接到对应文件具体位置。</p>
+		</li>
+	</ul>
+	<ul class='task-list'>
+		<li class='task-list-item task-list-done' >
+	    <input type='checkbox' disabled='disabled' checked> </input><p>请您务必确保该目录、数据文件保持原相对位置，不要随意移动文件或文件夹，否则无法实现链接。</p>
+		</li>
+	</ul>
+	<ul class='task-list'>
+		<li class='task-list-item task-list-done' >
+	    <input type='checkbox' disabled='disabled' checked> </input><p>6.SNP_index_indel_index_analysis中如果有2个子代池则释放Delta_SNP/InDel/Allindex.xls，如果只有1个子代池则释放Filter_SNP/InDel/All_index.xls。</p>
+		</li>
+	</ul>
+
+	</fieldset>
+	</form>
+	<hr style="height:5px;border:none;border-top:5px ridge grey;" />
+	<table align="center"  height="100%" style="font-size:12px font-weight:bold color:#F5F5F5" >
+	<td "align="center" valign="top">如有疑问请咨询项目销售或运营，我们将竭诚为您服务。感谢您对Novogene的信任！</td>
+  </body>
+</html>

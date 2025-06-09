@@ -1,0 +1,13 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/minimap2-2.26_x64-linux.tar.bz2 /opt/src/
+    
+%post
+    mkdir -p /opt/bioinfo/bin 
+    tar --no-same-owner -xjf /opt/src/minimap2-2.26_x64-linux.tar.bz2 \
+        -C /opt/bioinfo/bin --strip-components=1 minimap2-2.26_x64-linux/minimap2 \
+    && chmod +x /opt/bioinfo/bin/minimap2
+
+%environment

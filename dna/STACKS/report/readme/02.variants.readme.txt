@@ -1,0 +1,36 @@
+变异检测结果汇总
+
+结果文件说明：
+1.	readme.txt：文件详细介绍说明
+2.	ref.loci.fa：参考tags序列文件
+3.	ref.loci.fa.fai：参考tags序列的索引文件
+4.	populations.final.vcf.gz：样品变异检测结果文件
+5.	populations.final.vcf.gz.tbi：样品变异检测结果的索引文件
+6.  snp.stat.xls：变异基因型文件单样品snp统计表
+7.  snp.stat.all.xls：群体变异基因型snp统计表
+
+表头具体说明：
+populations.final.vcf.gz
+CHROM：变异位点所在染色体
+POS：变异位点坐标
+ID：变异位点的ID,如在dbSNP中有该该位点的id，则会在此行给出；若没有，则用’.'表示其为一个novel variant
+REF：参考序列在该位点的基因型
+ALT：该位点的其它基因型
+QUAL：Phred格式(Phred_scaled)的质量值，表示在该位点存在SNP的可能性；该值越高，则SNP的可能性越大；计算方法：Phred值 = -10 * log (1-p) p为SNP存在的概率; 通过计算公式可以看出值为10的表示错误概率为0.1，该位点的概率为90%,qual值与p成正比例
+FILTER：使用上一个QUAL值来进行过滤的话，是不够的。GATK能使用其它的方法来进行过滤，过滤结果中通过则该值为"PASS";若SNP不可靠，则该项不为"PASS"或"."
+INFO：这一行是变异位点的详细信息
+FORMAT：变异位点的格式
+
+snp.stat.xls/snp.stat.all.xls：snp数量统计结果表
+sample：样品名;
+num_gt：表示每个样本中具有非缺失基因型的位点数;
+num_nonref_gt：表示每个样本中具有非参考等位基因的位点数;
+num_homo_ref：表示每个样本中具有纯合参考等位基因的位点数;
+num_homo_alt：表示每个样本中具有纯合非参考等位基因的位点数;
+num_het：表示每个样本中具有杂合等位基因的位点数;
+num_snv：表示SNV位点的数目，num_indel表示INDEL位点的数目;
+num_singleton：表示只在一个样本中出现的位点数;
+num_miss：表示每个样本中缺失的位点数;
+num_ts：表示转换位点的数目;
+num_tv：表示颠换位点的数目;
+ts/tv：表示转换位点和颠换位点的比率。

@@ -1,0 +1,36 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/wgs.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/snpEff_v5_1d_core.zip    /opt/src/
+    /mnt/ilustre/users/sanger-dev1/app/bioinfo/dna/env/jdk-11.0.11/ /opt/bioinfo/
+
+%labels
+    Author yexiaoya
+    Version v1.0
+    Description Bioinformatics tools container
+
+%post
+    # 创建目录
+    mkdir -p /opt/bioinfo/bin
+    apt-get install -y openjdk-11-jdk 
+    apt-get install -y unzip
+
+    # 14. 安装 snpEff & SnpSift
+    unzip -o /opt/src/snpEff_v5_1d_core.zip -d /opt/bioinfo/
+
+    # 4. Symlink the main jar for easy execution
+    ln -s $SNPEFF_HOME/snpEff.jar /opt/bioinfo/bin/snpEff.jar && \
+    ln -s $SNPEFF_HOME/SnpSift.jar  /opt/bioinfo/bin/SnpSift.jar
+
+    apt-get clean -y
+    rm -rf /opt/src/*
+
+%environment
+    export PATH=/usr/local/bin:/opt/bioinfo/bin:/usr/bin:$PATH
+    export SNPEFF_HOME=/opt/bioinfo/bin/snpEff
+    export PATH=$SNPEFF_HOME:$PATH
+    # Java环境
+    export JAVA_HOME=/opt/bioinfo/jdk-11.0.11
+    export PATH=$JAVA_HOME/bin:$PATH
+    

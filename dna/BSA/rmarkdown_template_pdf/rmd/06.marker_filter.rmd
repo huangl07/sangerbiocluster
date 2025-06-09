@@ -1,0 +1,38 @@
+
+### 标记过滤
+
+BSA关联分析的核心思路是通过在表型差异最大的两组子代间，寻找基因型频率差异最大的位点，并将其鉴定为与表型相关的位点。之所以要用构建子代分离群体、而不用具有极端性状的亲本直接分析，是因为亲本之间的遗传背景通常差异较大，除了关注的目标性状位点的差异之外，其他变异位点也会存在差异；而通过两亲本杂交所产生的子代群体的遗传背景一致，通过挑选具有极端目标表型差异的两组子代构建混池进行分析，使非相关变异在两个子代混池中均有分布，这样就消除了目标性状外背景差异的干扰。
+
+实际过滤条件如下：（1）过滤去除非二态性（有多种基因型）的变异位点；（2）筛选两个亲本间纯合差异的遗传标记（除F1群体）。过滤后的SNP及InDel标记信息见下表\@ref(tab:snpindelgenestat-table)。
+
+> 过滤后详细的统计结果详见结题文件夹目录下[data_release/01.vcf2table](./data_release/01.vcf2table)文件夹下的snp_indel_gene.stat.xls文件和pop.final.anno.xls文件
+
+```{r get-snpindelgenestat-table}
+data <- read.delim('../file/snp_indel_gene.stat.xls',sep='\t',header=T,check.names = F)
+show_data <- data[c("CHROM", "SNP Number", "Effective SNP", "InDel Number", "Effective InDel")]
+colnames(show_data) <- c("Chrom", "SNP Number", "Effective SNP", "InDel Number", "Effective InDel")
+show_data <- show_data[str_order(show_data$Chrom, numeric = T),]
+show_data <- show_data %>%
+  tbl_prettier(c(NA, 0, 0, 0, 0))
+tempfn <- c(
+    "Chrom：染色体编号；",
+    "SNP Number：过滤后对应染色体上 SNP 数目；",
+    "Effective SNP：过滤后对应染色体上变异功效为 HIGH 或 MODERATE SNP 的数量；",
+    "InDel Number：过滤后对应染色体上 InDel 数目；",
+    "Effective InDel：过滤后对应染色体上变异功效为 HIGH 或 MODERATE INDEL 的数量。"
+)
+```
+
+```{r snpindelgenestat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("关联分析标记信息统计表", "snpindelgenestat-table")
+datatable(show_data, rownames=FALSE,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r snpindelgenestat-table,eval=pdffmt}
+kbl(row.names=FALSE, show_data, "latex", caption="关联分析标记信息统计表", booktabs = TRUE, longtable = TRUE, linesep=' ', escape=FALSE) %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+

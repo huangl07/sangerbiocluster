@@ -1,0 +1,46 @@
+\usepackage[pages=all]{background}
+
+\backgroundsetup{
+scale=1,
+color=black,
+opacity=0.8,
+angle=0,
+contents={
+  \resizebox{\paperwidth}{\paperheight}{\includegraphics{tex/background.png}}
+  }
+}
+
+\usepackage{fancyhdr}
+\usepackage{ctex}
+\usepackage{colortbl}
+\usepackage{tabularray}
+\usepackage{float}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage{makecell}
+\usepackage[a4paper,
+            left=0.8in,
+            right=0.8in,
+            top=1in,
+            bottom=1.2in
+           ]{geometry}
+
+\pagestyle{fancy}
+
+\fancyhf{}
+\lhead{美吉生物结题报告}
+\rhead{\thepage}
+
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
+\usepackage[labelsep=space]{caption}
+\usepackage{indentfirst}
+\setlength{\parindent}{2em}
+
+\usepackage{noto}
+
+% set all math expressions to not be italicized
+%\usepackage{amsmath}
+%\everymath{\textstyle\rm}

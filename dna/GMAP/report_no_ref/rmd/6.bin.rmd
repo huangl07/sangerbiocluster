@@ -1,0 +1,30 @@
+### bin标记构建
+
+由于实际实验的群体大小限制，一个遗传群体能够承载的重组事件是有限的，基于当前群体能够检测到的重组事件，将分子标记根据重组事件发生进行划分，即可获得大量不重组的DNA片段，这些不重组的DNA片段称为Bin。采用滑窗法进行Bin的构建，可以提高遗传图谱的质量，同时提升图谱构建的效率。本项目基于群体情况，构建Binmap如\@ref(tab:bin-table)所示。
+
+```{r get-bin-table}
+total_bin_stat_file <- file.path(gmap_result_dir, "08.evaluate", "total.bin.stat")
+total_bin_stat <- read.delim(total_bin_stat_file,sep='\t',header=TRUE,check.names = FALSE)
+#if(params$devmode){snp_stat <- snp_stat[order(snp_stat[,1])[1:10],]}
+tempdf <- total_bin_stat[,c("#CHROM","BinNum","AverBinSize")]
+colnames(tempdf) <- c("Sequence ID","BinNumber","Average BinSize")
+tempdf <- tempdf %>% tbl_prettier(c(NA,0,2))
+tempdf <- tempdf[str_order(tempdf$`Sequence ID`, numeric = T),]
+tempfn <- c(
+"Sequence ID：序列编号",
+"BinNumber：当前染色体序列构建的bin个数；",
+"Average BinSize：平均每个bin的长度；"
+)
+```
+```{r bin-table-html,eval=htmlfmt,results="asis"}
+dt_caption("binmarker统计表","bin-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r bin-table,eval=pdffmt}
+tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+kbl(row.names=FALSE, tempdf, "latex",caption="binmarker统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',,escape=FALSE,align="c") %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+kbl_foot(tempfn) %>% table_bline()
+```

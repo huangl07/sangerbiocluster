@@ -1,0 +1,36 @@
+## 高级分析
+本信息分析高级分析主要是基于标准分析所检测的突变信息进行后续易感基因筛查、突变频谱与突变特征分析、高频突变基因分析及高频突变基因通路富集、已知驱动基因的筛选等深入的研究。
+
+### 肿瘤样本同源性检测
+
+在进行体细胞突变检测时，需要确定用来查找体细胞突变检测的成对组织是否具有同源性，为后续分析肿瘤样本特有变异的可靠性提供来源性证据。
+
+本项目利用Bam-matcher软件检测两个样品是否来自于同一个来源。统计结果见表\@ref(tab:bam-matcher-stat-table)。
+
+
+```{r get-bam-matcher-stat-table}
+cnv_stat <- read.delim('info/bam_matcher.report',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- cnv_stat %>% tbl_prettier(c(NA,0,0,0))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Normal：对照样本编号；",
+"Tumor：肿瘤样本编号；",
+"Fraction：同源性比例；",
+"CONCLUSION：结论。"
+)
+```
+
+```{r bam-matcher-stat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("同源性检测结果统计表","bam-matcher-stat-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r bam-matcher-stat-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    tempdf[,2]=gsub("_","\\\\_",tempdf[,2])
+    kbl(row.names=FALSE, tempdf, "latex",caption="同源性检测结果统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

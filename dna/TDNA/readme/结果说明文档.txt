@@ -1,0 +1,47 @@
+插入位点检测文件结果汇总
+
+结果文件说明：
+1.	readme.txt：文件详细介绍说明
+2.  aimhii 文件夹：aimhii结果汇总文件夹
+3.  aimhii.stat.xls：AIM-HII结果统计表
+4.	${sample}.csv：样本AIM-HII结果详细文件
+5.  tdna 文件夹：tdna结果汇总文件夹
+6.  tdna.stat.xls：TDNAscan结果统计表
+
+表头具体说明：
+aimhii.stat.xls：AIM-HII结果统计表
+1.  Sample：样品；
+2.  Type：singleton/pair（单个簇/簇对）；
+3.  Ref_chrom：匹配到的基因组染色体；
+4.  Start：匹配到的基因组染色体上的起始位点；
+5.  End：匹配到的基因组染色体上的终止位点；
+
+tdna.stat.xls：TDNAscan结果统计表
+1.  Sample： 样品名；
+2.  Chr：匹配到的参考基因组染色体
+3.  Position： T-DNA插入的位置（’~’代表附近的插入位置,但是无法判别准确位置）；
+4.  SuppRead： CLR代表clipped reads（双端序列中的一端分别能对上参考基因组和T-DNA）个数；
+5.  DIR 表示discordant reads（双端序列中的一端能对上参考基因组，另一端能对上T-DNA）的读数；
+6.  TDNA_info： tdna 和 tdna_end 表示插入参考基因组的 T-DNA 序列的开始和结束位置，’-’表示没有检测到TDNA起始/终止位置；
+7.  Orientation： 插入参考基因组的正向或反向T-DNA；
+8.  Freq： 插入频率，这个频率可以表示为每个接受T-DNA的细胞中,
+9.  有多少个转化事件中成功插入T-DNA的百分比（对于非组织类样品无意义）
+
+${sample}.csv：样本AIM-HII结果详细文件
+1.  type：singleton/pair（单个簇/簇对）；
+2.  ref_chrom：匹配到的基因组染色体；
+3.  left_start：匹配到的基因组染色体上的旁侧序列起始位点（左侧）；
+4.  left_junction_b1：匹配到的基因组染色体上的旁侧序列终止位点（左侧）；
+5.  left_numreads：匹配到的基因组染色体上的旁侧序列Reads数量（左侧）；
+6.  gap_length：簇对之间的距离长度；
+7.  insert_length：检测到的插入片段的长度；
+8.  insert_chrom：插入片段名称；
+9.  insert_start：插入片段插入的起始位点；
+10.  insert_end：插入片段插入的终止位点；
+11.  insert_strand：正链为“+”，负链为“-”；
+12.  right_junction_b1：匹配到的基因组染色体上的旁侧序列起始位点（右侧）；
+13.  right_end_b1：匹配到的基因组染色体上的旁侧序列终止位点（右侧）；
+14.  right_numreads：匹配到的基因组染色体上的旁侧序列Reads数量（右侧）；
+
+${sample}_*_*.png:样本AIM-HII结果详细文件
+图片为AIM-HII匹配到的该样本的对应reads。

@@ -1,0 +1,70 @@
+# 附录
+ 
+***
+
+## 数据库及名词解释
+
+***
+
+- (1).NCBI_NT：NCBI非冗余核酸库，包括GenBank、RefSeq、PDB的数据，仅未预测出蛋白的序列比对了该数据库
+
+- (2).NCBI_NR：NCBI非冗余蛋白库，包括了SwissProt、PIR（Protein InformationResource）、PRF（Protein Research Foundation）、PDB（Protein Data Bank）蛋白质数据库中非冗余的数据以及从GenBank 和RefSeq 的CDS 数据翻译来的蛋白质数据
+
+- (3).GO(http://www.geneontology.org) 是基因本体论联合会建立的数据库，其目的在于标准化不同数据库中的关于基因和基因产物的生物学术语，对基因和蛋白功能进行限定和描述。利用 GO 数据库，可以将基因按照它们参与的生物学过程、构成细胞的组分、实现的分子功能等进行分类。  
+
+&emsp;&emsp;GO功能包括3大方面：  
+
+&emsp;&emsp;Cellular component：the parts of a cell or its extracellular environment，such as nucleus, ribosome  
+
+&emsp;&emsp;Molecular function：the elemental activities of a gene product at the molecular level, such as binding,catalysis  
+
+&emsp;&emsp;Biological process：operations or sets of molecular events with a defined beginning and end, pertinent to the functioning of integrated living units: cells, tissues, organs, and organisms, such as cellular physiological process, signal transduction  
+
+- (4).KEGG 库 (Kyoto encyclopedia of genes and genomes 数据库)：京都基因和基因组百科全书，是系统分析基因功能、联系基因组信息和功能信息的知识库。基因组信息存储在GENES 数据库里，包括完整和部分测序的基因组序列；更高级的功能信息存储在PATHWAY 数据库里，包括图解的细胞生化过程如代谢、膜转运、信号传递、细胞周期，还包括同系保守的子通路等信息；KEGG 的另一个数据库是LIGAND，包含化学物质、酶分子、酶反应等信息；KEGG还有个数据库是DISEASE，提供和人类疾病有关的的信息，整合了疾病的遗传和环境影响因素等信息，包括已知疾病相关基因，环境影响因子，诊断标记，对应治疗药物等。
+
+- (5).STRING（Search Tool for the Retrieval of Interacting Genes）：是欧洲分子生物学实验室建立的数据库，这个数据库可用于预测蛋白质的相互作用，它利用了COG数据库的信息对蛋白进行直系同源聚类。通过blast比对String数据库，可以得到蛋白编码基因的COG分类信息，一个COG表示一组直系同源蛋白。
+
+- (6).COG(Clusters of Orthologous Groups of proteins，http://www.ncbi.nlm.nih.gov/COG )为蛋白直系同源簇数据库，是选取66株已完成的基因组的蛋白质序列，根据系统进化关系分类构建而成。与COG数据库比对可以进行功能注释、归类以及蛋白进化分析。
+
+- (7).Rfam数据库
+
+&emsp;&emsp;Rfam是RNA序列家族的一个收集，由多重序列比对（multiple sequence alignments）和协方差模型（covariance models，CMs）代表。Rfam的主要目的是使用敏感BLAST过滤器连同CMs，对核苷酸序列特别是完整基因组，注释已知RNA家族的新成员。具有一个非常广泛的分类学区域的少数家族（例如，tRNA和rRNA）提供了大多数的序列注释，同时大多数Rfam家族（例如，snoRNAs和miRNAs）具有有限的分类范围，并提供了有限数目的注释。Rfam网址：http://rfam.sanger.ac.uk。
+
+- (8).miRBase数据库
+
+&emsp;&emsp;miRBase序列数据库是一个提供包括miRNA命名、miRNA序列存储、注释、预测靶标以及搜索等信息的全方位数据库，是存储miRNA信息最主要的公共数据库之一。miRBase提供便捷的网上查询服务，使用者可以通过名称、关键词或序列等方式进行检索，并可通过链接查询有关该miRNA的主要文献，对miRNA进行基因组背景分析及靶标预测等。miRBase网址：http://www.mirbase.org/index.shtml。
+
+- (9).piRNAbank数据库
+
+&emsp;&emsp;piRNAbank数据库是一个收录模式生物piwiRNA信息的数据库，目前已经收录了人、大鼠、小鼠、果蝇、斑马鱼和鸭嘴兽的piRNA数据。piRNAbank网址：http://pirnabank.ibab.ac.in/
+
+- (10).网络拓扑性质
+
+&emsp;&emsp;网络拓扑性质包括联通性（Degree）、介数中心性（Betweeness）、亲密系数（Closeness），以及聚类系数（Cluster Coefficient）等，现对以上4个常用拓扑性质进行简要说明。（1）连通性：某节点的联通性表示在网络中直接与该节点相连的节点数目，连通性越高表示该节点在整个网络中重要性越高，连通性非常高的节点也称为Hub节点。在生物体内，支持生命基本活动的必须基因或其翻译产物在整个生物网络中出现的频率很高，很多癌症等遗传性疾病相关基因有此性质。（2）介数中心性：该拓扑性质体现了某一个节点在与其他节点连接中所起的作用，该值越大，意味着该节点在保持整个网络紧密连接性中作用越重要。（3）亲密系数：也称为紧密度，该值越小说明节点越靠近网络的中心位置。（4）聚类系数：该拓扑性质值越大，表明某节点的邻居节点之间越倾向于直接相连。
+
+## 文件解压缩方法
+
+***
+
+&emsp;&emsp;所有提供的文件均为Linux系统下的文件，压缩包使用“tar –zcvf ”命令压缩，以下为不同系统用户解压缩的方法
+
+- Unix/Linux/Mac用户: 使用tar –zxvf *.tar.gz命令 
+
+- Windows用户：使用WinRAR软件解压缩 
+
+## 文件打开或浏览方法
+
+***
+
+&emsp;&emsp;如果在本附录中无特殊说明，所有提供的文件均为Linux系统下文本文件，Unix/Linux用户可以使用more或less命令查看文本文件内容。对于Windows用户，一般文本文件可以使用写字板打开。推荐使用开源文本编辑器gedit for win32版本或者商业文本编辑器UltraEdit。当文件比较大时，打开文件可能导致Windows系统死机，建议使用性能较好的计算机或者使用更适合处理大量数据的Unix/Linux系统打开。
+
+&emsp;&emsp;数据中可能包含部分图像文件，一般图像文件后缀名为.png、.jpg、.gif等，对于图像文件，Windows用户可以使用图片浏览器打开，Linux/Unix用户使用display命令打开。
+
+&emsp;&emsp;后缀名为svg的文件为文本格式描述的图像文件，Windows用户需要安装Adobe Illustrator软件打开。Linux/Unix用户可以使用rsvg-view命令查看。公司默认提供“pdf“格式的矢量图，可利用"Adobe Illustrator"软件对该格式图片进行编辑。
+
+&emsp;&emsp;Linux下的表格均为制表符(Tab)分割的文本，为了便于阅读，建议使用excel或openoffice等办公软件用表格形式打开，打开时请用“Tab分割”方式。
+
+
+
+
+

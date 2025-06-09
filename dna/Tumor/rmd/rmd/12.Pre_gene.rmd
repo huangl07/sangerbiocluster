@@ -1,0 +1,43 @@
+
+### 肿瘤易感基因筛查
+
+癌症易感基因（Cancer Predisposing genes, CPGs）是指在适宜环境刺激下能够编码遗传性疾病或获得疾病易感性的基因，个体生殖细胞中发生的突变不一定会直接导致癌症发生，但会显著增加个体的患癌风险，是癌症发生机制研究的一个重要分支。
+
+本项目利用Samtools 软件（Li H et al. 2009）检测患者正常组织中的Germline Mutation（SNP,InDel），再将检测到的突变基因进行筛选，筛选可能的癌症易感基因，具体筛选策略如下：
+
+1：过滤掉深度低于10X 的变异位点；
+
+2：保留千人、ExAc、esp6500 数据库中的低频位点（AF<0.0014），过滤掉dbSNP 数据库中的SNP 位点，但保留存在于COSMIC 数据库中的变异位点；
+
+3：过滤掉基因间区、非编码区域和内含子区域及同义突变的位点；
+
+4：过滤掉同义突变的变异位点；过滤掉基因组重复区域的变异位点；
+
+5：根据ljb23_sift, ljb23_pp2hvar, ljb23_pp2hdiv 和ljb23_mt 的分值过滤：至少在1 个数据库中评估为有害或2 个以上中是中等有害程度。
+
+通过CGC 数据库（ Cancer Gene Census, http://cancer.sanger.ac.uk/cancergenome/projects/census/）、dbNSFP数据库v4.3（http://database.liulab.science/dbNSFP），对上述筛选结果进行注释，便于根据个性化的研究需求对结果进行进一步解读统计结果见表\@ref(tab:pregene-table)，详细结果见结果文件中。
+
+
+```{r get-pregene-table}
+pre_stat <- read.delim('info/pre_gene.stat',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- pre_stat
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Sample_Control:肿瘤样品_对照样品;",
+"Gene_numbers:dbNSFP和CGC注释到的易感基因总数量;"
+)
+```
+
+```{r pregene-table-html,eval=htmlfmt,results="asis"}
+dt_caption("肿瘤易感基因筛查统计表","pregene-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r pregene-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="肿瘤易感基因筛查统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

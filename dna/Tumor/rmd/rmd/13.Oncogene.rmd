@@ -1,0 +1,66 @@
+
+### 肿瘤已知驱动基因筛查
+
+癌症是一种复杂的疾病，是体细胞突变积累的结果。对于癌症致病机理的研究旨在找寻对肿瘤的增殖扩散有重要影响，使肿瘤获得选择性的生长优势的驱动突变（Driver mutation）。但研究的难点在于，检测所得到的Somatic Mutation 中多数是对肿瘤增殖扩散影响很小或者没有影响的突变，称为乘客突变（Passenger mutation）。因此，确定癌症发生发展过程中DriverMutation 及Driver Gene 对于开发个性化治疗方案和靶向药物具有重要意义。通过将Somatic Mutation 与数据库中的已知驱动基因进行比较，可以筛选出该肿瘤样本中的已知驱动基因。
+
+本项目比较的驱动基因来源有:
+
+1:IntOGen:pan-cancer数据中鉴定的568个驱动基因;
+
+2:CGC: Cancer Gene Census数据库收录的558个驱动基因;
+
+3:Bert Vogelstein125(Bert Vogelstein et al. 2013): Bert Vogelstein 的论文里的125 个mut-driver gene;
+
+4:SMG127 (Cyriac Kandoth et al. 2013): pan-cancer 的数据找出的significantly mutated gene;
+
+5:Comprehensive435 (David Tamborero et al. 2013): 用多种driver 检测方法找出的Driver 基因;
+
+6: Comprehensive299 (Matthew H. Bailey et al. 2018):Matthew H. Bailey的论文里的299 个Cancer Driver Genes。
+
+在基因组中，同义突变由于不承受选择压力，其突变位置是随机、无偏好性的，均匀分布于整个基因上，而功能获得性突变则往往在蛋白的某些特定区域聚集形成突变簇，分布特征的差异说明功能获得性突变使得癌细胞获得了选择性生长优势，因而在肿瘤发生发展的过程中受到了正向选择的压力。目前多数针对正向选择压力的分析方法都涉及突变频率，即鉴定出突变频率高于背景突变率的基因，即为可能的驱动基因。
+
+本项目同时使用OncodriveCLUSTL 软件，考虑到驱动突变在位点分布上具有形成突变簇的偏好性，利用同义突变无偏分布的特点构建背景突变率模型，寻找可能的驱动突变。
+
+驱动基因统计表\@ref(tab:oncogene-table)和驱动突变预测富集图\@ref(fig:oncogene-plot)如下所示，详细结果见结果文件中。
+
+```{r get-oncogene-table}
+oncogene_stat <- read.delim('info/oncogene.stat',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- oncogene_stat 
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Sample_Control:肿瘤样品名_对照样本名;",
+"Genes_all:统计到的驱动基因总数量;",
+"IntOGen:IntOGen注释到的驱动基因数量;",
+"CGC:CGC注释到的驱动基因数量;",
+"Com299:Com299文献注释到的驱动基因数量;",
+"Com435:Com435文献注释到的驱动基因数量;",
+"B125:B125文献注释到的驱动基因数量;"
+)
+```
+
+```{r oncogene-table-html,eval=htmlfmt,results="asis"}
+dt_caption("肿瘤已知驱动基因统计表","oncogene-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r oncogene-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="肿瘤已知驱动基因统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```
+
+```{r oncogene-plot, echo=FALSE, fig.cap="驱动突变预测富集图"}
+state_plots <- list.files("info","*_plot_oncodriven.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注**:致癌基因的大多数突变在少数特定位点（也称为热点）富集。该方法利用这些位置来鉴定癌症驱动基因。
+其中点的大小与基因中发现的簇的数量成比例。X 轴显示在这些簇中观察到的突变（或突变部分）的占比。

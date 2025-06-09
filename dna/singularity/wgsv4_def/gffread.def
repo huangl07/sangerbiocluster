@@ -1,0 +1,16 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/gffread-0.12.7.tar.gz      /opt/src/
+
+%post
+    mkdir -p /opt/bioinfo/bin 
+    mkdir -p /opt/src/build
+    
+    tar --no-same-owner -xzf /opt/src/gffread-0.12.7.tar.gz -C /opt/src/build && \
+    cd /opt/src/build/gffread-0.12.7 && \
+    make && cp gffread /opt/bioinfo/bin/
+
+    apt-get clean -y
+%environment

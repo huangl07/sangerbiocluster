@@ -1,0 +1,2 @@
+&emsp;&emsp;采用 Gprime 的算法；共得到 Gprime_region_num 个与性状相关的侯选区域，候选区域总长度为 Gprime_region_len，候选区域总的基因数为 Gprime_region_gene。
+

@@ -1,0 +1,88 @@
+
+# 工作流程
+
+***
+
+## 测序实验流程
+
+***
+
+&emsp;&emsp;circRNA是一大类非线性RNA，作为调控因子发挥着巨大的作用。circRNA具有大量存在，进化保守，在细胞质中相对稳定的特点。这些特点使得circRNA具有许多的功能，例如作为miRNA的海绵，绑定RNA形成RNA-蛋白复合物，调控基因的转录。circRNA测序是通过高通量测序技术及生物信息学方法在整体水平上解释样品中circRNA及miRNA全面信息的研究方法。测序实验采用Illumina TruSeqTM Stranded Total RNA Library Prep Kit方法进行链特异文库构建，其操作流程图及仪器试剂，如下图和下表所示：
+
+<img class="normal6" src="src/library.png">
+
+```{r echo=FALSE}
+library(knitr)
+data <- read.delim('src/library.xls',sep='\t',header=T)
+kable(data,table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/library.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+### 提取total_RNA
+
+&emsp;&emsp;从组织样品中提取total RNA，利用Nanodrop 2000对所提RNA的浓度和纯度进行检测，琼脂糖凝胶电泳检测RNA完整性，Agilent 2100测定RIN值。单次建库要求RNA总量＞5ug，浓度≥200ng/μL，OD260/280介于1.8~2.2之间。
+
+### 去除rRNA
+
+&emsp;&emsp;细胞内的circRNA都是环状的，缺少传统poly A尾，因此采用去除rRNA的方式建库可以获得更加全面的 circRNA信息。
+
+### 去除线性RNA
+
+&emsp;&emsp;去除rRNA得到的剩余RNA中含有mRNA、lncRNA、miRNA、siRNA等线性RNA，以及circRNA，因此需要将线性RNA去除，以增加circRNA在样品中的含量，对circRNA进行测序。RNase R降解线性RNA，而不对circRNA产生作用，因此使用RNase R去除线性RNA。
+
+### 片段化circRNA
+
+&emsp;&emsp;Illumina平台是针对短序列片段进行测序，circRNA是环状的，其长度范围为200bp-2kb或更长，因此需要对其进行随机打断。利用金属离子，可以将circRNA随机断裂成200bp左右的小片段。
+
+### 反转合成cDNA
+
+&emsp;&emsp;在逆转录酶的作用下，利用随机引物以circRNA为模板反转合成一链cDNA，进行二链合成时，dNTPs试剂中用dUTP代替dTTP，使cDNA第二链中碱基包含A/U/C/G。
+
+### 连接adaptor
+
+&emsp;&emsp;双链的cDNA结构为粘性末端，加入End Repair Mix将其补成平末端，随后在3’末端加上一个A碱基，用于连接Y字形的接头。
+
+### UNG酶消化cDNA二链
+
+&emsp;&emsp;在PCR扩增前，用UNG酶将cDNA第二链消化，从而使文库中仅包含cDNA第一链。
+
+### Illumina Hiseq上机测序
+
+- 1. 文库富集，PCR扩增15个cycles；
+- 2. 2%琼脂糖胶回收目的条带（Certified Low Range Ultra Agarose）；
+- 3. TBS380（Picogreen）定量，按数据比例混合上机；
+- 4. cBot上进行桥式PCR扩增，生成clusters；
+- 5. Hiseq测序平台，进行2*150bp测序。
+
+## 去核糖体RNA（rRNA）链特异性文库信息分析流程
+
+***
+
+### circRNA分析流程
+
+<img class="normal1" src='src/strand.png'>
+
+## 去核糖体RNA（rRNA）链特异性文库生物信息学分析内容
+
+***
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('src/fenxi.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('src/fenxi.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+

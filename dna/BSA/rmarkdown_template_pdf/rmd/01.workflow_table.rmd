@@ -1,0 +1,213 @@
+## 材料基本信息
+
+```{r get-material-info-table}
+material_info_table<- data.frame(
+  info = c("物种信息", "群体", "亲本", "混池信息", "参考基因组大小", "参考基因组组装水平", "参考基因组链接"),
+  content=c(
+    genome_name,
+    params$population,
+    paste(c(p1_id,p2_id),collapse=","),
+    paste(c(mix1_id,mix2_id),collapse=","),
+    genome_size,
+    genome_scale,
+    genome_link
+  )
+)
+names(material_info_table) <- c("条目","基本信息")
+```
+```{r material-info-table-html, eval=htmlfmt}
+kable(material_info_table, "html") %>%
+  kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+```{r material-info-table, eval=pdffmt}
+kbl(row.names=FALSE, material_info_table, "latex", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+  kable_styling(latex_options=c("striped","scale_down","repeat_header")) %>%
+  table_bline() %>%
+        column_spec(2,"30em")
+```
+
+本项目混池样本对应关系如下：
+
+```{r get-mix-info-table}
+mix_info_table<- data.frame(
+  info = c("野生型亲本", "突变型亲本", "野生型混池", "突变型混池"),
+  content=c(
+    ifelse(length(p1_id)>0,p1_id,"无"),
+    ifelse(length(p2_id)>0,p2_id,"无"),
+    ifelse(length(mix1_id)>0,mix1_id,"无"),
+    ifelse(length(mix2_id)>0,mix2_id,"无")
+  )
+)
+names(mix_info_table) <- c("混池信息","样本编号")
+```
+```{r mix-info-table-html, eval=htmlfmt}
+kable(mix_info_table, "html") %>%
+  kable_styling(bootstrap_options=c("striped","hover","condensed")) %>%
+        column_spec(2,"30em")
+```
+```{r mix-info-table, eval=pdffmt}
+kbl(row.names=FALSE, mix_info_table, "latex", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+  kable_styling(latex_options=c("striped","scale_down","repeat_header")) %>%
+  table_bline()
+```
+
+## 项目服务内容
+
+按照合同约定，对`r sample_number`个检测合格的样本进行以下实验及分析：
+
+- 1、全基因组重测序，每个混池测序量达到合同标准，Q30 $\geq$ 80%。
+
+- 2、比对参考基因组进行变异检测分析，具体内容包括：SNP检测和注释、InDel检测和注释。
+
+- 3、关联分析：根据混池中SNP和Indel基因型频率的差异，全基因组上筛选与目标性状相关联的位点，并对其进行注释。
+
+## 分析结果概述
+
+### 测序数据概述
+
+```{r workflow-p1-result, results='asis', eval=length(p1_id)>0}
+cat(
+  "1. 野生型亲本获得",
+  p1_total_base,
+  "的clean data，Q30达到",
+  p1_average_q30,
+  "，测序深度为",
+  p1_average_depth,
+  "，与参考基因组平均比对效率为",
+  p1_mapped_ratio,
+  "，基因组覆盖度为",
+  p1_coverage,
+  "（至少一个碱基覆盖）；\n\n",
+  sep=""
+  )
+```
+
+```{r workflow-p2-result, results='asis', eval=length(p2_id)>0}
+cat(
+  "1. 突变型亲本获得",
+  p2_total_base,
+  "的clean data，Q30达到",
+  p2_average_q30,
+  "，测序深度为",
+  p2_average_depth,
+  "，与参考基因组平均比对效率为",
+  p2_mapped_ratio,
+  "，基因组覆盖度为",
+  p2_coverage,
+  "（至少一个碱基覆盖）；\n\n",
+  sep=""
+  )
+```
+
+```{r workflow-mix1-result, results='asis', eval=length(mix1_id)>0}
+cat(
+  "1. 野生型混池获得",
+  mix1_total_base,
+  "的clean data，Q30达到",
+  mix1_average_q30,
+  "，测序深度为",
+  mix1_average_depth,
+  "，与参考基因组平均比对效率为",
+  mix1_mapped_ratio,
+  "，基因组覆盖度为",
+  mix1_coverage,
+  "（至少一个碱基覆盖）；\n\n",
+  sep=""
+  )
+```
+
+
+```{r workflow-mix2-result, results='asis', eval=length(mix2_id)>0}
+cat(
+  "1. 突变型混池获得",
+  mix2_total_base,
+  "的clean data，Q30达到",
+  mix2_average_q30,
+  "，测序深度为",
+  mix2_average_depth,
+  "，与参考基因组平均比对效率为",
+  mix2_mapped_ratio,
+  "，基因组覆盖度为",
+  mix2_coverage,
+  "（至少一个碱基覆盖）；\n\n",
+  sep=""
+  )
+```
+
+### 变异检测
+
+```{r workflow-p1-snv, results='asis', eval=length(p1_id)>0}
+cat(
+  "1. 野生型亲本共检测到",
+  prettier(p1_snp_number, 0),
+  "个SNP，其中HIGH的个数为",
+  prettier(p1_snp_high_number, 0),
+  "个，MODERATE的个数为",
+  prettier(p1_snp_moderate_number, 0),
+  "个；",
+  prettier(p1_indel_number, 0),
+  "个 InDel，其中HIGH的个数为",
+  prettier(p1_indel_high_number, 0),
+  "个, MODERATE的个数为",
+  prettier(p1_indel_moderate_number, 0),
+  "个；\n\n",
+  sep=""
+  )
+```
+
+```{r workflow-p2-snv, results='asis', eval=length(p2_id)>0}
+cat(
+  "1. 突变型亲本共检测到",
+  prettier(p2_snp_number, 0),
+  "个SNP，其中HIGH的个数为",
+  prettier(p2_snp_high_number, 0),
+  "个，MODERATE的个数为",
+  prettier(p2_snp_moderate_number, 0),
+  "个；",
+  prettier(p2_indel_number, 0),
+  "个 InDel，其中HIGH的个数为",
+  prettier(p2_indel_high_number, 0),
+  "个, MODERATE的个数为",
+  prettier(p2_indel_moderate_number, 0),
+  "个；\n\n",
+  sep=""
+  )
+```
+
+```{r workflow-mix1-snv, results='asis', eval=length(mix1_id)>0}
+cat(
+  "1. 野生型混池共检测到",
+  prettier(mix1_snp_number, 0),
+  "个SNP，其中HIGH的个数为",
+  prettier(mix1_snp_high_number, 0),
+  "个，MODERATE的个数为",
+  prettier(mix1_snp_moderate_number, 0),
+  "个；",
+  prettier(mix1_indel_number, 0),
+  "个 InDel，其中HIGH的个数为",
+  prettier(mix1_indel_high_number, 0),
+  "个, MODERATE的个数为",
+  prettier(mix1_indel_moderate_number, 0),
+  "个；\n\n",
+  sep=""
+  )
+```
+
+```{r workflow-mix2-snv, results='asis', eval=length(mix2_id)>0}
+cat(
+  "1. 突变型混池共检测到",
+  prettier(mix2_snp_number, 0),
+  "个SNP，其中HIGH的个数为",
+  prettier(mix2_snp_high_number, 0),
+  "个，MODERATE的个数为",
+  prettier(mix2_snp_moderate_number, 0),
+  "个；",
+  prettier(mix2_indel_number, 0),
+  "个 InDel，其中HIGH的个数为",
+  prettier(mix2_indel_high_number, 0),
+  "个, MODERATE的个数为",
+  prettier(mix2_indel_moderate_number, 0),
+  "个；\n\n",
+  sep=""
+  )
+```

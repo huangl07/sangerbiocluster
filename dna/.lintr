@@ -1,0 +1,6 @@
+linters: linters_with_defaults(
+    line_length_linter = line_length_linter(120),
+    indentation_linter = indentation_linter(indent = 4L),
+    object_name_linter = object_name_linter(styles = c("snake_case", "symbols", "camelCase", "CamelCase"), regexes = character()),
+    commented_code_linter = NULL
+  )

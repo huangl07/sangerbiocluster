@@ -1,0 +1,56 @@
+## SNP位点检测
+
+单核苷酸多态性(SingleNucleotidePolymorphism，SNP)，主要是指在基因组水平上由单个核苷酸的变异所引起的DNA序列多态性，是基因组上多态性最高的遗传变异之一。具体位点检测过程如下：
+- 对每个样品中的tag进行比对归类，按照每类tag的深度信息由大到小进行排序，得到每个个体的tag频数表。
+- 每个样品的tag内部进行比对得到样品内部的杂合位点信息。
+- 不同样品之间的tag进行互相的比对，寻找个体之间单碱基差异信息。
+- 综合考虑每个个体tag的频数表信息和比对信息，过滤掉可能来自重复区域的结果，从而得到高可信度的群体SNP标记基因分型结果。
+
+样品SNP统计结果见表\@ref(tab:snpstat-table)：
+
+
+
+```{r get-snpstat-table}
+snp_stat <- read.delim("info/snp.stat.xls", sep = "\t", header = T, check.names = FALSE)
+snp_stat$num_homo <- snp_stat$num_homo_ref + snp_stat$num_homo_alt
+snp_stat <- read_report_table(
+    data = snp_stat,
+    cols = c("sample", "num_snv", "num_ts", "num_tv", "ts/tv", "num_het", "num_homo_alt"),
+    col_names = c("Sample ID", "SNP Number", "Transition", "Transversion", "Ts/Tv", "Heterozygosity Number", "Homozygosity Number"),
+    col_prt = c(NA, 0, 0, 0, 2, 0, 0),
+    footnote = c(
+        "样本编号；",
+        "检测到的单核苷酸多态性位点的数量，表示材料与参考基因组之间的核苷酸变异；",
+        "转换的SNP数量；",
+        "颠换的SNP数量；",
+        "转换型SNP（Transition）和颠换型SNP（Transversion）的比值；",
+        "杂合分型的SNP位点总数；",
+        "纯合分型的SNP位点总数。"
+    ),
+    rows = sample_rows
+)
+```
+
+```{r snpstat-table-html,eval=htmlfmt,results="asis"}
+html_table(snp_stat, "SNP数据统计表", "snpstat-table")
+```
+
+```{r snpstat-table,eval=pdffmt}
+pdf_table(
+    snp_stat,
+    "SNP数据统计表",
+    escape = F,
+    col = linebreak(
+        c(
+            "Sample ID",
+            "SNP\nNumber",
+            "Transition",
+            "Transversion",
+            "Ts/Tv",
+            "Heterozygosity\nNumber",
+            "Homozygosity\nNumber"
+        ),
+        align = "c"
+    )
+)
+```

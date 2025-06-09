@@ -1,0 +1,4 @@
+index	/mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_task/BSA/BSA_demo_20230613/result/02.index-slid/pop.index.region
+loess	/mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_task/BSA/BSA_demo_20230613/result/05.loess/pop.loess.region
+ed	/mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_task/BSA/BSA_demo_20230613/result/04.ED-slid/pop.ED.region
+gprime	/mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_task/BSA/BSA_demo_20230613/result/03.Gprime/pop.Gprime.region

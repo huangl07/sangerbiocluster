@@ -1,0 +1,63 @@
+# 参考文献
+
+- 1. [Michelmore R W, Paran I, Kesseli R V. Identification of markers linked to disease-resistance genes by bulked segregant analysis: a rapid method to detect markers in specific genomic regions by using segregating populations. Proceedings of the national academy of sciences, 1991, 88(21): 9828-9832.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC52814/)
+- 2. [Takagi H, Abe A, Yoshida K, et al. QTL‐seq: rapid mapping of quantitative trait loci in rice by whole genome resequencing of DNA from two bulked populations. The Plant Journal, 2013, 74(1): 174-183.](https://pubmed.ncbi.nlm.nih.gov/23289725/)
+- 3. [Abe A, Kosugi S, Yoshida K, et al. Genome sequencing reveals agronomically important loci in rice using MutMap. Nature biotechnology, 2012, 30(2): 174-178.](https://www.nature.com/articles/nbt.2095)
+- 4. [Singh V K, Khan A W, Saxena R K, et al. Indel‐seq: a fast‐forward genetics approach for identification of trait‐associated putative candidate genomic regions and its application in pigeonpea (Cajanus cajan). Plant Biotechnology Journal, 2017, 15(7): 906-914.](https://pubmed.ncbi.nlm.nih.gov/28027425/)
+- 5. [Li H, Durbin R. Fast and accurate short read alignment with Burrows–Wheeler transform. bioinformatics, 2009, 25(14): 1754-1760.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2705234/)
+- 6. [McKenna A, Hanna M, Banks E, et al. The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome research, 2010, 20(9): 1297-1303.](https://genome.cshlp.org/content/20/9/1297.long)
+- 7. [Cingolani P, Platts A, Wang L L, et al. A program for annotating and predicting the effects of single nucleotide polymorphisms, SnpEff: SNPs in the genome of Drosophila melanogaster strain w1118; iso-2; iso-3. Fly, 2012, 6(2): 80-92.](https://pubmed.ncbi.nlm.nih.gov/22728672/)
+
+- 8. [Magwene P M, Willis J H, Kelly J K. The statistics of bulk segregant analysis using next generation sequencing. PLoS computational biology, 2011, 7(11): e1002255.](https://pubmed.ncbi.nlm.nih.gov/22072954/)
+
+# 附录
+
+***
+
+## 软件列表
+
+***
+
+
+<p class='mark'> BSA 分析软件介绍</p>
+
+```{r echo=FALSE}
+library(knitr)
+data <- read.delim('src/fujian.xls',sep='\t',header=T,check.names = F)
+kable(data,table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+## 相关软件下载链接如下：
+
+***
+
+- fastp：https://github.com/OpenGene/fastp
+
+- BWA：http://bio-bwa.sourceforge.net/
+
+- GATK：https://software.broadinstitute.org/gatk/
+
+- SAMtools：http://www.htslib.org/
+
+- Sentieon：https://www.sentieon.com/products/
+
+- SnpEff：http://snpeff.sourceforge.net/
+
+- Blast：https://blast.ncbi.nlm.nih.gov/Blast.cgi
+
+## 附件说明及数据下载
+
+***
+
+### 文件解压缩方法
+
+&emsp;&emsp;所有提供的文件均为 Linux 系统下的文件，压缩包使用 “tar -zcvf” 命令压缩， 以下为不同系统用户解压缩的方法：Unix/Linux/Mac 用户:  使用 tar -zcvf *.tar.gz 命令；Windows 用户：使用 WinRAR 软件解压缩
+
+### 文件打开或浏览方法
+
+&emsp;&emsp;如果在本附录中无特殊说明，所有提供的文件均为 Linux 系统下文本文件，Unix/Linux 用 户可以使用 more 或 less 命令查看文本文件内容。对于 Windows 用户，一般文本文件可以使用写字板或者 Excel 打开 。推荐使用开 Note Pad 打开超过 10M  以上的文本文件，或选择 Unix/Linux/MacOS 系统在终端中打开相关文件。
+
+&emsp;&emsp;数据中可能包含部分图像文件，一般图像文件后缀名为.png 、.pdf、.gif、tiff 等，对于图像文件，Windows 用户可以使用图片浏览器打开，Linux/Unix 用户使用 display 命令打开。
+
+&emsp;&emsp;后缀名为 svg 的文件为文本格式描述的图像文件，Windows 用户需要安装 Adobe Illustrator 软件打开。Linux/Unix 用户可以使用 rsvg-view 命令查看。公司默认提供“pdf“格式的矢量图，可利用 "Adobe Illustrator" 软件对该格式图片进行编辑。Linux 下的表格均为制表符（Tab）分割 的文本，为了便于阅读，建议使用 Excel 或 OpenOffice 等办公软件用表格形式打开，打开时请 用 “Tab” 分割方式。

@@ -1,0 +1,69 @@
+# 参考文献
+
+1. [Cingolani P, Platts A, Wang le L, Coon M, Nguyen T, Wang L, Land SJ, Lu X, Ruden DM. A program for annotating and predicting the effects of single nucleotide polymorphisms, SnpEff: SNPs in the genome of Drosophila melanogaster strain w1118; iso-2; iso-3. Fly (Austin). 2012 Apr-Jun;6(2):80-92. doi: 10.4161/fly.19695. PMID: 22728672; PMCID: PMC3679285.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3679285/)
+
+2. [Hill JT, Demarest BL, Bisgrove BW, Gorsi B, Su YC, Yost HJ. MMAPPR: mutation mapping analysis pipeline for pooled RNA-seq. Genome Res. 2013 Apr;23(4):687-97. doi: 10.1101/gr.146936.112. Epub 2013 Jan 8. PMID: 23299975; PMCID: PMC3613585.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3613585/)
+
+3. [Jung Y, Han D. BWA-MEME: BWA-MEM emulated with a machine learning approach. Bioinformatics. 2022 Apr 28;38(9):2404-2413. doi: 10.1093/bioinformatics/btac137. PMID: 35253835.](https://academic.oup.com/bioinformatics/article-lookup/doi/10.1093/bioinformatics/btac137?login=false)
+
+4. [Magwene PM, Willis JH, Kelly JK. The statistics of bulk segregant analysis using next generation sequencing. PLoS Comput Biol. 2011 Nov;7(11):e1002255. doi: 10.1371/journal.pcbi.1002255. Epub 2011 Nov 3. PMID: 22072954; PMCID: PMC3207950.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3207950/)
+
+5. [McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA. The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 2010 Sep;20(9):1297-303. doi: 10.1101/gr.107524.110. Epub 2010 Jul 19. PMID: 20644199; PMCID: PMC2928508.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2928508/)
+
+6. [Michelmore RW, Paran I, Kesseli RV. Identification of markers linked to disease-resistance genes by bulked segregant analysis: a rapid method to detect markers in specific genomic regions by using segregating populations. Proc Natl Acad Sci U S A. 1991 Nov 1;88(21):9828-32. doi: 10.1073/pnas.88.21.9828. PMID: 1682921; PMCID: PMC52814.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC52814/)
+
+7. [Takagi H, Abe A, Yoshida K, Kosugi S, Natsume S, Mitsuoka C, Uemura A, Utsushi H, Tamiru M, Takuno S, Innan H, Cano LM, Kamoun S, Terauchi R. QTL-seq: rapid mapping of quantitative trait loci in rice by whole genome resequencing of DNA from two bulked populations. Plant J. 2013 Apr;74(1):174-83. doi: 10.1111/tpj.12105. Epub 2013 Feb 18. PMID: 23289725.](https://onlinelibrary.wiley.com/doi/10.1111/tpj.12105)
+
+8. [Yu G, Wang LG, Han Y, He QY. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS. 2012 May;16(5):284-7. doi: 10.1089/omi.2011.0118. Epub 2012 Mar 28. PMID: 22455463; PMCID: PMC3339379.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3339379/)
+
+\clearpage
+
+
+# 附录
+
+## 软件列表
+
+```{r software-info-table}
+software_info <- read.delim('static/src/software.xls',sep='\t',header=T,check.names = F)
+if(htmlfmt){
+kable(software_info, "html", caption="BSA分析软件介绍") %>%
+  kable_styling(bootstrap_options=c("striped","hover","condensed"))
+}else{
+kbl(row.names=FALSE, software_info, "latex",  format.args = list(big.mark = ",",scientific = FALSE), caption="BSA分析软件介绍", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>% table_bline()
+}
+```
+
+## 相关软件下载链接如下：
+
+- fastp 0.23.2：https://github.com/OpenGene/fastp
+
+- BWA-MEME 1.0.5：https://github.com/kaist-ina/BWA-MEME
+
+- SAMtools 1.15.1：http://www.htslib.org/
+
+- Sentieon 202112.06：https://www.sentieon.com/products/
+
+- SnpEff 5.1d：http://snpeff.sourceforge.net/
+
+- R 4.2.2: https://cloud.r-project.org/
+
+- R/clusterProfiler: http://master.bioconductor.org/packages/release/bioc/html/clusterProfiler.html
+
+## 附件说明及数据下载
+
+### 文件解压缩方法
+
+&emsp;&emsp;所有提供的文件均为 Linux 系统下的文件，压缩包使用 “tar -zcvf” 命令压缩， 以下为不同系统用户解压缩的方法：Unix/Linux/Mac 用户:  使用 tar -zcvf *.tar.gz 命令；Windows 用户：使用 WinRAR 软件解压缩
+
+### 文件打开或浏览方法
+
+&emsp;&emsp;如果在本附录中无特殊说明，所有提供的文件均为 Linux 系统下文本文件，Unix/Linux 用 户可以使用 more 或 less 命令查看文本文件内容。对于 Windows 用户，一般文本文件可以使用写字板或者 Excel 打开 。推荐使用开 Note Pad 打开超过 10M  以上的文本文件，或选择 Unix/Linux/MacOS 系统在终端中打开相关文件。
+
+&emsp;&emsp;数据中可能包含部分图像文件，一般图像文件后缀名为.png 、.pdf、.gif、tiff 等，对于图像文件，Windows 用户可以使用图片浏览器打开，Linux/Unix 用户使用 display 命令打开。
+
+&emsp;&emsp;后缀名为 svg 的文件为文本格式描述的图像文件，Windows 用户需要安装 Adobe Illustrator 软件打开。Linux/Unix 用户可以使用 rsvg-view 命令查看。公司默认提供“pdf“格式的矢量图，可利用 "Adobe Illustrator" 软件对该格式图片进行编辑。Linux 下的表格均为制表符（Tab）分割 的文本，为了便于阅读，建议使用 Excel 或 OpenOffice 等办公软件用表格形式打开，打开时请 用 “Tab” 分割方式。
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\n\\newpage\n')
+```

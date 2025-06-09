@@ -1,0 +1,55 @@
+
+
+### 突变基因功能注释
+
+将上述发现的SNP信息，与参考基因组上公布的基因位置进行整合，筛选发生突变的gene序列，将基因序列与NR(即非冗余蛋白质序列（Non redundant ）数据库，基因进行注释的常用蛋白数据库)，UniProt(是 Universal Protein 的英文缩写，是信息最丰富、资源最广的蛋白质数据库。它由整合Swiss-Prot、 TrEMBL 和 PIR-PSD 三大数据库的数据而成。他的数据主要来自于基因组测序项目完成后，后续获得的蛋白质序列。它包含了大量来自文献的蛋白质的生物功能的信息)，KEGG(即Kyoto Encyclopedia of Genes and Genomes，是一个综合数据库，它们大致分为系统信息、基因组信息和化学信息三大类。KEGG 的Pathway 数据库整合了当前在分子互动网络（比如通道，联合体）的知识，一般使用率较高)，EggNOG(即Evolutionary genealogy of genes: Non-supervised Orthologous Groups，对直系同源类群进行了功能描述和功能分类的注释；包含了1133个物种的直系同源类群，主要分析蛋白的直系同源，同时作功能注释)，GO(基因本体（Gene Ontology）数据库，涵盖了基因的细胞组分、分子功能、生物学过程)，Pfam(是一系列蛋白质家族的集合。一个蛋白质通常由多个结构域（domains）组成，Pfam将蛋白质按照domain序列、结构和HMM轮廓等编成索引（entries），再将多个相关的索引整合为集群，称为一个clan)等功能数据库比对，确定发生突变的基因的功能，注释统计结果见表\@ref(tab:genestat-table)：。
+
+
+```{r get-genestat-table}
+gene_stat <- read.delim('info/gene_anno.xls',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- gene_stat %>% tbl_prettier(c(NA,0,0,0,0,0,0))
+tempfn <- c(
+"Total：全基因组范围内所有的基因注释的数量；",
+"Eff：有蛋白功能变异(SNP/InDel)影响的基因注释数量；",
+"NR：注释NR数据库的基因数量；",
+"Uniprot：注释Uniprot数据库的基因数量；",
+"KEGG：注释KEGG数据库的基因数量；",
+"eggNOG：注释EggNOG数据库的基因数量；",
+"GO：注释GO数据库的基因数量；",
+"Pfam：注释Pfam数据库的基因数量。"
+)
+```
+
+```{r genestat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("基因注释统计表","genestat-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r genestat-table,eval=pdffmt}
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="gene注释统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```
+
+### 变异信息的可视化
+
+对上述所有的变异信息进行统计，将所有的变异类型，利用Circos软件进行绘图，表现变异在基因组上的分布情况，如图如图\@ref(fig:circos-plot)所示。
+
+> 完整的基因注释信息详见结题文件夹目录(./data/anno)。
+
+```{r circos-plot, fig.cap="变异信息的可视化分析"}
+state_plots <- list.files("info","circos.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+}else{
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注：**Circos图从外向内分为6圈，表示染色体上基因、SNP、InDel、SV、CNV、SSR等标记的分布情况，用颜色的深浅（热图）、柱子的高度（柱状图）代表该位置标记的密度。
+
+
+

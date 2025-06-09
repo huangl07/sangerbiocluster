@@ -1,0 +1,17 @@
+基因组调查文件结果汇总
+
+结果文件说明：
+1. 结果说明文档.txt：文件详细介绍说明
+2. plot.png：基因组kmer频数-覆盖深度分布图
+3. plot.log.png：基因组kmer频数-覆盖深度分布图（log转换）
+4. summary.txt：基因组调查分析结果汇总
+
+表头具体说明：
+summary.txt
+k为基因组调查选用的kmer长度；
+Heterozygosity表示基因组杂合性；
+Genome Haploid Length表示基因组单倍型长度；
+Genome Repeat Length表示基因组重复片段长度；
+Genome Unique Length表示基因组非重复片段长度；
+Model Fit表示模型拟合优度；
+Read Error Rate表示测序错误率期望值。

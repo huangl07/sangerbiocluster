@@ -1,0 +1,98 @@
+# 项目信息
+
+## 项目信息表
+
+```{r get-project-info-table}
+tempdf<- data.frame(
+  info = c("合同编号","项目编号","物种信息","客户姓名","报告时间"),
+  content=c(
+    project_info[1:2],
+    paste(project_info[4:5],collapse="/"),
+    project_info[3],
+    format(Sys.time(), "%F")
+  )
+)
+names(tempdf) <- c("项目信息","项目内容")
+```
+
+```{r project-info-table, eval=htmlfmt}
+kable(tempdf, "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+```{r first-page, eval=pdffmt}
+knitr::asis_output(sprintf(paste(readLines("tex/first_page.tex"),collapse="\n"),project_info[1],paste(project_info[4:5],collapse=" / "),project_info[6]))
+```
+
+
+## 项目研究背景
+癌症（Cancer）是一种身体某些细胞不受控制地生长并扩散到身体其他部位的疾病。在人体内，控制细胞功能方式的基因可能会发生变化，尤其是生长和分裂方式。在这样的情况下，受其影响，细胞分裂过程中异常或受损的细胞会在不应该的时候生长和繁殖。这些细胞可能形成肿瘤（Tumor），即组织块。这些癌症相关的基因一般会发生独特且不可预测的多个点突变、插入缺失、易位、融合等事件，对于这些突变的研究可分为两个层面：Germline Mutation（胚系突变）和Somatic Mutation（体细胞突变）。前者侧重于可遗传的、个体背景中所有细胞携带的突变；后者侧重于肿瘤细胞特有、正常细胞没有的一类突变。
+· 全外显子测序（wholeexomesequencing,WES）是指利用序列捕获技术将全基因组中所有外显子区域DNA序列捕获，富集后进行高通量测序的方法。为了保证数据的准确性，测序深度要求在100X以上。相较于全基因组测序，由于外显子只占人类基因组约1%（约30Mb），因此更容易做到高深度测序，检测到更多低频和罕见变异，同时也能降低费用，缩短周期。
+· 癌症分析是指针对全外显子测序得到的变异位点进行后续分析，例如易感基因筛查、突变频谱与突变特征分析、高频突变基因分析及高频突变基因通路富集、已知驱动基因的筛选等深入的研究，帮助进一步探究遗传易感性及药物基因组学的相关研究和癌症发生发展的机制。
+
+
+## 材料基本信息
+对同一亚型的`r prettier(as.numeric(info_stat[1]))`个患者成对取样,共取样`r prettier(as.numeric(info_stat[2]))`个肿瘤样本，`r prettier(as.numeric(info_stat[3]))`个对照样本。
+```{r get-info-table}
+tumor_pair_info <- read.delim('info/tumor_pair_info.txt',sep='\t',header=FALSE,check.names = FALSE)
+qc_stat <- read.delim('info/qc.stat',sep='\t',header=FALSE,check.names = FALSE,comment="#")
+snp_stat_all <- read.delim('info/snp.stat.all',sep='\t',header=TRUE,check.names = FALSE)
+indel_stat_all <- read.delim('info/indel.stat',sep='\t',header=TRUE,check.names = FALSE)
+```
+```{r info-table}
+if(htmlfmt){
+kable(info_table, "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+}else{
+kbl(row.names=FALSE, info_table, "latex",  format.args = list(big.mark = ",",scientific = FALSE), booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+kable_styling(latex_options=c("striped","scale_down","repeat_header"))%>% table_bline()
+}
+```
+注：类型(Type) 中，取癌组织样本作为Tumor(肿瘤样本)，取同一个病人的癌旁组织或血液样本作为Normal(正常样本).
+
+
+## 项目服务内容
+
+按照合同约定，对`r prettier(as.numeric(project_info[6]))`个检测合格的样本进行以下实验及分析：
+
+1、全基因组测序，每个样品测序量达到合同标准，Q30大于80%。
+
+2、比对参考基因组，进行变异检测分析。
+
+3、基于变异检测结果，进行后续易感基因筛查、突变频谱与突变特征分析、高频突变基因分析及高频突变基因通路富集、已知驱动基因的筛选等深入的研究。
+
+## 测序数据概述：
+
+
+本项目共获得`r prettier(sum(qc_stat[,3] / 1000000000),2)`G 测序数据，测序Q30为`r prettier(mean(qc_stat[,5] * 100), 2)`%，GC含量为`r prettier(mean(qc_stat[,6] * 100), 2)`%，数据量达到合同要求。通过变异检测分析，共获得`r prettier(snp_stat_all$total[1])`个SNP，`r prettier(sum(indel_stat_all[,"Insert Number"]))`个Indel。
+
+
+# 项目流程
+
+## 外显子重测序实验流程
+
+样品基因组DNA检测合格后，利用超声波将DNA序列片段化形成随机片段，对片段化的DNA依次进行末端修复、3′端加A，连接接头制备DNA文库，建好的文库通过AgilentSureSelectXTHumanAllExonV8液相试剂盒进行杂交捕获，再利用磁珠吸附洗脱获得目标外显子序列，经过PCR扩增形成测序文库。建好的文库先进行文库质检，质检合格的文库用Illumina NovaSeq$\rm{^{TM}}$平台进行测序，测序策略为Illumina PE150，总测序读长为300bp。建库流程见图 \@ref(fig:library-plot)。
+
+
+```{r library-plot,fig.cap = "人全外显子测序实验建库流程"}
+include_graphics("static/images/library.png")
+```
+
+
+## 生物信息分析流程
+
+在Illumina NovaSeq$\rm{^{TM}}$测序数据（Raw Data）下机之后，对下机数据进行质量控制，过滤其中低质量的数据，获得高质量的数据（Clean Data）。利用 BWA-MEME 软件（Jung and Han 2022）将 Clean Data 比对到参考基因组序列上，获得序列的位置归属（即 BAM 文件）。利用GATK软件（McKenna *et al.* 2010）的 Best Practices 流程对BAM文件进行校正，并进行 SNP 和 InDel 标记的检测。利用 SnpEff 软件（Cingolani *et al.* 2012）和参考基因组的基因预测信息进行变异功能注释，得到SNP、InDel的功能注释信息。同时利用manta软件（Chen *et al.* 2016）对样品与参考基因组相比发生的SV进行检测；利用CNVkit软件(Talevich *et al.* 2016)检测CNV变异；利用Circos软件（Krzywinski *et al.* 2009）绘制变异信息基因组圈图。
+基于以上变异检测结果，进行后续易感基因筛查、突变频谱与突变特征分析、高频突变基因分析及高频突变基因通路富集、已知驱动基因的筛选等深入的研究。
+整体的分析流程如图2-2所示。
+
+
+```{r pipeline-plot,fig.cap = "变异检测生信分析流程图",out.width="100%"}
+include_graphics("static/images/pipeline_wes.png")
+```
+
+
+\clearpage
+
+\clearpage
+
+

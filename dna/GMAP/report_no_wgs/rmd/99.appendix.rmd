@@ -1,0 +1,101 @@
+\newpage
+
+# 参考文献
+
+1. [Julian T, David B. R Package ASMap: Efficient Genetic Linkage Map Construction and Diagnosis. *Journal of Statistical Software*, 2017, 79(6):1-29.](https://arxiv.org/abs/1705.06916v1)
+
+2. [R/qtl: A QTL mapping environment](https://rqtl.org/)
+
+3. [Li H, Durbin R. Fast and accurate short read alignment with Burrows-Wheeler transform. *Bioinformatics*, 2009; 25(14):1754-1760.](https://pubmed.ncbi.nlm.nih.gov/19451168/)
+
+4. [McKenna A, Hanna M, Banks E, et al. The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. *Genome research*, 2010, 20(9):1297-1303.](https://pubmed.ncbi.nlm.nih.gov/20644199/)
+
+5. [Cingolani P, Platts A, Wang le L, et al. A program for annotating and predicting the effects of single nucleotide polymorphisms, SnpEff: SNPs in the genome of Drosophila melanogaster strain w1118; iso-2; iso-3. *Fly (Austin)*, 2012, 6(2):80-92.](https://pubmed.ncbi.nlm.nih.gov/22728672/)
+
+6. [Gonda I, Ashrafi H, Lyon DA, et al. Sequencing-Based Bin Map Construction of a Tomato Mapping Population, Facilitating High-Resolution Quantitative Trait Loci Detection. *The plant genome*, 2019, 12(1)](https://pubmed.ncbi.nlm.nih.gov/30951101/)
+
+7. [Lander ES, Botstein D. Mapping mendelian factors underlying quantitative traits using RFLP linkage maps. *Genetics*, 1989, 121(1):185-199.](https://pubmed.ncbi.nlm.nih.gov/2563713/)
+
+\newpage
+
+# 附录
+
+## 软件列表
+
+```{r software-table, echo=FALSE}
+software_df <- data.frame(
+    V1=c(
+        "原始数据质控",
+        "参考基因组比对",
+        "SNP/InDel检测",
+        "变异功能注释",
+        "排图软件",
+        "QTL定位软件",
+        "基因功能注释"
+    ),
+    V2=c(
+        "Fastp",
+        "BWA-MEME",
+        "Sentieon",
+        "SnpEff",
+        "ASMap",
+        "R/qtl",
+        "Blast"
+    ),
+    V3=c(
+        "0.23.2",
+        "v1.0.6",
+        "202112.07",
+        "5.1d",
+        "1.0-4",
+        "1.5.0",
+        "2.12.0+"
+    )
+)
+colnames(software_df)<-c("步骤","应用软件","版本")
+if(htmlfmt){
+kable(software_df, "html", caption="遗传图谱分析软件介绍") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+}else{
+kbl(row.names=FALSE, software_df, "latex",  format.args = list(big.mark = ",",scientific = FALSE), caption="遗传图谱分析软件介绍", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>% table_bline()
+}
+```
+
+## 遗传图谱分析使用软件版本与下载链接
+
+- Fastp 0.23.2：https://github.com/OpenGene/fastp
+
+- BWA-MEME v1.0.6：https://github.com/kaist-ina/BWA-MEME
+
+- Sentieon 202112.07：https://www.sentieon.com/products/
+
+- SnpEff 5.1d：http://snpeff.sourceforge.net/
+
+- ASMap 1.0-4：https://cran.r-project.org/web/packages/ASMap/index.html
+
+- R/qtl 1.5.0：https://rqtl.org/download/
+
+- blast 2.12.0+：https://blast.ncbi.nlm.nih.gov/Blast.cgi
+
+## 附件说明
+
+### 文件解压缩方法
+
+所有提供的文件均为 Linux 系统下的文件，压缩包使用 `tar -zcvf` 命令压缩，以下为不同系统用户解压缩的方法：
+
+Unix/Linux/Mac 用户：使用 `tar -zcvf *.tar.gz` 命令；
+
+Windows 用户：使用WinRAR软件解压缩。
+
+### 文件打开或浏览方法
+
+如果在本附录中无特殊说明，所有提供的文件均为 Linux 系统下文本文件， Unix/Linux 用户可以使用 `more` 或 `less` 命令查看文本文件内容。
+对于 Windows 用户， 一般文本文件可以使用写字板或者 Excel 打开。推荐使用 [LTFviewer](https://pan.baidu.com/s/1SN_YLyVSOhIJGsLgA27-Wg?pwd=0ek1) 软件打开超过 10M 以上的文本文件，或选择 Unix/Linux/MacOS 系统在终端中打开相关文件。
+
+数据中可能包含部分图像文件，一般图像文件后缀名为 png、pdf、gif、tiff 等，对于图像文件， Windows 用户可以使用图片浏览器打开， Linux/Unix 用户使用 `display` 命令打开。
+
+后缀名为 svg 的文件为文本格式描述的图像文件， Windows 用户需要安装 Adobe Illustrator 软件打开。 Linux/Unix 用户可以使用 `rsvg-view` 命令查看。
+公司默认提供 pdf 格式的矢量图，可利用 Adobe Illustrator 软件对该格式图片进行编辑。 Linux 下的表格均为制表符（ Tab ）分割的文本，
+为了便于阅读，建议使用 Excel 或 OpenOffice 等办公软件用表格形式打开，打开时请用 “Tab 分割” 方式。
+

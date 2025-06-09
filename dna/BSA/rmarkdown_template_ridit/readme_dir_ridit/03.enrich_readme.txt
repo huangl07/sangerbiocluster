@@ -1,0 +1,24 @@
+此文件夹为候选区域内基因的富集分析结果，文件数量因分析结果存在差异，如下所述（如有缺少请
+第一时间联系本公司售后技术人员）：
+1. 03.enrich_readme.txt：       文件详细介绍说明
+2. ridit   ridit分析方法得到的候选区域内基因的富集分析结果文件夹
+3. ridit.degfile	ridit方法得到的候选区域内的富集基因
+4. ridit.genes_abstract.list ridit方法得到的候选区域及基因结果表
+
+分析方法文件夹说明：
+1.	ridit_KEGGenrichment.xls: KEGG富集结果表（all）
+2.	ridit_KEGGenrichment_0.05.xls: KEGG富集结果表（显著阈值在0.05之下）
+3.	ridit_KEGGenrichment.pdf/png: KEGG富集结果图
+4.	ridit_GOenrichment.xls: GO富集结果表（all）
+5.	ridit_GOenrichment_0.05.xls: GO富集结果表（显著阈值在0.05之下）
+6.	ridit_GOenrichment.pdf/png: GO富集结果图
+
+ridit_KEGG/GOenrichment/_0.05.xls: kegg/go富集分析结果表
+ID： ID编号；
+Description： 数据库描述；
+GeneRatio： 通路中富集基因出现比例；
+BgRatio： 通路中background出现比例；
+pvalue： pvalue；
+p.adjust： 校正后的pvalue；
+geneID： 数据库中的编号；
+Count：	在样品中出现次数；

@@ -1,0 +1,37 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/AnnotSV-3.2.1.tar.gz     /opt/src/
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/Annotations_Mouse_3.2.1.tar.gz          /opt/src/
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/Annotations_Human_3.2.1.tar.gz          /opt/src/
+
+%post
+    apt-get install -y tcl make wget bedtools bcftools git
+    mkdir -p /opt/bioinfo/bin 
+    
+    mkdir -p /opt/bioinfo/AnnotSV-3.2.1
+    cd /opt/bioinfo/
+
+    # 解压 AnnotSV 主程序
+    tar -zxf /opt/src/AnnotSV-3.2.1.tar.gz -C /opt/bioinfo/
+
+    # 编译并安装 AnnotSV 到 bin 路径
+    cd /opt/bioinfo/AnnotSV-3.2.1
+    make PREFIX=/opt/bioinfo/AnnotSV-3.2.1 install
+
+    # 安装数据库（注释也可以分开执行 install-human-annotation 和 install-mouse-annotation）
+    tar -zxf /opt/src/Annotations_Human_3.2.1.tar.gz -C /opt/bioinfo/AnnotSV-3.2.1/share/AnnotSV/
+    tar -zxf /opt/src/Annotations_Mouse_3.2.1.tar.gz -C /opt/bioinfo/AnnotSV-3.2.1/share/AnnotSV/
+
+    # 设置环境变量
+    echo "export PATH=\$PATH:/opt/bioinfo/AnnotSV-3.2.1/bin" >> /environment
+    echo "export ANNOTSV=/opt/bioinfo/AnnotSV-3.2.1" >> /environment
+    echo "export TCLLIBPATH=/usr/lib/tcltk" >> /environment
+
+    # 确保主程序可执行
+    chmod +x /opt/bioinfo/AnnotSV-3.2.1/bin/AnnotSV
+
+
+    apt-get clean -y
+%environment

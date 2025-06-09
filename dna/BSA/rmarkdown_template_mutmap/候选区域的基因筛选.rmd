@@ -1,0 +1,47 @@
+## 候选区域定位分析
+
+***
+  
+### 候选区域的基因筛选
+  
+***
+  
+  <style>
+  img.inline-img {
+    display:inline;
+    width:auto;
+  }
+
+img.independent-img {
+  display:block;
+  width:auto;
+}
+</style>
+&emsp;&emsp;理论上候选区域内的基因都有可能与性状直接相关，在候选区域内的基因上、亲本之间或者混池之间发生了非同义突变的位点，影响了基因的功能和蛋白的结构编码。因此筛选候选区域中发生变异的位点，有助于我们更快速的找到与性状相关的功能基因。以下是通过2种统计方法分别定位到的候选区域内的相关统计结果，见表3-14：
+
+<p class='mark'>表3–14 候选区域内的相关信息统计表</p>
+  
+```{r echo=FALSE}
+library(DT)
+data <- read.delim('../file/all.region_stat.xls',sep='\t',header=T,check.names = F)
+show_data <- data[c("Method", "Region", "SNP_Number", "Effective_SNP", "INDEL_Number", "Effective_INDEL", "Gene_Number")]
+datatable(show_data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+<p class='mark1'>**注：**</p>
+
+- <p class='mark1'>Method：BSA的具体方法；</p>
+
+- <p class='mark1'>Region：方法定位到的区域；</p>
+
+- <p class='mark1'>SNP_Number：关联区域 SNP 的数量；</p>
+
+- <p class='mark1'>Effective_SNP：关联区域有效突变 SNP 的数量；</p>
+
+- <p class='mark1'>INDEL_Number：关联区域 INDEL 的数量；</p>
+
+- <p class='mark1'>Effective_INDEL：关联区域有效突变 INDEL 的数量。</p>
+
+- <p class='mark1'>Gene_Number：关联区域 GENE 的数量。</p>
+
+

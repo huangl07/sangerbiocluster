@@ -1,0 +1,29 @@
+## miRNA靶基因（circRNA）预测
+
+***
+
+&emsp;&emsp;本分析利用动物专用的靶基因预测软件对所有已知miRNA（使用的数据来源是miRBase）于差异的circRNA进行靶基因预测，预测的软件是miRanda（http://www.miranda.org/）阈值参数：score 阈值 是160，energy 阈值 是 -20。
+
+&emsp;&emsp;结果目录为**10miRNATarget. known_targets.xls：**结果见下表：
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/known_targets.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/known_targets.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+上表中各表头含义如下：
+
+- MiRNA:已知的miRNA
+- Target:靶向目标circRNA
+- Score:靶基因预测结果得分值越大越可靠
+- Energy:Energy：miRNA与靶基因结合的自由能，值越小结合越稳定
+
+

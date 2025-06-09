@@ -1,0 +1,699 @@
+#!/usr/bin/env Rscript
+times <- Sys.time()
+library("getopt")
+spec <- matrix(c(
+    "input", "i", 1, "character",
+    "freq", "f", 2, "numeric",
+    "annot", "a", 1, "character",
+    "out", "o", 1, "character",
+    "help", "h", 0, "logical",
+    "disease", "d", 1, "character",
+    "gene", "g", 2, "character",
+    "ped", "p", 1, "character",
+    "hardfilter", "c", 0, "character"
+), byrow = TRUE, ncol = 4)
+opt <- getopt(spec)
+if (is.null(opt$ped)) {
+    q("请提供ped文件！")
+}
+if (is.null(opt$input)) {
+    q("请提供variant table！")
+}
+if (is.null(opt$input)) {
+    q("请提供基因注释！")
+}
+if (is.null(opt$out)) {
+    q("请提供输出前缀！")
+}
+if (is.null(opt$freq)) {
+    opt$freq <- 0.01
+}
+if (is.null(opt$gene)) {
+    spec_gene <- c()
+} else {
+    spec_gene <- readLines(opt$gene)
+}
+if (is.null(opt$hardfilter)) {
+    opt$hardfilter <- FALSE
+}
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(org.Hs.eg.db)
+library(msigdbr)
+library(DOSE)
+library(clusterProfiler)
+library(LaF)
+library(foreach)
+library(doParallel)
+# opt <- list()
+# opt$input <- "annovar.hg38_multianno.xls"
+# opt$out <- "filtered"
+# opt$ped <- "sample.ped"
+# opt$annot <- "/mnt/lustre/users/sanger-dev/sg-users/yiwei.tang/offline_src/disease/db"
+
+## 功能函数
+
+get_annot <- function(x, annot, name = "gene_symbol", value = "gs_name") {
+    temp_anno <- annot %>%
+        group_by(!!sym(name)) %>%
+        summarise(gs = paste(!!sym(value), collapse = ";"))
+    anno_list <- temp_anno$gs
+    names(anno_list) <- as.data.frame(temp_anno)[, name]
+    temp <- strsplit(x, split = ";")
+    oo <- lapply(temp, function(x) ifelse(x %in% names(anno_list), anno_list[x], rep_len(".", length(temp))))
+    sapply(oo, paste, collapse = ";")
+}
+
+get_common_mutation <- function(x) {
+    temp <- strsplit(x, split = ":")
+    temp <- sapply(temp, "[", 1)
+    sum(grepl("1", temp))
+}
+
+# 此方法实现了将字符型的数字转换为数值型，同时将"."转换为0或1，用于将vcf中的AF信息转换为数值型
+as.digit <- function(x) {
+    ifelse(x == ".", ifelse(opt$hardfilter, 1, 0), as.numeric(x))
+}
+
+# 根据功能过滤位点
+filter_func <- function(x) {
+    xlist <- unlist(strsplit(x, split = ";"))
+    s <- xlist %in% c(
+        "upstream", "downstream", "intergenic", ".",
+        "intronic", "ncRNA_exonic", "ncRNA_intronic",
+        "ncRNA_splicing", "ncRNA_UTR3", "ncRNA_UTR5", "UTR3", "UTR5"
+    )
+    if (sum(!s) > 0) {
+        return(TRUE)
+    } else {
+        return(FALSE)
+    }
+}
+
+cat("now reading omim database...\n")
+omim_gene <- as.data.frame(fread(file.path(opt$annot, "hs_omim_gene.txt"),
+    header = F, col.names = c("gene_symbol", "gs_name")
+))
+omim_disease <- as.data.frame(fread(file.path(opt$annot, "hs_omim_disease.txt"),
+    header = F, col.names = c("gene_symbol", "gs_name")
+))
+cat("now reading go & pathway database...\n")
+go_bp <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "GO:BP")
+go_cc <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "GO:CC")
+go_mf <- msigdbr(species = "Homo sapiens", category = "C5", subcategory = "GO:MF")
+kegg <- msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:KEGG")
+biocarta <- msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:BIOCARTA")
+pid <- msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:PID")
+reactome <- msigdbr(species = "Homo sapiens", category = "C2", subcategory = "CP:REACTOME")
+generifs <- as.data.frame(fread(file.path(opt$annot, "hs_generifs_gene.txt"),
+    header = F, col.names = c("gene_symbol", "gs_name")
+))
+entrenz_list <- unlist(as.list(org.Hs.egSYMBOL2EG[mappedkeys(org.Hs.egSYMBOL2EG)]))
+
+ped <- read.delim(opt$ped, header = F, sep = "\t")
+dn_names <- ped[which(ped[, 6] == 2 & ped[, 3] != 0 & ped[, 4] != 0), 1:4]
+
+cat("now reading the variant table...\n")
+model <- detect_dm_csv(opt$input, sep = "\t", header = TRUE, stringsAsFactors = FALSE, comment.char = "", nrows=10, check.names=FALSE)
+model$columns$type <- "string"
+samplenames <- model$columns$name
+samplenames <- samplenames[69:length(samplenames)]
+laf <- laf_open(model,sep="\t")
+
+# 初始化统计表
+init_result <- function(){
+    result <- NULL
+    result$rows <- 0
+    result$row1 <- 0
+    result$row2 <- 0
+    result$row3 <- 0
+    result$row4 <- 0
+    result$intervar_stat <- data.frame(
+        "Sample ID" = samplenames,
+        "Total" = 0,
+        "Pathogenic" = 0,
+        "Likely pathogenic" = 0,
+        "VUS" = 0,
+        "Likely benign" = 0,
+        "Benign" = 0
+    )
+
+    result$gm_stat <- data.frame(
+        "Type" = c("Variant", "SNP", "InDel"),
+        "Total" = 0,
+        "AR" = 0,
+        "AR_comp" = 0,
+        "AD" = 0,
+        "XR" = 0,
+        "XD" = 0
+    )
+
+    if(nrow(dn_names) > 0){
+        result$dn_stat <- data.frame(
+            "Patient" = dn_names$V2,
+            "Family" = dn_names$V1,
+            "De novo" = 0,
+            "De novo SNP" = 0,
+            "De novo InDel" = 0,
+            "Total" = 0
+        )
+    } else {
+        result$dn_stat <- NULL
+    }
+
+    result$eg <- c()
+
+    result
+}
+
+# 块处理函数
+cl <- makeCluster(5)
+registerDoParallel(cl)
+process_fun <- function(df, result, samplenames, dn_names){
+    if(is.null(result)){
+        cat("Now initializing the result...\n")
+        result <- init_result()
+        header <- TRUE
+    } else {
+        header <- FALSE
+    }
+    if(nrow(df) == 0) {
+        cat("No data in this block. skip.\n")
+        return(result)
+    }
+
+    cat(paste("######################\n[",Sys.time(),"] Processing",sprintf("%d",result$rows + 1),"-",sprintf("%d",result$rows + nrow(df)),"rows.\n"))
+    result$rows <- result$rows + nrow(df)
+    df <- df[, -3]
+    names(df)[2] <- "Pos"
+    newcol <- c(
+        "Chr",
+        "Pos",
+        "Ref",
+        "Alt",
+        "QUAL",
+        "FILTER",
+        "Origin",
+        samplenames,
+        "DBSNP_ID",
+        "AF_1KG_EAS",
+        "AF_1KG",
+        "AF_ESP6500",
+        "AF_GNOMAD",
+        "AF_GNOMAD_EAS",
+        "Func",
+        "Gene",
+        "GeneDetail",
+        "ExonicFunc",
+        "AAChange",
+        "cytoBand",
+        "cpgIslandExt",
+        "genomicSuperDups",
+        "wgRna",
+        "TargetScanS",
+        "TfbsConsSites",
+        "RepeatMask",
+        "GERPgt2",
+        "MCAP",
+        "REVEL",
+        "dbscSNV_ADA_score",
+        "dbscSNV_RF_score",
+        "dbNSFP_Ensembl_transcriptid",
+        "dbNSFP_Ensembl_proteinid",
+        "dbNSFP_SIFT_score",
+        "dbNSFP_SIFT_pred",
+        "dbNSFP_Polyphen2_HDIV_score",
+        "dbNSFP_Polyphen2_HDIV_pred",
+        "dbNSFP_Polyphen2_HVAR_score",
+        "dbNSFP_Polyphen2_HVAR_pred",
+        "dbNSFP_LRT_score",
+        "dbNSFP_LRT_pred",
+        "dbNSFP_MutationTaster_score",
+        "dbNSFP_MutationTaster_pred",
+        "dbNSFP_MutationAssessor_score",
+        "dbNSFP_MutationAssessor_pred",
+        "dbNSFP_FATHMM_score",
+        "dbNSFP_FATHMM_pred",
+        "dbNSFP_PROVEAN_score",
+        "dbNSFP_PROVEAN_pred",
+        "dbNSFP_MetaSVM_score",
+        "dbNSFP_MetaSVM_pred",
+        "dbNSFP_CADD_raw",
+        "dbNSFP_CADD_phred",
+        "dbNSFP_phyloP100way_vertebrate",
+        "dbNSFP_phyloP470way_mammalian",
+        "dbNSFP_SiPhy_29way_logOdds",
+        "dbNSFP_Interpro_domain",
+        "InterVar_judgement",
+        "InterVar_evidence",
+        "CLNALLELEID",
+        "CLNDN",
+        "CLNDISDB",
+        "CLNREVSTAT",
+        "CLNSIG",
+        "HGMD_URL",
+        "GWAS_disease_Pubmed_pValue",
+        "GeneticModels",
+        "Denovo_Mutation"
+    )
+    df <- df[, newcol]
+
+    ## 共有突变统计
+    cat("now stating the common variant...\n")
+    if (length(which(ped[, 6] == 2)) > 0) {
+        df$PatientSharedNumber <- apply(
+            df[, paste0("sample_", ped[which(ped[, 6] == 2), 2]), drop = F],
+            1, get_common_mutation
+        )
+    } else {
+        df$PatientSharedNumber <- "."
+    }
+    if (length(which(ped[, 6] == 1)) > 0) {
+        df$NormalSharedNumber <- apply(
+            df[, paste0("sample_", ped[which(ped[, 6] == 1), 2]), drop = F],
+            1, get_common_mutation
+        )
+    } else {
+        df$NormalSharedNumber <- "."
+    }
+
+    ## 统计intervar结果
+    cat("now stating intervar...\n")
+    intervar_stat.tmp <- c()
+    for (i in samplenames) {
+        tabs <- table(df$InterVar_judgement[which(grepl("1", sapply(strsplit(df[, i], split = ":"), "[", 1)))])
+        intervar_stat.tmp <- rbind(
+            intervar_stat.tmp,
+            c(
+                "Sample ID" = i,
+                "Total" = sum(
+                    tabs[names(tabs) != "."]
+                ),
+                "Pathogenic" = ifelse(is.na(tabs["Pathogenic"]), 0, tabs["Pathogenic"]),
+                "Likely pathogenic" = ifelse(is.na(tabs["Likely pathogenic"]), 0, tabs["Likely pathogenic"]),
+                "VUS" = ifelse(is.na(tabs["Uncertain significance"]), 0, tabs["Uncertain significance"]),
+                "Likely benign" = ifelse(is.na(tabs["Likely benign"]), 0, tabs["Likely benign"]),
+                "Benign" = ifelse(is.na(tabs["Benign"]), 0, tabs["Benign"])
+            )
+        )
+    }
+    result$intervar_stat[,2:7] <- result$intervar_stat[,2:7] + as.data.frame(intervar_stat.tmp[,2:7,drop=F]) %>% mutate_all(as.numeric)
+
+    ## 处理共分离的结果并统计
+    if (length(setdiff(names(table(df$GeneticModels)), ".")) > 0) {
+        cat("now stating cogregate variant...\n")
+        tabs <- table(df$GeneticModels)
+        AR <- grep("AR", names(tabs))
+        AR_comp <- grep("AR_comp", names(tabs))
+        AD <- grep("AD", names(tabs))
+        XR <- grep("XR", names(tabs))
+        XD <- grep("XD", names(tabs))
+        snp_tabs <- table(df[nchar(df$Ref) + nchar(df$Alt) == 2, ]$GeneticModels)
+        snp_AR <- grep("AR", names(snp_tabs))
+        snp_AR_comp <- grep("AR_comp", names(snp_tabs))
+        snp_AD <- grep("AD", names(snp_tabs))
+        snp_XR <- grep("XR", names(snp_tabs))
+        snp_XD <- grep("XD", names(snp_tabs))
+        indel_tabs <- table(df[nchar(df$Ref) + nchar(df$Alt) > 2, ]$GeneticModels)
+        indel_AR <- grep("AR", names(indel_tabs))
+        indel_AR_comp <- grep("AR_comp", names(indel_tabs))
+        indel_AD <- grep("AD", names(indel_tabs))
+        indel_XR <- grep("XR", names(indel_tabs))
+        indel_XD <- grep("XD", names(indel_tabs))
+        gm_stat.tmp <- data.frame(
+            "Type" = c("Variant", "SNP", "InDel"),
+            "Total" = c(
+                sum(tabs[names(tabs) != "."]),
+                sum(snp_tabs[names(snp_tabs) != "."]),
+                sum(indel_tabs[names(indel_tabs) != "."])
+            ),
+            "AR" = c(
+                ifelse(length(AR) > 0, sum(tabs[AR]), 0),
+                ifelse(length(snp_AR) > 0, sum(snp_tabs[snp_AR]), 0),
+                ifelse(length(indel_AR) > 0, sum(indel_tabs[indel_AR]), 0)
+            ),
+            "AR_comp" = c(
+                ifelse(length(AR_comp) > 0, sum(tabs[AR_comp]), 0),
+                ifelse(length(snp_AR_comp) > 0, sum(snp_tabs[snp_AR_comp]), 0),
+                ifelse(length(indel_AR_comp) > 0, sum(indel_tabs[indel_AR_comp]), 0)
+            ),
+            "AD" = c(
+                ifelse(length(AD) > 0, sum(tabs[AD]), 0),
+                ifelse(length(snp_AD) > 0, sum(snp_tabs[snp_AD]), 0),
+                ifelse(length(indel_AD) > 0, sum(indel_tabs[indel_AD]), 0)
+            ),
+            "XR" = c(
+                ifelse(length(XR) > 0, sum(tabs[XR]), 0),
+                ifelse(length(snp_XR) > 0, sum(snp_tabs[snp_XR]), 0),
+                ifelse(length(indel_XR) > 0, sum(indel_tabs[indel_XR]), 0)
+            ),
+            "XD" = c(
+                ifelse(length(XD) > 0, sum(tabs[XD]), 0),
+                ifelse(length(snp_XD) > 0, sum(snp_tabs[snp_XD]), 0),
+                ifelse(length(indel_XD) > 0, sum(indel_tabs[indel_XD]), 0)
+            )
+        )
+        result$gm_stat[,2:7] <- result$gm_stat[,2:7] + gm_stat.tmp[,2:7]
+    }
+
+    ## 新生突变统计
+    if (length(setdiff(names(table(df$Denovo_Mutation)), ".")) > 0 && nrow(dn_names) > 0) {
+        cat("now stating the denovo variant...\n")
+        dn_stat.tmp <- c()
+        for (i in seq_len(nrow(dn_names))) {
+            family_samples <- dn_names[i, 2:4, drop = TRUE]
+            family_df <- df[apply(
+                df[, paste0("sample_", family_samples), drop = F], 1,
+                function(x) !any(grepl("./.", fixed = T, x))
+            ), ]
+            dn_df <- family_df[family_df$Denovo_Mutation != ".", ]
+            dn_df <- dn_df[!duplicated(dn_df[, c("Chr", "Pos")]), ]
+            dn_df$type <- ifelse(apply(dn_df[, c("Ref", "Alt")], 1, function(x) {
+                all(nchar(x) == 1)
+            }), "SNP", "InDel")
+            dn_stat.tmp <- rbind(
+                dn_stat.tmp,
+                c(
+                    "Patient" = dn_names[i, 2],
+                    "Family" = dn_names[i, 1],
+                    "De novo" = nrow(dn_df),
+                    "De novo SNP" = length(which(dn_df$type == "SNP")),
+                    "De novo InDel" = length(which(dn_df$type == "InDel")),
+                    "Total" = nrow(family_df)
+                )
+            )
+        }
+        result$dn_stat[,3:6] <- result$dn_stat[,3:6] + as.data.frame(dn_stat.tmp[,3:6,drop=F]) %>% mutate_all(as.numeric)
+    }
+
+
+    ## 人群频率过滤
+    cat("now filtered the rare variant...\n")
+    freq_1kg <- which(as.digit(df$`AF_1KG`) <= opt$freq)
+    freq_1kg_eas <- which(as.digit(df$`AF_1KG_EAS`) <= opt$freq)
+    freq_esp <- which(as.digit(df$`AF_ESP6500`) <= opt$freq)
+    freq_gnomad <- which(as.digit(df$`AF_GNOMAD`) <= opt$freq)
+    freq_gnomad_eas <- which(as.digit(df$`AF_GNOMAD_EAS`) <= opt$freq)
+    freq_spec <- which(df$Gene %in% spec_gene)
+    freq_index <- union(Reduce(intersect, list(freq_1kg, freq_1kg_eas, freq_esp, freq_gnomad, freq_gnomad_eas)), freq_spec)
+    df1 <- df[freq_index, ]
+    df1 <- df1[df1$PatientSharedNumber > 0, ]
+
+    ## annotate dbnsfp bad db number
+    f31 <- grepl("D", df1$dbNSFP_SIFT_pred)
+    f32 <- grepl("[DP]", paste(df1$dbNSFP_Polyphen2_HDIV_pred, df1$dbNSFP_Polyphen2_HVAR_pred))
+    f33 <- grepl("[AD]", paste(df1$dbNSFP_MutationTaster_pred))
+    f34 <- sapply(df1$dbNSFP_CADD_phred, function(x) {
+        if (x != ".") {
+            as.numeric(x) >= 10
+        } else {
+            FALSE
+        }
+    })
+    f35 <- grepl("[MH]", df1$dbNSFP_MutationAssessor_pred)
+    f36 <- grepl("D", df1$dbNSFP_FATHMM_pred)
+    f37 <- grepl("D", df1$dbNSFP_PROVEAN_pred)
+    tmp <- which(colnames(df1) == "dbNSFP_Interpro_domain")
+    dbnsfp_damage_num <- f31 + f32 + f33 + f34 + f35 + f36 + f37
+    df1 <- cbind(df1[,c(1:tmp)], dbNSFP_damage_num = dbnsfp_damage_num, df1[,c((tmp+1):ncol(df1))])
+
+
+    ## 基因注释
+    cat("now annotating the genes...\n")
+    gene_raw <- df1$Gene
+    gene_annos <- foreach(i = list(omim_gene, omim_disease, go_bp, go_cc, go_mf, kegg, pid, biocarta, reactome, generifs), .export = "get_annot", .packages = "dplyr") %dopar% {
+        get_annot(gene_raw, i)
+    }
+    df1$OMIM_GENE <- gene_annos[[1]]
+    df1$OMIM_DISEASE <- gene_annos[[2]]
+    df1$GO_BP <- gene_annos[[3]]
+    df1$GO_CC <- gene_annos[[4]]
+    df1$GO_MF <- gene_annos[[5]]
+    df1$KEGG_PATHWAY <- gene_annos[[6]]
+    df1$PID_PATHWAY <- gene_annos[[7]]
+    df1$BIOCARTA_PATHWAY <- gene_annos[[8]]
+    df1$REACTOME_PATHWAY <- gene_annos[[9]]
+    df1$PubMedID <- gene_annos[[10]]
+
+    write.table(df1, paste0(opt$out, ".Freq.xls"), row.names = F, col.names = header, sep = "\t", quote = F, append = !header)
+    con <- file(paste0(opt$out, ".Freq.var.list"), open=ifelse(header, "w", "a"))
+    writeLines(unique(df1$DBSNP_ID[df1$DBSNP_ID != "."]), con)
+    close(con)
+
+    ## 外显子，剪切区域过滤
+    cat("now filtering exonic variant...\n")
+    f1 <- which(grepl("exonic", df1$Func))
+    f2 <- which(!grepl(".", df1$ADA_score))
+    df2 <- df1[sort(union(f1, f2)), ]
+    write.table(df2, paste0(opt$out, ".Func.xls"), row.names = F, col.names = header, sep = "\t", quote = F, append = !header)
+
+    ## 保守性过滤
+    cat("now filtering exonic Functional variant...\n")
+    nf1 <- which(df2$GERPgt2 == "." & df2$ExonicFunc == "synonymous SNV")
+    nf2 <- which(df2$RepeatMask != "." & nchar(df2$Alt) < 10 & nchar(df2$Ref) < 10 & grepl("nonframeshift", df2$ExonicFunc))
+    df3 <- df2[-sort(union(nf1, nf2)), ]
+    write.table(df3, paste0(opt$out, ".ExonicFunc.xls"), row.names = F, col.names = header, sep = "\t", quote = F, append = !header)
+
+    ## 有害性过滤
+    cat("now filtering deleterious variant...\n")
+    f1 <- which(as.numeric(df3$ADA_score) > 0.6 | as.numeric(df3$RF_score) > 0.6)
+    f2 <- which(grepl("splicing", df3$Func))
+
+    f3 <- which(df3$dbNSFP_damage_num >= 2)
+    df4 <- df3[sort(union(union(f1, f2), f3)), ]
+    write.table(df4, paste0(opt$out, ".Deleterious.xls"), row.names = F, col.names = header, sep = "\t", quote = F, append = !header)
+
+    result$row1 <- result$row1 + nrow(df1)
+    result$row2 <- result$row2 + nrow(df2)
+    result$row3 <- result$row3 + nrow(df3)
+    result$row4 <- result$row4 + nrow(df4)
+
+    genelist <- unlist(strsplit(df1$Gene[sapply(df1$Func, filter_func)], split = ";"))
+    gene.o <- unique(genelist[genelist != "."])
+    if(length(gene.o) >0){
+        con <- file(paste0(opt$out, ".gene.list"), open=ifelse(header, "w", "a"))
+        writeLines(gene.o, con)
+        close(con)
+    }
+
+    ## entrenz id
+    cat("now transforming entrenz id...\n")
+    genes <- unlist(strsplit(df4$Gene, split = ";"))
+    genes <- genes[!duplicated(genes)]
+    genes <- genes[genes != "."]
+    genes_eg <- entrenz_list[genes[genes %in% names(entrenz_list)]]
+    if(length(genes_eg)>0) {
+        con <- file("entrenz_id.list", open=ifelse(header, "w", "a"))
+        writeLines(genes_eg, con)
+        close(con)
+    }
+    result$eg <- c(result$eg, genes_eg)
+
+    result
+}
+
+result <- process_blocks(laf, process_fun, nrows = 50000, samplenames=samplenames, dn_names=dn_names)
+stopCluster(cl)
+cat("now writing the final result...\n")
+print(result$intervar_stat)
+print(result$gm_stat)
+write.table(result$intervar_stat, "intervar_stat.xls", row.names = F, col.names = T, sep = "\t", quote = F)
+if(any(as.numeric(result$gm_stat$Total)>0)){
+    write.table(result$gm_stat, "genetic_models_stat.xls", row.names = F, col.names = T, sep = "\t", quote = F)
+}
+if(!is.null(result$dn_stat))write.table(result$dn_stat, "denovo_mutation_stat.xls", row.names = F, col.names = T, sep = "\t", quote = F)
+
+## 统计每次过滤的结果
+cat("now stating filter results...\n")
+stat <- data.frame(
+    Filter = c("Freq", "Func", "ExonicFunc", "Deleterious"),
+    number = c(result$row1, result$row2, result$row3, result$row4)
+)
+write.table(stat, "filter_stat.xls", row.names = F, col.names = T, sep = "\t", quote = F)
+
+## 拆染色体输出注释结果
+# for (i in names(table(df$Chr))) {
+#    write.table(
+#        df[df$Chr == i, ],
+#        paste0("Total.chr", i, ".xls"),
+#        row.names = F, col.names = T, sep = "\t", quote = F
+#    )
+# }
+
+## disgenet enrich
+genes_eg <- unique(result$eg)
+if (length(genes_eg) > 0) {
+    cat("now disgenet enrich...\n")
+    enrich_df <- enrichDGN(
+        gene = genes_eg,
+        pvalueCutoff = 1, # 显著可设置0.05
+        pAdjustMethod = "BH",
+        minGSSize = 1,
+        maxGSSize = Inf,
+        qvalueCutoff = 1, # 显著可设置0.05
+        readable = FALSE
+    )
+    if (!is.null(enrich_df)) {
+        enrich_df <- as.data.frame(enrich_df)
+        enrich_df <- enrich_df[, -which(names(enrich_df) == "qvalue")]
+        enrich_df <- enrich_df[order(enrich_df$p.adjust, decreasing = FALSE), ]
+        write.table(enrich_df, "dgn.enrichment.xls", sep = "\t", quote = F, row.names = F)
+        enrich_df <- enrich_df[seq_len(min(20, nrow(enrich_df))), ]
+        enrich_df$logp <- -log(enrich_df$p.adjust, 10)
+        enrich_df <- enrich_df %>%
+            mutate(
+                GeneRatio_result = Count / as.numeric(sub("\\d+/", "", GeneRatio))
+            )
+        p2 <- ggplot(
+            enrich_df,
+            aes(x = GeneRatio_result, y = stringr::str_wrap(Description, 40))
+        ) +
+            geom_point(aes(size = Count, color = logp)) +
+            coord_cartesian(clip = "off") +
+            scale_color_gradient(
+                low = "yellow", high = "red",
+                name = "-log10(p.adjust)"
+            ) +
+            theme_bw() +
+            scale_size_continuous(name = "Count", range = c(2, 12)) +
+            labs(x = "GeneRatio", y = "Disease", title = "DisGeNET Enrichment") +
+            theme(axis.text = element_text(size = 14), plot.title = element_text(hjust = 0.5))
+        ggsave(p2,
+            file = "dgn.enrichment.png",
+            dpi = 300, height = 10, width = 15
+        )
+        ggsave(p2,
+            file = "dgn.enrichment.pdf",
+            dpi = 300, height = 10, width = 15
+        )
+        dgn_list <- enrich_df[seq_len(min(5, nrow(enrich_df))), c("ID", "Description")]
+    }
+}
+if (file.exists(opt$disease)) {
+    dgn_uml <- readLines(opt$disease)
+    dgn_list <- as.data.frame(
+        fread(file.path(opt$annot, "disgenet/diseaseAttributes.csv"),
+            header = F
+        )[V2 %in% dgn_uml, c(2, 3), drop=F]
+    )
+}
+write.table(dgn_list, file = "dgn.list", sep = "\t", col.names = F, row.names = F, quote = F)
+
+## go enrichment
+if (length(genes_eg) > 0) {
+    cat("now go enrich...\n")
+    go_enrich <- enrichGO(
+        gene = genes_eg,
+        OrgDb = "org.Hs.eg.db",
+        ont = "ALL",
+        pAdjustMethod = "BH",
+        maxGSSize = Inf,
+        minGSSize = 0,
+        pvalueCutoff = 1,
+        qvalueCutoff = 1,
+        readable = FALSE
+    )
+    if (!is.null(go_enrich)) {
+        go_enrich_df <- as.data.frame(go_enrich)
+        go_enrich_df <- go_enrich_df[order(go_enrich_df$p.adjust), ]
+        write.table(go_enrich_df,
+            "go.enrichment.xls",
+            sep = "\t", col.names = TRUE, row.names = FALSE, quote = FALSE
+        )
+        # 做go富集气泡图
+        go_enrich_df <- go_enrich_df[seq_len(min(20, nrow(go_enrich_df))), ]
+        go_enrich_df$logp <- -log(go_enrich_df$p.adjust, 10)
+        go_enrich_df <- go_enrich_df[order(go_enrich_df$logp, decreasing = TRUE), ]
+        go_enrich_df$Description <- factor(go_enrich_df$Description,
+            levels = go_enrich_df$Description
+        )
+        go_enrich_df <- go_enrich_df %>%
+            mutate(
+                GeneRatio_result = Count / as.numeric(sub("\\d+/", "", GeneRatio))
+            )
+        p1 <- ggplot(
+            go_enrich_df,
+            aes(x = GeneRatio_result, y = stringr::str_wrap(Description, 40))
+        ) +
+            geom_point(aes(
+                size = Count, color = logp,
+                shape = ONTOLOGY
+            )) +
+            coord_cartesian(clip = "off") +
+            scale_color_gradient(
+                low = "yellow", high = "red",
+                name = "-log10(p.adjust)"
+            ) +
+            theme_bw() +
+            scale_size_continuous(name = "Count", range = c(2, 12)) +
+            labs(x = "GeneRatio", y = "GO Terms", title = "Go Enrichment") +
+            theme(plot.title = element_text(hjust = 0.5))
+        ggsave(p1,
+            file = "go.enrichment.png",
+            dpi = 300, height = 10, width = 15
+        )
+        ggsave(p1,
+            file = "go.enrichment.pdf",
+            dpi = 300, height = 10, width = 15
+        )
+    }
+}
+
+# kegg enrichment
+if (length(genes_eg) > 0) {
+    cat("now kegg enrich...\n")
+    kegg_enrich <- enricher(
+        gene = genes_eg,
+        TERM2GENE = kegg %>% distinct(gs_name, entrez_gene) %>% as.data.frame(),
+        TERM2NAME = kegg %>% distinct(gs_name, gs_description) %>% as.data.frame(),
+        pvalueCutoff = 1,
+        qvalueCutoff = 1,
+        maxGSSize = Inf,
+        minGSSize = 0
+    )
+    if (!is.null(kegg_enrich)) {
+        kegg_enrich_df <- as.data.frame(kegg_enrich)
+        kegg_enrich_df$logp <- -log(kegg_enrich_df$p.adjust, 10)
+        kegg_enrich_df <- kegg_enrich_df[order(kegg_enrich_df$logp, decreasing = TRUE), ]
+        write.table(kegg_enrich_df,
+            "kegg.enrichment.xls",
+            sep = "\t", col.names = TRUE, row.names = FALSE, quote = FALSE
+        )
+        # 做kegg富集气泡图
+        kegg_enrich_df <- kegg_enrich_df[seq_len(min(20, nrow(kegg_enrich_df))), ]
+        kegg_enrich_df$Description <- factor(kegg_enrich_df$Description,
+            levels = kegg_enrich_df$Description
+        )
+        kegg_enrich_df <- kegg_enrich_df %>%
+            mutate(
+                GeneRatio_result = Count / as.numeric(sub("\\d+/", "", GeneRatio))
+            )
+        p2 <- ggplot(
+            kegg_enrich_df,
+            aes(x = GeneRatio_result, y = stringr::str_wrap(Description, 40))
+        ) +
+            geom_point(aes(size = Count, color = logp)) +
+            coord_cartesian(clip = "off") +
+            scale_color_gradient(
+                low = "yellow", high = "red",
+                name = "-log10(p.adjust)"
+            ) +
+            theme_bw() +
+            scale_size_continuous(name = "Count", range = c(2, 12)) +
+            labs(x = "GeneRatio", y = "Pathways", title = "KEGG Enrichment") +
+            theme(plot.title = element_text(hjust = 0.5))
+        ggsave(p2,
+            file = "kegg.enrichment.png",
+            dpi = 600, height = 10, width = 15
+        )
+        ggsave(p2,
+            file = "kegg.enrichment.pdf",
+            dpi = 600, height = 10, width = 15
+        )
+    }
+}
+
+escaptime <- Sys.time() - times
+print("Done!")
+print(escaptime)

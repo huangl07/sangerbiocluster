@@ -1,0 +1,131 @@
+## InDel检测和注释 
+
+***
+
+### InDel检测
+
+***
+
+&emsp;&emsp;利用GATK的Best Practices流程处理比对结果（BAM文件），利用GATK的Haplotyper方法进行InDel检测及过滤，过滤条件按照GATK推荐的参数进行，具体可见：（https://software.broadinstitute.org/gatk/documentation/article.php?id=3225）。
+
+&emsp;&emsp;对项目样品进行InDel标记开发，这里的InDel指能够明确获得序列组成的InDel标记。最终样本获得Insertion和Deletion详情如下。本次分析统计结果如表3-8所示：
+
+<p class="mark">表3-8 InDel数据统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/indel_stat.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/indel_stat.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+**注：**
+
+- Sample ID：样本编号；
+
+- Insertion Number：检测到的插入变异的位点个数；
+
+- Deletion Number：检测到的缺失变异的位点个数；
+
+- Heterozygosity Number：杂合分型的InDel的位点个数； 
+
+- Homozygosity Number：纯合分型的InDel位点个数。
+
+
+&emsp;&emsp;对样品的插入缺失片段长度进行了统计，长度分布如图3-7所示：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*indel.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*indel.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-7 样品的InDel长度分布图</p>
+
+**注：横坐标为InDel的长度分布（正值表示插入片段的长度，负值表示缺失片段的长度），纵坐标为长度对应的InDel的数量。**
+
+
+
+### InDel功能注释
+
+***
+
+&emsp;&emsp;对于在全基因组区域的InDel位点，有可能会影响蛋白翻译情况。我们将影响蛋白翻译类型包括移码突变（Frameshift），非移码突变（Nonframeshift），突变获得终止子（Stop-gain）以及突变缺失终止子（Stop-loss）以及所有的变异位点进行统计。表3-9为全基因组区域的InDel位点对蛋白翻译影响结果统计：
+
+<p class="mark">表3-9 全基因组区域InDel突变位点的影响结果统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/indel_anno.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/indel_aano.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+**注：**
+
+- 3_prime_UTR_variant：在3’UTR区域的InDel个数：
+
+- 5_prime_UTR_variant：在5’URT区域的InDel个数；
+
+- HIGH：对变异位点有害程度的简单评估的个数；
+
+- LOW：对变异位点有害程度的简单评估的个数；
+
+- MODERATE：对变异位点有害程度的简单评估的个数；
+
+- MODIFIER：对变异位点有害程度的简单评估的个数；
+
+- Conservative_inframe_deletion：对蛋白翻译影响小的碱基缺失类型的移码突变的InDel个数；
+
+- Conservative_inframe_insertion：对蛋白翻译影响小的碱基插入类型的移码突变的InDel个数；
+
+- Disruptive_inframe_deletion：严重影响蛋白翻译的碱基缺失类型的移码突变的InDel个数；
+
+- Disruptive_inframe_insertion：严重影响蛋白翻译的碱基插入类型的移码突变的InDel个数；
+
+- Downstream_gene_variant：在基因下游区域的InDel个数：
+
+- Frameshift_variant：导致移码突变的InDel个数；
+
+- Intergenic_region：在基因间区的InDel的个数：
+
+- Intragenic_variant：在基因内非功能区的InDel个数：
+
+- Intron_variant：在内含子区域的InDel位点个数及所占比例；
+
+- Non_coding_transcript_variant：导致无法编码蛋白的InDel个数；
+
+- Splice_acceptor_variant：在内含子左侧的连接点区域的InDel个数及所占比例；
+
+- Splice_donor_variant：在内含子右侧的连接点区域的InDel个数及所占比例；
+
+- Splice_region_variant：距离外显子或内含子2 bp的剪切位点的InDel个数及所占比例；
+
+- Start_lost：由于InDel的突变导致启动子缺失的InDel位点个数及所占比例；
+
+- Stop_gained：由于InDel的突变导致终止子获得的InDel位点个数及所占比例；
+
+- Stop_lost：由于InDel的突变导致终止子缺失的InDel位点个数及所占比例；
+
+- Upstream_gene_variant：在基因上游区域的InDel个数及比例。
+
+
+

@@ -1,0 +1,65 @@
+SSR引物设计结果
+
+结果文件说明：
+1. readme.txt: 文件详细介绍说明
+2. table_stat.out： 短序列重复统计表
+3. table_primer.out： 短序列重复引物设计表
+
+表头具体说明：
+table_primer.out： SSR引物设计结果表
+Sample ID：样本编号；
+SSR number：SSR位点个数统计
+c*：不完全型SSR标记，指2个以上的SSR位点，中间由一段3个碱基以上的非重复序列隔开的SSR标记，如ATATATATATATATGCTGATATATATAT；
+c：复合型SSR标记，指包含2种以上不同类型SSR重复的拼接型SSR标记，如ATATATATATATATCCCCCCC；
+p1：1个碱基重复10次及10次以上的SSR标记;
+p2：2个碱基重复6次及6次以上的SSR标记；
+p3：3个碱基重复5次及5次以上的SSR标记；
+p4：4个碱基重复5次及5次以上的SSR标记；
+p5：5个碱基重复5次及5次以上的SSR标记；
+p6：6个碱基重复5次及5次以上的SSR标记。
+
+表头具体说明：
+table_primer.out： SSR引物设计结果表
+Sample： ssr所在染色体/scaffold；
+pos： 起始位置；
+length： ssr长度；
+type： ssr类型；
+*sample: 所有样品是否有该ssr；
+Ref： ssr参考序列；
+Alt： ssr在样品中可能的序列；
+Marker_size(bp)：引物目标ssr长度；
+Marker_start(bp)：引物目标ssr起始位置；
+Marker_end(bp)：引物目标ssr终止位置；
+FORWARD_PRIMER1(5'-3'):引物1的前引；
+Tm(.C)：引物1的前引的温度；
+GC(%)：引物1的前引的GC含量；
+size：引物1的前引的长度；
+REVERSE_PRIMER1(5'-3'):引物1的后引；
+Tm(.C)：引物1的后引的温度；
+GC(%)：引物1的后引的GC含量；
+size：引物1的后引的长度；
+PRODUCT1_size(bp)：引物1的结果产物长度；
+start(bp)：引物1的结果产物的起始位置；
+end(bp)：引物1的结果产物的终止位置；
+FORWARD_PRIMER2(5'-3'):引物2的前引；
+Tm(.C)：引物2的前引的温度；
+GC(%)：引物2的前引的GC含量；
+size：引物2的前引的长度；
+REVERSE_PRIMER2(5'-3'):引物2的后引；
+Tm(.C)：引物2的后引的温度；
+GC(%)：引物2的后引的GC含量；
+size：引物2的后引的长度；
+PRODUCT2_size(bp)：引物2的结果产物长度；
+start(bp)：引物2的结果产物的起始位置；
+end(bp)：引物2的结果产物的终止位置；
+FORWARD_PRIMER3(5'-3'):引物3的前引；
+Tm(.C)：引物3的前引的温度；
+GC(%)：引物3的前引的GC含量；
+size：引物3的前引的长度；
+REVERSE_PRIMER3(5'-3'):引物3的后引；
+Tm(.C)：引物3的后引的温度；
+GC(%)：引物3的后引的GC含量；
+size：引物3的后引的长度；
+PRODUCT3_size(bp)：引物3的结果产物长度；
+start(bp)：引物3的结果产物的起始位置；
+end(bp)：引物3的结果产物的终止位置。

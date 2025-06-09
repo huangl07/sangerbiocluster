@@ -1,0 +1,29 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%post
+    pip3 install --no-cache-dir \
+    numpy==1.26.4 \
+    pandas==2.2.3 \
+    scipy==1.14.1 \
+    matplotlib==3.10.0 \
+    seaborn==0.12.2 \
+    biopython==1.79 
+
+       # whatshap-1.4
+    echo "安装whatshap-1.4..."
+    pip3 install --no-cache-dir whatshap==1.4
+    
+    # cnvkit-0.9.9
+    echo "安装cnvkit-0.9.9..."
+    pip3 install --no-cache-dir cnvkit==0.9.9
+    
+    # sniffles
+    echo "安装sniffles"
+    pip3 install --no-deps sniffles==2.0.7
+
+    pip3 install --no-cache-dir \
+        pandas \
+        
+    apt-get clean -y
+%environment

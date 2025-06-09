@@ -1,0 +1,50 @@
+## circRNA统计
+
+***
+
+### circRNA的类型统计
+
+&emsp;&emsp;根据来源区域进行分类统计circRNA在外显子、内含子和基因间区的数目，绘制circRNA的类型分布图。
+
+&emsp;&emsp;结果目录：**05statistics**
+
+&emsp;&emsp;**Sample/cirRNAclass.pdf：**circRNA类型分布图，如图3.7.1所示：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","cirRNAclass.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","cirRNAclass.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3.7.1 circRNA类型分布图</p>
+
+### circRNA的来源统计
+
+&emsp;&emsp;对定位到各个染色体上的circRNA的数目进行统计，用于展示不同染色体上circRNA的分布情况。
+
+&emsp;&emsp;结果目录：**05statistics/sample/chr_distribution.pdf**
+
+**Sample_chr.pdf：**circRNA类型分布图，如图3.7.2.所示：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","chr_distribution.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","chr_distribution.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3.7.2 circRNA染色体分布图</p>
+
+
+

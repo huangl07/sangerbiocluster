@@ -1,0 +1,75 @@
+# 项目结果报告
+
+***
+
+&emsp;&emsp;本项目采用Illumina Hiseq测序平台完成 人 的转录组测序，构建Illumina PE文库进行2×150bp测序，对获得的测序数据进行质量控制（质控）。
+
+## 原始测序数据说明
+
+***
+
+&emsp;&emsp;为方便测序数据的分析、发布和共享，Illumina测序得到的原始图像数据经过Base Calling转化为序列数据，即FASTQ格式，得到最原始的测序数据文件。
+
+
+&emsp;&emsp;FASTQ(Cock et al., 2010)格式是一种保存生物序列（通常为核酸序列）及其测序质量得分信息的文本格式。序列与质量得分皆由单个ASCII字符表示。
+
+<img class="normal1" src='src/fast.png'>
+
+
+<p class='mark'>图3.1.1 读段FASTQ数据格式示例</p>
+
+&emsp;&emsp;个run有2个flowcell，一个flowcell中包含8个lane，其中一个lane包含2列，每一列又包含60个tile，每一个tile又会种下不同的cluster，其产生的测序文件识别标志（Sequence Identifiers）中的详细信息如下表所示：
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('src/illum.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('src/illum.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+- reads的质量分数以不同的字符来表示，以phred 33为例，其中每个字符对应的ASCII值减去33，即为对应的测序质量值(Erlich et al., 2008)。一般地，碱基质量从0-42，即对应的ASCII码为从“！”（0+33）到“K”(42+33）。如果测序错误率用E表示，Illunima HiSeq / Miseq的碱基质量值用Q表示，则有下列关系：
+
+<img class="normal3" src='src/err.png'>
+
+<p class='mark'>表3.1.1 测序错误率与测序质量值简明对应关系</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('src/err.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('src/err.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+- 测序reads错误率会随着测序的进行而升高，是由测序过程中化学试剂的消耗造成，并且这是Illumina高通量测序平台通有的特征。原始测序数据文件一般较大，建议使用性能较好的计算机或者使用更适合处理大量数据的Unix/Linux系统打开。原始测序数据会在项目结题后，发送给客户。
+
+<p class="mark">表3.1.2产出数据统计结果</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/RawdataStat.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/RawdataStat.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+- Q20、Q30%：Phred 数值大于20、30的碱基占总体碱基的百分比
+
+- GC %：碱基G和C的数量总和占总的碱基数量的百分比
+

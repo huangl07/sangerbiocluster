@@ -1,0 +1,209 @@
+疾病分析
+
+突变有害性筛选
+
+对患者携带的SNP/InDel突变进行位点筛选，具体的筛选过程如下：
+
+1. Freq: 去除在千人基因组数据（1000g_all）、ESP6500数据库（esp6500si_all）、gnomAD数据（gnomAD_ALL和gnomAD_EAS）这四个频率数据库中至少有一个频率高于1%的突变。旨在去除个体间的多样性位点，得到可能致病的罕见（rare）突变。此外，如果提供了感兴趣的基因，那么基因上的突变也会被保留，无论该突变是否为罕见变异；
+2. Func: 保留处于编码区（exonic）或剪接位点区（splicing，上下5bp）的变异；
+3. ExonicFunc: 去除不位于高度保守区且未被软件预测为会影响剪接的同义SNP突变（以gerp++分值>2的位点为高度保守区；若dbscSNV的两个预测分值至少有一个大于0.6认为突变影响剪接）；去除处于Repeat区的小片段（<10bp）非移码InDel突变；
+4. Deleterious: 保留符合以下条件之一的突变：
+- 根据多种预测方法（SIFT、Polyphen2、MutationTaster、MutationAssessor、FATHMM、PROVEAN、CADD）判断突变是否有害，至少有两种方法预测结果为有害则认为该突变会造成有害影响；
+- dbscSNV数据库至少有一个值大于0.6或与外显子区距离不大于2bp（±1~2bp）的剪接位点区突变，则认为该突变影响剪接。
+
+
+
+结果文件说明:
+1. 结果说明文档.txt: 文件详细介绍说明；
+2. sex_check.xls: 性别质控结果，STATUS为OK表示通过质控
+3. denovo_mutation_stat.xls: 新生突变分析结果统计表
+4. dgn/go/kegg.enrichment.xls:  有害突变所在基因的富集分析结果
+5. dgn/go/kegg.enrichment.png/pdf:  有害突变所在基因的富集分析图
+6. filter_stat.xls: 每步过滤剩余突变数统计
+7. filtered.Deleterious.xls: 第四步过滤的结果与注释，表头说明见报告附录
+8. filtered.ExonicFunc.xls: 第三步过滤的结果与注释，表头说明见报告附录
+9. filtered.Func.xls: 第二步功能区域过滤的结果与注释，表头说明见报告附录
+10. filtered.Freq.xls: 第一步频率过滤的结果与注释，表头说明见报告附录
+11. dgn.gene.result.xls: 根据提供的疾病（未提供则是富集结果前五项），筛选DisGeNet数据库中有关联的候选有害基因，
+12. dgn.variant.result.xls: 根据提供的疾病（未提供则是富集结果前五项），筛选DisGeNet数据库中有关联的候选有害位点
+13. dgn.result.png/pdf: DisGeNet数据库筛选得到的网络图
+14. genemania.result.xls: genemania得到的蛋白互作网络
+15. genemania.stat.xls: genemania互作网络统计表
+16. genetic_models_stat.xls: 遗传模式分析结果统计
+17. phenolyzer.disease_00.xls: phenolyzer关联分析结果
+18. phenolyzer.disease_00.png/pdf: phenolyzer关联分析展示图
+
+表头具体说明:
+*.enrichment.xls:
+    ID: ID编号；
+    Description: 数据库描述；
+    GeneRatio: 通路中富集基因出现比例；
+    BgRatio: 通路中background出现比例；
+    pvalue: pvalue；
+    p.adjust: 校正后的pvalue；
+    EntrezID: EntrezGene数据库中的编号；
+    Count: 在样品中出现次数；
+    logp: log(pvalue);
+    gene_name: 通路中富集基因名。
+
+denovo_mutation_stat.xls:
+    Patient: 病人编号；
+    Family: 家系编号；
+    De novo: 新生突变总数；
+    De novo SNP: SNP类型的新生突变数；
+    De novo InDel: InDel类型的新生突变数；
+    Total: 家系成员具有的突变总数。
+
+dgn.gene.result.xls:
+    diseaseId: 疾病编号；
+    diseaseName: 疾病名称；
+    geneId: 基因编号；
+    geneName: 基因名称；
+    score: DisGeNet数据库给出的关联性评分；
+    NumberOfPubmeds: PubMed中报道的文献数量；
+    associationType: 关联类型；
+    source: 关联信息的其他数据库来源。
+
+dgn.variant.result.xls:
+    diseaseId: 疾病编号；
+    diseaseName: 疾病名称；
+    variantId: 变异编号；
+    s: 变异类型；
+    chromosome: 变异所在染色体；
+    coord: 变异所在染色体上的位置；
+    score: DisGeNet数据库给出的关联性评分；
+    NumberOfPubmeds: PubMed中报道的文献数量；
+    associationType: 关联类型；
+    source: 关联信息的其他数据库来源。
+
+genemania.result.xls:
+    Gene1: 基因1编号；
+    Gene2: 基因2编号；
+    Weight: 互作权重；
+    Type: 互作类型，主要包括以下类别：
+        Co-expression: 在相同或类似生物学条件下，蛋白质表达水平呈现出相关性；
+        Co-localization: 在细胞或组织中，蛋白质聚集在相似的位置或区域；
+        Genetic interactions: 干扰基因1对基因2也会有影响；
+        Pathway: 基因产物参与了一个通路中的相同反应；
+        Physical interactions: 在蛋白质相互作用研究中发现两种基因产物相互作用；
+    Source: 互作信息来源。
+
+genetic_models_stat.xls:
+    Type: 突变类型；
+    Total: 符合五种遗传模式的突变总数；
+    AR: 符合常染色体隐性遗传模式的突变数量；
+    AR_comp: 符合常染色体隐性遗传复合杂合模式的突变数量；
+    AD: 符合常染色体显性遗传模式的突变数量；
+    XR: 符合伴X染色体隐性遗传模式的突变数量；
+    XD: 符合伴X染色体显性遗传模式的突变数量。
+
+phenolyzer.disease_*.xls:
+    Disease: 疾病名称；
+    Gene: 基因名称；
+    ID: 基因编号；
+    Score: phenolyzer给出的关联性评分；
+    Status: 基因类型，SeedGene为有报道的关联基因，Predicted为phenolyzer预测的关联基因。
+
+
+突变位点注释表头说明:
+    1. 变异位点基本信息
+    - Chr: 染色体。
+    - Pos: 变异位点在染色体上的绝对位置。
+    - Ref: 参考基因组碱基型。
+    - Alt: 样本基因组碱基型。
+    - QUAL: 变异的质量值，值越高越好。文献中常见以变异的质量值大于20为过滤标准。
+    - FILTER: 过滤TAG，如果该位点满足所有过滤条件，则标记为PASS（采用国际惯用的过滤标准）。
+    - Origin: 该位点在VCF文件中REF列的值。对于InDel，VCF文件中REF的值可能跟本文件REF列的值不一致，因为注释时用bcftools norm对InDel位点进行了left-normalization。SNP位点，该列为“.”；InDel位点，该列格式为 CHROM|POS|REF|ALT|USED_ALT_IDX。
+    - 样品名同名列: 变异软件检测的变异位点信息，格式为GT:AD:DP:GQ。
+    其中：
+    GT: 该位点基因型（Genotype）。0代表Allele和REF相同，1、2、3等代表Allele和REF不同；纯合：0/0，1/1；杂合：0/1；
+    AD: 以逗号隔开的两个值，这两个值分别表示覆盖到REF和ALT碱基的reads数；
+    DP: 该位点测序深度（覆盖的总reads数）；
+    GQ: 该位点基因分型质量分数，分数越高表示分型越可靠。
+
+    2. 变异位点频率注释信息
+    - DBSNP_ID: dbSNP注释ID。
+    - AF_1KG_EAS: 给出千人基因组计划数据的东亚人群中，该变异位点上突变碱基的等位基因频率。
+    - AF_1KG: 给出千人基因组计划数据的所有人群中，该变异位点上突变碱基的等位基因频率。
+    - AF_ESP6500: 国家心肺和血液研究所外显子组测序计划（NHLBI-ESP project，esp6500si_all数据库中包含SNP变异、InDel变异和Y染色体上的变异的所有个体中，突变碱基的等位基因频率（alternative allele frequency）。
+    - AF_GNOMAD: GnomAD是The Genome Aggregation Database的简称，涵盖了来自不相关个体的123,136个外显子序列和15,496个全基因组序列，作为各种疾病特异性和群体遗传研究的一部分进行测序。GNOMAD_AF指在所有人群中，该变异位点上突变碱基的等位基因频率。
+    - AF_GNOMAD_EAS: GnomAD是The Genome Aggregation Database的简称，涵盖了来自不相关个体的123,136个外显子序列和15,496个全基因组序列，作为各种疾病特异性和群体遗传研究的一部分进行测序。GNOMAD_AF_eas指在所有亚洲人群中，该变异位点上突变碱基的等位基因频率。
+
+    3. 变异位点基因注释信息
+    - Func: 对变异位点所在的区域进行注释（exonic, splicing, UTR5, UTR3, intronic, ncRNA_exonic, ncRNA_intronic, ncRNA_UTR3, ncRNA_UTR5, ncRNA _splicing, upstream, downstream, intergenic）。说明：1、exonic应该包括coding exonic portion、UTR3和UTR5，但ANNOVAR注释结果中exonic只代表coding exonic portion。2、当一个变异位点位于多个基因或转录本，且功能不同，这些功能按照优先级排序，该列输出优先级最高的功能类型：Exonic = splicing > ncRNA> > UTR5/UTR3 > intron > upstream/downstream > intergenic。 当一个变异既位于一个基因的UTR3，又位于另一个基因的UTR5时，该列输出"UTR5,UTR3"。当一个变异既位于一个基因的downstream，又位于另一个基因的upstream时，该列输出"upstream,downstream "。
+    - Gene: 突变所在基因名称。
+    - GeneDetail: 描述UTR、splicing、ncRNA_splicing或intergenic区域的变异情况。当Func列的值为exonic、ncRNA_exonic、intronic、ncRNA_intronic、upstream、downstream、upstream；downstream、ncRNA_UTR3、ncRNA_UTR5时，该列为空；当Func列的值为exonic;splicing时，表示该位点位于某些转录本的exonic区，另一些转录本的splicing区，这种情况下，GeneDetail会给出该位点对于转录本splicing的影响，例如，NM_172210:exon6:c.1090+5C>A，表示该变异位于转录本NM_172210上，exon6表示第6个人外显子，c.1090+5C>A表示CDS的1090bp下游5bp处发生由C到A的突变；当Func列的值为intergenic时，该列格式为dist=1366;dist=22344，表示该变异位点距离两侧基因的距离。
+    - ExonicFunc: 外显子区的SNV 或 InDel变异类型（SNV的变异类型包括synonymous_SNV, missense_SNV, stopgain, stopgloss和unknown；InDel的变异类型包括frameshift insertion, frameshift deletion, stopgain, stoploss, nonframeshift insertion, nonframeshift deletion和unknown）。
+    - AAChange: 氨基酸改变，只有当Func列为exonic或exonic;splicing时，该列才有结果。按照每个转录本进行注释（例如，AIM1L: NM_001039775:exon2:c.C2768T:p.P923L，其中，AIM1L表示该变异所在的基因名称，NM_001039775表示该变异所在的转录本ID，exon2表示该变异位于转录本的第二个外显子上，c.C2768T表示该变异引起CDS在第2768位上由C突变为T，p.P923L表示该变异引起蛋白序列在第923位上的氨基酸由Pro变为Leu）。
+
+    4. 变异位点所在区域注释信息
+    - cytoBand: 该变异位点所处的染色体区段（利用Giemas染色观察得到的）。如果变异位点跨过多个区段，用短横线连接。
+    - cpgIslandExt: 该变异位点对应的CpG岛信息，可用于在cpgIslandExt数据库查询。
+    - genomicSuperDups: 检测该变异位点是否位于重复片段（segmental duplication）中。重复区域中检测到的遗传变异大多数是由于序列比对错误造成的，所以被注释到segmental duplications的变异需要谨慎对待，很可能是假阳性位点。给出两个值，一是Name，表示基因组中与该变异位点所在区域相似的片段的位置；二是Score，表示两个相似片段的序列一致性。例如，Score=0.994828;Name=chr19:60000，表示chr19:60000所在片段跟该变异位点所在片段相似，序列一致性为0.994828，范围0~1。
+    - wgRna: 基于miRBase和snoRNABase，对变异位点相关的microRNA和snoRNA进行注释，给出microRNA和snoRNA的基因名称。
+    - TargetScanS: UCSC提供TargetScanS注释数据库，库中包含在3’UTR中保守的microRNA结合位点，来源于TargetScanHuman 5.1的预测结果；该软件预测microRNA的靶点，预测结果依据microRNA与靶点之间结合的效能进行排序，排名越靠前，说明microRNA与其靶点的结合越可能是实际存在的事件。此项给出microRNA靶点的信息，一是score，是该靶点的分值，反映的是结合效能的排名，因此，score越大，说明排名越靠后，实际发生该结合的可能性越小，作者没有推荐阈值；二是Name，是作用于该靶点的microRNA名称。例如，Score=62|Name=KRAS:miR-181:1，表示该靶点的分值是62，其位于KRAS基因的3’UTR中，受到该变异位点影响的microRNA是miR-181:1。表示该变异位点位于microRNA（miR-181:1）在基因KRAS的3’UTR上的结合位点。
+    - TfbsConsSites: 基于transfac矩阵数据库（v7.0），计算所有转录因子结合位点在人/小鼠/大鼠比对中的保守分值，当结合位点的分值达到阈值时，认为该位点在人/小鼠/大鼠中保守。该列给出的是该变异位点所在的保守转录因子结合位点的位置和分值，即Name和Score。Name是结合位点处的motif名称，这些motif能够被转录因子识别，例如V$CDPCR3_01，利用一些在线服务器（如MSigDB）能够查询这个motif能够被哪些转录因子识别；Score是该结合位点的保守分值。
+    - RepeatMask: 重复序列注释信息，重复序列来源于RepeatMasker注释。例如，"Score=180;Name=(CACCC)n(Simple_repeat)"。Score表示该repeat的分值；Name由两部分构成，一部分(CACCC)n是repeat的名称，另一部分Simple是repeat的类别。只要有注释信息，就表明该变异位于散在重复序列或低复杂度序列中；这些区域容易出现比对错误，所以该区域的变异位点可靠性不高。
+
+    5. 变异有害性注释信息
+    - GERPgt2: GERP++分值大于2的位点。越保守的位点发生变异，对于蛋白的影响越大。分值越高，位点越保守。通常，GERP++ 分值大于2的位点认为是保守位点，可能具有功能。
+    - MCAP: 是一种致病性似然分数，即孟德尔临床应用致病性（Mendelian Clinically Applicable Pathogenicity，MCAP）分数。MCAP用于分类的变量是基于现有致病性似然值结合对进化保守性和跨物种推断人类种群内频率的直接评估，MCAP作者建议的阈值分值大于0.025。
+    - REVEL: 是一种整合了多种软件预测分值，预测罕见错义突变致病性的方法。REVEL的分值范围为0-1，分值越大越有害，文献中作者取值分值为0.5时对应检测有害性突变的敏感性为0.754，特异性为0.891。
+    - dbscSNV_ADA_score: dbscSNV version1.1基于多种预测突变是否影响splicing的软件，通过Ada和RF两种机器学习方法得到两个综合的预测分值。建议使用0.6作为判定阈值，即dbscSNV两个分值中至少一个大于0.6，认为突变可能影响剪接。
+    - dbscSNV_RF_score: dbscSNV version1.1基于多种预测突变是否影响splicing的软件，通过Ada和RF两种机器学习方法得到两个综合的预测分值。建议使用0.6作为判定阈值，即dbscSNV两个分值中至少一个大于0.6，认为突变可能影响剪接。
+    - dbNSFP_Ensembl_transcriptid: Ensembl转录本编号(dbNSFP version4.4)。
+    - dbNSFP_Ensembl_proteinid: Ensembl蛋白编号(dbNSFP version4.4)。
+    - dbNSFP_SIFT_score: SIFT分值(dbNSFP version4.4)，表示该变异对蛋白序列的影响。SIFT_score是SIFT分值，分值越小越可能“有害”，表明该SNP导致蛋白结构或功能改变的可能性大。
+    - dbNSFP_SIFT_pred: SIFT分值(dbNSFP version4.4)，表示该变异对蛋白序列的影响。SIFT_pred是预测结果，取值为T或者D。D: Deleterious (sift<=0.05); T: Tolerated (sift>0.05)
+    - dbNSFP_Polyphen2_HDIV_score: 利用PolyPhen2基于HumanDiv数据库预测该变异对蛋白序列的影响，用于复杂疾病(dbNSFP version4.4)。该值为Polyphen2_HDIV分值，数值越大越可能“有害”，表明该SNP导致蛋白结构或功能改变的可能性大。
+    - dbNSFP_Polyphen2_HDIV_pred: 利用PolyPhen2基于HumanDiv数据库预测该变异对蛋白序列的影响，用于复杂疾病(dbNSFP version4.4)。该值为Polyphen2_HDIV预测结果，取值为D或P或B（D: Probably damaging (>=0.957), P: Possibly damaging (0.453<=pp2_hdiv<=0.956); B: Benign (pp2_hdiv<=0.452)）。
+    - dbNSFP_Polyphen2_HVAR_score: 利用PolyPhen2基于HumanVar数据库预测该变异对蛋白序列的影响，用于单基因遗传病(dbNSFP version4.4)。该值为Polyphen2_HVAR分值，数值越大越“有害”，表明该SNP导致蛋白结构或功能改变的可能性大。
+    - dbNSFP_Polyphen2_HVAR_pred: 利用PolyPhen2基于HumanVar数据库预测该变异对蛋白序列的影响，用于单基因遗传病(dbNSFP version4.4)。该值为Polyphen2_HVAR预测结果，取值为D或P或B（D: Probably damaging (>=0.909), P: Possibly damaging (0.447<=pp2_hvar<=0.909); B: Benign (pp2_hvar<=0.446)）。
+    - dbNSFP_LRT_score: LRT预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。LRT_score是LRT分值，分值越小越可能“有害”，表明该SNP导致蛋白结构或功能改变的可能性大。
+    - dbNSFP_LRT_pred: LRT预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。LRT_pred是预测结果，取值为D、N或者U(D: Deleterious; N: Neutral; U: Unknown)。
+    - dbNSFP_MutationTaster_score: MutationTaster预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。MutationTaster_score是MutationTaster分值，取值为0-1，分值越大，表示预测结果越可靠。
+    - dbNSFP_MutationTaster_pred: MutationTaster预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。MutationTaster_pred是预测结果，取值为A、D、N或者P。"A" ("Disease_causing_automatic"); "D" ("Disease_causing"); "N" ("Polymorphism"); "P" ("Polymorphism_automatic")。A和D都表示位点可能有害。
+    - dbNSFP_MutationAssessor_score: MutationAssessor预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。MutationAssessor_score是MutationAssessor初始分值，越大越可能“有害”，表明该SNP导致蛋白结构或功能改变的可能性大。
+    - dbNSFP_MutationAssessor_pred: MutationAssessor预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。MutationAssessor_pred是H、M、L或N（H: High; M: Medium; L: Low; N: Neutral.）。H和M表示功能性的，L和N表示non-functional。
+    - dbNSFP_FATHMM_score: FATHMM预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。FATHMM_score是FATHMM初始分值，分值小于-1.5认为是Deleterious，分值越小越可能有害，表明该SNP导致蛋白结构或功能改变的可能性大。
+    - dbNSFP_FATHMM_pred: FATHMM预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。FATHMM_pred是D或T（D: Deleterious; T: Tolerated）。
+    - dbNSFP_PROVEAN_score: PROVEAN预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。PROVEAN_score是PROVEAN初始分值，分值小于-2.5认为是Damaging，分值越小越可能有害，表明该SNP导致蛋白结构或功能改变的可能性大。
+    - dbNSFP_PROVEAN_pred: PROVEAN预测结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。PROVEAN_pred是D或T（D: Damaging; N: Neutral）。
+    - dbNSFP_MetaSVM_score: dbNSFP作者基于SIFT、PolyPhen-2 HDIV、PolyPhen-2 HVAR、GERP++、MutationTaster、Mutation Assessor、FATHMM、LRT、SiPhy、PhyloP十个数据库和千人基因组计划基因频率的荟萃分析结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。MetaSVM_score是MetaSVM初始分值，分值大于0认为是Deleterious，分值越大越可能有害，表明该SNP导致蛋白结构或功能改变的可能性大。
+    - dbNSFP_MetaSVM_pred: dbNSFP作者基于SIFT、PolyPhen-2 HDIV、PolyPhen-2 HVAR、GERP++、MutationTaster、Mutation Assessor、FATHMM、LRT、SiPhy、PhyloP十个数据库和千人基因组计划基因频率的荟萃分析结果(dbNSFP version4.4)，表示该变异对蛋白序列的影响。MetaSVM_pred是D或T（D: Damaging; T: Tolerated）。
+    - dbNSFP_CADD_raw: CADD是一种对SNV、InDel的有害性进行打分的工具，它整合多种信息来注释变异位点的功能；不仅预测编码区变异（包括同义突变和非同义突变的影响）的功能影响，还预测非编码区变异的功能影响。对于SNP，仅对CADD分值排名在前10%的SNP给出分值，‘.'表示CADD分值排名不在前10%。CADD_raw是初始分值。
+    - dbNSFP_CADD_phred: CADD是一种对SNV、InDel的有害性进行打分的工具，它整合多种信息来注释变异位点的功能；不仅预测编码区变异（包括同义突变和非同义突变的影响）的功能影响，还预测非编码区变异的功能影响。对于SNP，仅对CADD分值排名在前10%的SNP给出分值，‘.'表示CADD分值排名不在前10%。CADD_Phred是转换后的分值，CADD_Phred分值中，10表示score排名在前10%，20表示前1%，30表示前0.1%，因此，分值要求越低，能保留下来的位点越多。对于SNP，CADD作者建议CADD_Phred分值>15，文章中通常用10或15；InDel没有建议值。
+    - dbNSFP_phyloP100way_vertebrate: PhyloP预测结果(dbNSFP version4.4)，基于100个脊椎动物物种的多序列比对得到位点的保守性分值，分值越大，位点越保守。
+    - dbNSFP_phyloP470way_mammalian: PhyloP预测结果(dbNSFP version4.4)，基于470个哺乳动物物种的多序列比对得到位点的保守性分值，分值越大，位点越保守。
+    - dbNSFP_SiPhy_29way_logOdds: SiPhy是基于29种哺乳动物的多序列比对得到位点的保守性分值，分值越大，位点越保守(dbNSFP version4.4)。
+    - dbNSFP_Interpro_domain: Interpro数据库注释的突变位点所在蛋白质的结构域(dbNSFP version4.4)。
+    - dbNSFP_damage_num: 七种预测方法（SIFT、Polyphen2、MutationTaster、MutationAssessor、FATHMM、PROVEAN、CADD）中判定该位点有害的方法的数量。
+    - InterVar_judgement: InterVar数据库中的突变位点有害性分类。
+    - InterVar_evidence: InterVar数据库中的突变位点有害性分类证据。
+
+    6. 变异致病性注释信息
+    - CLNALLELEID: 变异位点在ClinVar数据库中的编号。
+    - CLNDN: ClinVar数据库中变异位点相关的疾病名称。
+    - CLNDISDB: ClinVar数据库中疾病关联信息的数据库来源。
+    - CLNREVSTAT: ClinVar数据库中变异位点的可信度水平，按可靠性从高到低依次可能为“practice guideline”、“reviewed by expert panel”、“criteria provided, multiple submitters, no conflicts”、“criteria provided, conflicting interpretations”、“criteria provided, single submitter”、“no assertion for the individual variant”、“no assertion criteria provided”、“no assertion provided”。详见https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/ 。
+    - CLNSIG: ClinVar数据库中变异位点在临床意义，可取值为Benign，Likely benign，Likely pathogenic，Pathogenic，drug response，not provided，Uncertain significance，other。
+    - GWAS_disease_Pubmed_pValue：该变异位点在以往的 GWAS 研究中，被哪篇文章报导与疾病相关联，并给出该位点在文章中的p-value。格式为：分号分隔的 pubmedID(p-value)。
+    - HGMD_URL: 根据ensembl数据库提供的HGMD_PUBLIC坐标系统，提供位点在HGMD数据库中的链接。
+
+    7. 基于样品信息的突变筛选
+    - GeneticModels: 突变遗传模式，如果提供样品家系信息，则提供该位点可能的遗传模式信息，否则为‘.’。
+    - Denovo_Mutation: 新生突变筛选，如果提供样品家系信息，则提供该位点是否为新生突变，否则为‘.’。
+    - PatientSharedNumber: 变异位点在患者中共有的数目，如无患者样品为‘.’。
+    - NormalSharedNumber: 变异位点在非患者（对照）中共有的数目，如无非患者样品为‘.’。
+
+    8. 变异所在基因功能注释信息
+    - OMIM_GENE: 人类孟德尔遗传病数据库注释，给出与变异位点所在基因编号和名称。
+    - OMIM_DISEASE: 人类孟德尔遗传病数据库注释，给出与变异位点所在基因相关的遗传疾病编号和名称。
+    - GO_BP: Gene Ontology数据库注释，基因的生物学过程（Biological Process，BP）相关注释。
+    - GO_CC: Gene Ontology数据库注释，基因的细胞组分（Cellular Component，CC）相关注释。
+    - GO_MF: Gene Ontology数据库注释，基因的分子功能（Molecular Function，MF）相关注释。
+    - KEGG_PATHWAY: 全基因组及代谢途径数据库注释，给出变异位点所在基因参与的代谢通路名称。
+    - PID_PATHWAY: 通路相互作用数据库注释，给出与变异位点所在蛋白相互作用的通路名称。
+    - BIOCARTA_PATHWAY: BIOCARTA数据库注释，给出变异位点所在基因参与的分子通路名称。
+    - REACTOME_PATHWAY: 人类生物学反应及信号通路数据库注释，给出变异位点所在基因参与的信号通路名称。
+    - PubMedID: 与变异位点所在基因有关的PubMed文献编号，来源于generif数据库，通过在Pubmed中输入编号可检索到编号对应的文献，同一个基因的PubMed编号以|分隔。

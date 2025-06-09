@@ -1,0 +1,50 @@
+此文件夹为qtl定位结果，如下所述（如有缺少请第一时间联系本公司售后技术人员）：
+1. 04.qtl_结果说明文档.txt： 文件详细介绍说明
+2. *: 基于性状定位结果，一个性状一个结果 
+
+单个分析方法文件夹说明
+1.  *.qtl-result.result: 性状定位结果表（*代表分析的性状）
+2.	*.detail.result: 性状定位结果详细结果表（*代表分析的性状）
+3.	*.pheno.pdf: 性状频率分布图（*代表性状，pdf版本）
+4.  *.pheno.png：性状频率分布图（*代表性状，png版本）
+5.  *.pdf: QTL定位曼哈顿图（*代表性状，pdf版本）
+6.  *.png: QTL定位曼哈顿图（*代表性状，png版本）
+5.  *.scan.pdf：QTL定位结果图(*代表性状，pdf版本)
+6.	*.scan.png：QTL定位结果图(*代表性状，png版本)
+7.  *.pxg.pdf: 区域内不同基因型的性状分布图（*代表性状，pdf版本，如果定位结果不存在则没有）
+8.  *.pxg.png: 区域内不同基因型的性状分布图（*代表性状，png版本，如果定位结果不存在则没有）
+9.  GO_result: GO富集结果文件夹（如果定位结果不存在则没有）
+10. KEGG_result：KEGG富集结果文件夹（如果定位结果不存在则没有）
+11. Pm2.region.gene.xls：定位区域内基因统计表
+12. Pm2.region.variant.xls：定位区域内变异位点统计表
+
+
+以下为文本文件详细说明：
+文件：*.qtl-result.result
+以下是表头详细说明：
+表头说明：
+qname： 性状名；
+lod.chr：QTL定位检索到的连锁群编号；
+lod.pos：定位区域内最大的LOD值所在的遗传图谱位置；
+var：定位区域内的表型贡献率；
+pos1：定位区域中边缘的分子标记；
+pos2：定位区域中边缘的分子标记；
+
+文件：*.detail.result(*代表性状)
+以下是表头详细说明：
+表头说明：
+marker: 遗传标记；
+chr: 染色体；
+pos：遗传图谱位置；
+lod：lod值；
+pm：阈值(有放回的随机抽样方法,置信水平大于95%的LOD值)
+
+index_KEGG/GOenrichment/_0.05.xls: kegg/go富集分析结果表
+ID： ID编号；
+Description： 数据库描述；
+GeneRatio： 通路中富集基因出现比例；
+BgRatio： 通路中background出现比例；
+pvalue： pvalue；
+p.adjust： 校正后的pvalue；
+geneID： 数据库中的编号；
+Count：	在样品中出现次数；

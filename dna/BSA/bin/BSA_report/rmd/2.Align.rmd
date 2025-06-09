@@ -1,0 +1,126 @@
+## 基因组比对
+
+***
+
+### 基因组比对效率
+
+***
+
+&emsp;&emsp;在本项目中，我们以genome_chinese（genome_latin）的基因组序列作为参考基因组。利用BWA软件将质控后的测序片段（Clean Reads）比对参考基因组，比对方法为MEM。表3-4为比对结果的数据统计表。
+
+<p class="mark">表3-4 比对结果数据统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/align_stat.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/align_stat.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+**注：**
+
+- Sample ID：客户样品编号；
+
+- Clean Reads：高质量的Reads总数；
+
+- Mapped Reads：定位到基因组的Reads总数；
+
+- Mapped Ratio：定位到基因组的Clean Reads数占所有Clean Reads数的百分比；
+
+- Properly Mapped：双端测序序列均定位到参考基因组上且距离符合测序片段的长度的Reads数占所有Clean Reads的百分比；
+
+- Duplication Ratio：测序数据中冗余序列的比例，即由于PCR产生的Reads复制序列。
+
+### 插入片段分布统计
+
+&emsp;&emsp;通过检测双端序列在参考基因组上的起止位置，可以得到样品DNA打断后得到的测序片段的实际大小，即插入片段大小（Insert Size），是生物信息分析时的一个重要参数。插入片段大小的分布一般符合正态分布，且只有一个单峰。样品的插入片段长度分布如图3-4所示：插入片段长度分布符合正态分布，说明测序数据文库构建无异常。
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*insert.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*insert.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-4 样品的插入片段长度分布图</p>
+
+**注：横坐标为Reads对应的插入片段大小，纵坐标为对应插入片段大小所对应的Reads数。**
+
+### 深度分布统计
+
+***
+
+&emsp;&emsp;Reads锚定到参考基因组后，可以统计其对参考基因组的覆盖情况。参考基因组上被Reads覆盖到的碱基数占基因组总长度的百分比称为基因组覆盖度；基因组覆盖度可以反映变异检测的完整性，覆盖到参考基因组的区域越多，可以检测到的变异位点也越多。碱基上覆盖的Reads数为覆盖深度。基因组的覆盖深度会影响变异检测的准确性，在覆盖深度较高的区域（非重复序列区），变异检测的准确性也越高。另外，若基因组上碱基的覆盖深度分布较均匀，也说明测序随机性较好。本项目所有样品的碱基覆盖度和平均覆盖深度统计见表3-5。样品的测序深度统计如图3-5所示，基因组覆盖度如图3-6所示。
+
+<p class="mark">表3-5 样品覆盖深度和覆盖度统计</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/coverage_sample.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/coverage_sample.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+**注：**
+
+- Sample：样品编号；
+
+- Coverage 1X (%)：至少有一条Reads覆盖的碱基占基因组长度的百分比；
+
+- Coverage 5X (%)：至少有五条Reads覆盖的碱基占基因组长度的百分比；
+
+- Average Depth：平均覆盖深度。
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*depth.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*depth.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-5 样品的深度分布统计</p>
+
+&emsp;&emsp;注：横坐标表示测序深度，图中左侧的纵坐标轴（红色）对应红色曲线，表示对应深度的位点占全基因组的百分比，图中右侧的纵坐标（蓝色）对应蓝色曲线，表示小于或等于该深的位点占全基因组的百分比。
+
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*coverage.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*coverage.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-6 	样品的染色体覆盖深度分布图</p>
+
+**注：横坐标为基因组上的碱基位置，纵坐标为染色体上对应位置的平均覆盖深度取对数（log2X）得到的值 **。
+
+
+&emsp;&emsp;图3-6表明基因组被覆盖的较均匀，说明测序随机性较好。图上深度不均一的地方可能是由于重复序列、PCR偏好性、或着丝粒部分引起的。
+

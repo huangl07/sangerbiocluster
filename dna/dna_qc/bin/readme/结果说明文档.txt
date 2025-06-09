@@ -1,0 +1,30 @@
+测序数据质控文件结果汇总
+
+结果文件说明：
+1.	结果说明文档.txt：文件详细介绍说明
+2.	qc.report.xls：质控后Clean原始数据及质控统计表
+fig文件夹
+3.	*.qual.png/pdf：样本碱基错误率分布例图
+4.	*.base.png/pdf：样本碱基组成分布例图
+qc文件夹
+5.	*.json：样本质控结果
+6.	*.raw/clean.atgcn：样本碱基分布比例表
+7.	*.raw/clean.qual：样本碱基质量统计表
+8.  *.html：样本质控结果网页
+
+
+表头具体说明：
+qc.report.xls
+1.	#SampleID：样本编号；
+2.	Raw Reads：原始下机数据的Reads数；
+3.	Raw Data：原始下机数据的base数；
+4.	Raw Q20：质量值大于或等于20的碱基所占百分比。
+5.	Raw Q30：质量值大于或等于30的碱基所占百分比。
+6.	Raw GC：GC碱基占所有碱基的比例；
+8.	Clean Reads：原始数据过滤后剩余的高质量测序数据Reads数；
+9.	Clean Data：原始数据过滤后剩余的高质量测序数据总碱基数；
+10.	Clean Q20：质量值大于或等于20的碱基所占百分比。
+11.	Clean Q30：质量值大于或等于30的碱基所占百分比。
+12.	Clean GC：GC碱基占所有碱基的比例；
+13.	Dup：Reads数重复率；
+14. Adapter：修剪接头Reads占比；

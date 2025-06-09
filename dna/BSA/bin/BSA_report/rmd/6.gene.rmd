@@ -1,0 +1,83 @@
+# 候选区域基因功能分析 
+
+***
+
+### 候选区域的 gene 筛选
+
+***
+
+&emsp;&emsp;理论上，候选区域内的 gene 都有可能与性状直接相关，在候选区域内的基因上，亲本之 间或者混池之间发生了非同义突变的位点，影响了基因的功能和蛋白的结构编码，因此，筛选 候选区域中发生变异的位点，有助于我们更快速的找到与性状相关的功能基因，统计结果见表3-11所示。
+
+<p class='mark'>SNP/表3-11 候选区域统计</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/pop.ED.region.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/pop.ED.region.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+**注：**
+
+- Chr：染色体编号；
+
+- pos_start：起始位点；
+
+- pos_end：终止位点；
+
+- num_snv：snv的数量。
+
+
+### 候选区域内基因的GO富集分析
+
+***
+
+&emsp;&emsp;GO数据库是一个结构化的标准生物学注释系统，建立了基因及其产物功能的标准词汇体系，适用于各个物种。该数据库结构分为多个层级，层级越低，节点所代表的功能越具体。通过GO分析并按照Cellular component、Molecular Function、Biological process对基因进行分类。
+
+&emsp;&emsp;候选区域内基因GO分类统计结果见下图：
+
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*go_enrich.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*go_enrich.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-9 候选区域内基因GO注释聚类图</p>
+
+### 候选区域内基因的KEGG富集分析
+
+***
+
+&emsp;&emsp;在生物体内，不同基因相互协调来行使生物学功能，不同的基因间相同的作用通路为一个Pathway，基于Pathway分析有助于进一步解读基因的功能。KEGG是关于Pathway的主要公共数据库。
+
+&emsp;&emsp;候选区域内基因的KEGG注释结果按照通路类型进行分类，分类图如下：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*kegg_enrich.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*kegg_enrich.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-10 候选区域内基因KEGG富集分析</p>
+
+
+

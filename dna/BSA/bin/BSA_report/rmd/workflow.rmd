@@ -1,0 +1,86 @@
+# 项目信息
+
+***
+
+## 项目研究背景
+
+***
+
+&emsp;&emsp;BSA（Bulked SegregantAnalysis）（Michelmore R W et al., 1991）集群分离分析法，是指利用目标性状存在差异的两个亲本构建家系，在子代分离群体中，选取目标性状个体构建DNA混合池，结合高通量测序技术对混合DNA样本测序，根据基因型频率的差异筛选基因组上与目标性状相关联的位点，并对其进行功能注释，进而研究控制目标性状的基因及其分子机制。
+
+&emsp;&emsp;本项目利用高通量测序技术对genome_chinese的F2代有突变性状的个体进行混池测序，开发全基因组范围内的SNP和InDel标记，以其基因频率为基础，在genome_chinese基因组上定位与突变表型相关的区域，筛选候选基因。
+
+
+## 项目服务内容
+
+***
+
+&emsp;&emsp;按照合同约定，对 sample_num 个检测合格的样本进行以下实验及分析：
+
+- 1、全基因组重测序，每个亲本各提供 6 G Clean Data，每个混池各提供 6 G Clean Data，Q30≥80%。
+
+- 2、比对参考基因组进行变异检测分析，具体内容包括：SNP检测和注释、InDel检测和注释。
+- 3、关联分析：根据混池中基因型频率的差异，全基因组上筛选与目标性状相关联的位点，并对其进行注释。
+
+# 项目流程
+
+***
+
+## 全基因组重测序实验流程
+
+***
+
+&emsp;&emsp;样品基因组DNA检测合格后，每个混池中DNA等量混合，利用超声波将亲本和混池DNA序列片段化形成随机片段，对片段化的DNA依次进行末端修复、3′端加A、连接测序接头后，再利用磁珠吸附富集基因组长度为400 bp左右的片段，经过PCR扩增形成测序文库。建好的文库先进行文库质检，质检合格的文库用Illumina HiSeqTM平台进行测序，测序策略为Illumina PE150，总测序读长为300 bp。建库流程见图2-1。
+
+<img class="normal6" src="src/library.png">
+
+<p class='mark'>图2-1 全基因组重测序实验建库流程</p>
+
+
+## 生物信息分析流程
+
+***
+
+&emsp;&emsp;在Illumina Hiseq测序数据（Raw Data）下机之后，对下机数据进行质量控制，过滤其中低质量的数据，获得高质量的数据（Clean Data）。利用BWA软件（Li et al., 2009）将Clean Data比对到参考基因组序列上，获得序列的位置归属（即BAM文件）。利用GATK的Best Practices流程（McKenna et al., 2010）对BAM文件进行校正，并进行SNP和Small InDel标记的检测。利用SNPEff软件（Cingolani P, 2012）和参考基因组的基因预测信息进行变异功能注释，得到SNP、InDel的功能注释信息，利用Circos软件（Krzywinski et al., 2009）绘制变异信息基因组圈图。分析流程如图2-2所示，相关步骤列表见表2-1。
+
+<img class="normal6" src="src/pipeline.png">
+
+<p class='mark'>图2-2 生信分析流程图</p>
+
+<p class='mark'>表2-1 生信分析软件列表</p>
+```{r echo=FALSE}
+library(knitr)
+data <- read.delim('src/software.xls',sep='\t',header=T,check.names = F)
+kable(data,table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+&emsp;&emsp;注：相关软件下载链接如下：
+
+- 1. Fastp：https://github.com/OpenGene/fastp
+- 2. BWA：http://bio-bwa.sourceforge.net/
+- 3. GATK：https://software.broadinstitute.org/gatk/
+- 4. SAMtools：http://www.htslib.org/
+- 5. Sentieon：https://www.sentieon.com/products/
+- 6. SnpEff：http://snpeff.sourceforge.net/
+- 7. Blast：https://blast.ncbi.nlm.nih.gov/Blast.cgi
+- 8. Circos：http://www.circos.ca/software/download/circos/
+
+## BSA关联分析方法介绍
+
+***
+
+&emsp;&emsp;BSA的分析方法是对开发所得到的亲本间SNP和InDel位点，通过统计学方法野生型混池和突变型混池的基因型频率差异。由于差异位点与周围标记存在一定的连锁效应，因此在差异位点处两个混池的差异最大，而在连锁效应较弱的位点，则呈现随机分布，两个混池没有差异。同时，为了消除由于单个SNP位点产生的计算误差，一般来说会通过滑窗(sliding-window)的方式对单个SNP位点计算后进行降低噪音。
+
+&emsp;&emsp;目前比较常用的分析方法有单一混池的MutMap(Abe A, 2012)，双混池的QTL-index(Taskgi et.al, 2013)，Eudiance Distance(Hill et.al, 2013)，Gprime(Magwene et.al, 2013),以及多混池的Ridti(Wang et.al, 2019)等方法。以下仅以QTL-index为例介绍计算方式：
+
+&emsp;&emsp;Index(Mut)=DepM/(DepM+DepW)
+
+&emsp;&emsp;Index(Wild)= DepW/(DepM+DepW)
+
+&emsp;&emsp;ΔIndex=Index(Mut)-Index(Wild)
+
+&emsp;&emsp;其中，DepM和DepW分别为突变型和野生型的等位基因在突变池与野生池中的Reads数目。
+
+<img class="normal6" src="src/snpindex.png">
+
+<p class='mark'>图2-3 QTL-seq中SNP-index计算方法</p>

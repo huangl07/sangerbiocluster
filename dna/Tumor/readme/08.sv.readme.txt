@@ -1,0 +1,42 @@
+SV变异结果汇总
+
+结果文件说明：
+1. stat.txt:所有样本SV变异结果统计汇总表
+2. *.sv.length.xls:各样本SV变异长度统计表
+3. *length.png/pdf:各样本各类型SV变异图
+4. germline_sv.vcf.gz:所有样品SV变异文件
+5. germline_sv.vcf.gz.tbi:所有样品SV变异文件索引文件
+
+表头具体说明：
+stat.txt:所有样本SV变异结果统计汇总表
+1、Sample ID：样本编号；
+2、DEL：发生序列缺失的SV变异个数；
+3、INS：发生序列插入的SV变异个数；
+4、INV：DNA片段发生倒位的SV变异个数；
+5、BND：染色体序列发生易位的SV变异个数；
+6、DUP：染色体序列发生重复的SV变异个数。
+
+*.sv.length.xls：各样本SV变异长度统计表
+1、0-1k：发生0-1Kb长度的SV个数；
+2、1-2k：发生1-2Kb长度的SV个数；
+3、2-3k：发生2-3Kb长度的SV个数；
+4、3-4k：发生3-4Kb长度的SV个数；
+5、4-5k：发生4-5Kb长度的SV个数；
+6、5-6k：发生5-6Kb长度的SV个数；
+7、6-7k：发生6-7Kb长度的SV个数；
+8、7-8k：发生7-8Kb长度的SV个数；
+9、8-9k：发生8-9Kb长度的SV个数；
+10、9-10k：发生9-10Kb长度的SV个数；
+11、>10k：发生10Kb以上长度的SV个数。
+
+germline_sv.vcf.gz:所有样品SV变异文件
+1、CHROM：SNP位点所在染色体
+2、POS：SNP位点坐标
+3、ID: SNP的ID,如在dbSNP中有该SNP的id，则会在此行给出；若没有，则用’.'表示其为一个novel variant
+4、REF：参考序列在该位点的基因型
+5、ALT：该位点的其它基因型
+6、QUAL: Phred格式(Phred_scaled)的质量值，表示在该位点存在SNP的可能性；该值越高，则SNP的可能性越大；计算方法：Phred值 = -10 * log (1-p) p为SNP存在的概率; 通过计算公式可以看出值为10的表示错误概率为0.1，该位点为SNP的概率为90%,qual值与p成正比例
+7、FILTER: 使用上一个QUAL值来进行过滤的话，是不够的。GATK能使用其它的方法来进行过滤，过滤结果中通过则该值为"PASS";若SNP不可靠，则该项不为"PASS"或"."
+8、INFO: 这一行是SNP的详细信息
+9、FORMAT: SNP的格式
+10、other coloums：每个个体该位点的基因型(数字代表支持该位点的reads个数)具体每个代表查看：https://samtools.github.io/hts-specs/VCFv4.2.pdf

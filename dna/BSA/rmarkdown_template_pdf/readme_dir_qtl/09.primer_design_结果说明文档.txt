@@ -1,0 +1,60 @@
+此文件夹为候选区域内变异位点的引物设计结果，文件数量因分析结果存在差异，如下所述（如有缺少请第一时间联系本公司售后技术人员）：
+1. 09.primer_design_结果说明文档.txt：       文件详细介绍说明
+2. index   snp-index分析方法得到的候选区域内变异位点的引物设计结果文件夹（注意：如snp-index分析无结果则无此文件夹）
+3. loess   loess分析方法得到的候选区域内变异位点的引物设计结果文件夹（注意：如snp-loess分析无结果则无此文件夹）
+4. ED   ED分析方法得到的候选区域内变异位点的引物设计结果文件夹（注意：如ED分析无结果则无此文件夹）
+5. Gprime   G统计分析方法得到的候选区域内变异位点的引物设计结果文件夹（注意：如G统计分析无结果则无此文件夹）
+
+分析方法文件夹说明，以下以index为例，其他分析方法同下：
+1.	index.sanger.snp.result.xls: 常规变异位点引物设计(snp)
+2.	index.sanger.indel.result.xls: 常规变异位点引物设计(indel)
+3.	index.caps.result.xls: CAPS引物设计结果
+4.  index.dcaps.result.xls: dCAPS引物设计结果
+5.  index.kasp.result.xls:  KASP引物设计结果
+
+index.variation.snp.result.xls/index.variation.indel.result.xls: 常规变异位点引物设计
+#CHROM：染色体编号
+POS：位置
+Total number：引物设计编号
+Type：变异类型
+Ref：参考基因组序列
+Alt：变异位点序列
+Marker size(bp)：Marker长度
+Marker start(bp)：Marker起始位置
+Marker end(bp)：Marker终止位置
+#################后续列分为三组，分别对应每个标记设计的三组引物，每组表结构如下（若后续列为空则表明该位点未能设计出引物）：
+FORWARD PRIMER1 (5'-3')：引物的前引
+Tm(.C)：前引的温度
+GC(%)：前引的GC含量
+size：前引的长度
+REVERSE PRIMER1 (5'-3')：引物的后引
+Tm(.C)：后引的温度
+GC(%)：后引的GC含量
+size：后引的长度
+PRODUCT1 size (bp)：引物的结果产物长度
+start (bp)：结果产物的起始位置
+end (bp)：结果产物的终止位置
+
+index.caps_primers_result.xls: CAPS/dCAPS引物设计结果
+chr: 染色体编号
+position: 变异位点位置
+ptype: 分型位点
+enzyme：酶
+bases：酶切特征
+product_size：产物大小
+TM_left：f端TM值
+GCcontenc_left: f端GC含量值
+primer_seq_left: f端引物序列
+TM_right：r端TM值
+GCcontenc_right: r端GC含量值
+primer_seq_right: r端引物序列
+
+index.kaps_primers_result.xls: Kasp引物设计结果
+chr: 染色体编号
+position: 变异位点位置
+product_size: 产物长度
+type: 标记类型
+ptype: 分型位点
+TM：TM值
+GCcontenc: GC含量值
+primer_seq: 引物序列

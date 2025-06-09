@@ -1,0 +1,8 @@
+步骤	第三方软件列表	版本
+原始数据质控	Fastp	0.23.0
+参考基因组比对	BWA	0.7.17-r1198-dirty
+SNP检测	GATK/SAMtools/sentieon	4.2.4.1/1.14/2021.12
+变异功能注释	SnpEff	5.0e
+排图软件	ASMap	1.0-4
+QTL定位软件	R/qtl	1.5.0
+基因功能注释	Blast	2.12.0+

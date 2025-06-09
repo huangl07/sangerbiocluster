@@ -1,0 +1,33 @@
+统计结果汇总
+
+结果文件说明：
+1.	readme.txt：文件详细介绍说明
+2.	qc.stat.xls：原始数据及质控统计表
+3.	sample_tags.stat.xls：样品tags统计表
+4.	fig/*.raw.qual.png/pdf：样本原始数据碱基错误率分布例图
+5.	fig/*.raw.base.png/pdf：样本原始数据碱基组成分布例图
+6.	fig/*.clean.qual.png/pdf：样本质控后数据碱基错误率分布例图
+7.	fig/*.clean.base.png/pdf：样本质控后数据碱基组成分布例图
+
+表头具体说明：
+qc.stat.txt
+1.	#sampleID: 样本ID，用于标识每个样本的唯一标识符。
+2.	rawreads: 原始测序读数，即测序仪输出的总读数。
+3.	rawdata: 原始测序数据量，即原始测序数据的总量（以碱基数或者字节为单位）。
+4.	rawq20: 原始数据中Q20以上的碱基比例，表示质量大于20的碱基占总碱基数的比例。
+5.	rawq30: 原始数据中Q30以上的碱基比例，表示质量大于30的碱基占总碱基数的比例。
+6.	rawGC: 原始数据的GC含量，表示原始测序数据中的GC碱基对占总碱基数的比例。
+7.	ada: 测序数据中接头Reads的比例。
+8.	cleanreads: 清洗后的测序读数，即去除低质量和污染的后的总读数。
+9.	cleandata: 清洗后的测序数据量，即去除低质量和污染的后的总数据量。
+10.	cleanq20: 清洗后的数据中Q20以上的碱基比例，表示质量大于20的碱基占总碱基数的比例。
+11.	cleanq30: 清洗后的数据中Q30以上的碱基比例，表示质量大于30的碱基占总碱基数的比例。
+12.	cleanGC: 清洗后的数据的GC含量，表示清洗后的测序数据中的GC碱基对占总碱基数的比例。
+        
+sample_tags.stat.xls
+1.	#sampleID: 样本编号。
+2.	total_tags: 共统计的tags数量。
+3.	total_snps: 共统计的snps数量。
+4.	present_tags: 样本检测到的tag数量。
+5.	present_snps: 样本检测到的SNP数量。
+6.	mean_depth: 样本检测到的tag的平均深度。

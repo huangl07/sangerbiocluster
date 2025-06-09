@@ -1,0 +1,43 @@
+## circRNA预测
+
+***
+
+&emsp;&emsp;环状RNA主要是由下游外显子的剪接供体位点与上游剪切外显子的剪接受体位点反向连接而成。因此线性 RNA片段可通过线性比对软件比对上基因组，但是环状RNA的反式剪切位置处的Reads却无法直接比对上基因组。因此识别反式剪切位点就成了识别环状RNA的关键点。由于circRNA本身的难以使用信息分析手段准确的检测出来，并且不同比对方法识别出的circRNA也会有一定差距，研究表明在众多circRNA识别软件中取两款软件识别的circRNA交集得到的结果在保证识别出的circRNA一定量的前提下能有效降低假阳性率。 因此在我们的分析流程中我们选择了CIRI软件识别出的circRNA的交集作为识别出的circRNA 用于后续分析。
+
+&emsp;&emsp;CIRI2 利用BWA-MEM算法进行序列比对，寻找Junction Reads，然后根据支持剪切切位点的GT-AG信号和PCC成对交替剪切信号的Junction Reads作为识别circRNA的依据，利用动态规划算法来检测circRNA。进一步比对工作原理示例图如下：
+
+<img class="normal2" src="src/CIRI.png">
+
+<p class="mark">CIRI 工作原理图</p>
+
+&emsp;&emsp;结果目录：**04identification/**
+
+***.CIRI2.txt：**circRNA的预测，见表3.6.1 
+
+<p class="mark">表3.6.1 circRNA预测</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/CIRI2.txt',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/CIRI2.txt')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+上表中各表头含义如下：
+
+- circRNA_ID:	环状RNA的id
+- chr:	染色体编号
+- circRNA_start:	环状RNA起始位置
+- circRNA_end:	环状RNA终止位置
+- junction_reads:	支持环状RNA的junction的reads数
+- circRNA_type:	环状RNA类型，根据来源区域进行分类
+- strand:	环状 RNA 的正负链信息
+- junction_reads_ID:	支持环状RNA的junction的reads的id
+
+

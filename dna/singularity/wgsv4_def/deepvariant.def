@@ -1,0 +1,13 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/deepvariant.tar.gz /opt/src/
+
+%post
+    mkdir -p /opt/bioinfo/bin 
+    cp /opt/src/deepvariant.tar.gz  /opt/bioinfo/bin/deepvariant.tar.gz
+    chmod +x /opt/bioinfo/bin/deepvariant.tar.gz
+
+    apt-get clean -y
+%environment

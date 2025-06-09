@@ -1,0 +1,32 @@
+
+### CNV检测
+
+拷贝数变异（Copy number variation， CNV ）是由基因组发生重排而导致的,一般指长度1KB以上的基因组大片段的拷贝数增加或者减少, 主要表现为亚显微水平的缺失（Deletion）和重复（Duplication），是基因组结构变异(Structural variation, SV) 的重要组成部分。可以说是染色体的一种重要致病机制，会影响到基因组的稳定性、基因的功能。
+
+本项目利用CNVkit软件检测CNV，统计结果见表\@ref(tab:cnvstat-table)：。
+
+
+```{r get-cnvstat-table}
+cnv_stat <- read.delim('info/cnv_stat.xls',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- cnv_stat %>% tbl_prettier(c(NA,0,0,0))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Sample ID：样本编号；",
+"Gene：CNV发生的区段所包含的基因个数；",
+"Duplication：拷贝数增加的CNV个数；",
+"Deletion：拷贝数减少的CNV个数。"
+)
+```
+
+```{r cnvstat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("CNV数据统计表","cnvstat-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r cnvstat-table,eval=pdffmt}
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="CNV数据统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

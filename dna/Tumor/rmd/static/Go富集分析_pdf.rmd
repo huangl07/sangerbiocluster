@@ -1,0 +1,27 @@
+## 候选区域定位分析
+
+***
+  
+### 候选区域内基因的 GO 富集分析
+
+***
+
+&emsp;&emsp;GO 数据库是一个结构化的标准生物学注释系统，建立了基因及其产物功能的标准词汇体系，适用于各个物种。该数据库结构分为多个层级，层级越低，节点所代表的功能越具体。通过 GO 分析并按照 Cellular component、Molecular Function、Biological process 对基因进行分类。
+
+&emsp;&emsp;候选区域内基因 GO 分类统计结果见下图：
+
+**重要提示：可通过下图">"标签切换为 ED 统计结果、G 结果以及 loess 结果**
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*_go_enrich.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*_go_enrich.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图 3-9 候选区域内基因 GO 注释聚类图</p>

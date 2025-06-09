@@ -1,0 +1,24 @@
+
+## 差异circRNA表达模式聚类
+
+***
+
+&emsp;&emsp;差异circRNA聚类分析用于判断不同实验条件下差异circRNA表达量的聚类模式。每个比较组合都会得到一个差异circRNA集，将所有比较组合的差异circRNA集的并集在每个实验组/样品中的的SRPBM值，用于层次聚类分析。采用距离计算算法：样本间为spearman，circRNA间为pearson，采用的聚类方法为hcluster（complete算法）。
+
+&emsp;&emsp;结果目录：**08DEGClusterAnalysis**
+
+- **Heatmap.pdf:**差异基因表达模式聚类图，见图3.11.1；
+
+- **Heatmap_trendlines_for_subclusters：**差异基因模块（clusters）表达趋势折线图，见图3.11.2；
+
+- **subcluster：**差异基因模块（clusters）表达模式结果表；
+
+<img class="normal5" src='file/heatmap.png'>
+
+&emsp;&emsp;注：图中每列表示一个样本，每行表示一个circRNA，图中的颜色表示circRNA在该组样本中表达量的大小 （log10 FPKM)，红色代表该circRNA在该样本中表达量较高，绿色代表表达量较低，具体表达量大小变化趋势请见左上方颜色条下的数字标注。左侧为circRNA聚类的树状图，右侧为circRNA的名称，两个circRNA分支离得越近，说明它们的表达量越接近；上方为样本聚类的树状图，下方为样本的名称，两个样本分支离的越近，说明这两个样本所有circRNA的表达模式越接近，即circRNA表达量变化趋势越接近。
+
+<img class="normal5" src='file/heatmap_trendlines_for_10_subclusters-0.png'>
+
+&emsp;&emsp;注：图中为每个子cluster的表达趋势折线图，横坐标为各比较样本组，纵坐标为circRNA在该组样本中的表达量。图中每一条线表示一个circRNA，蓝色的线表示该子cluster中所有circRNA的表达量平均值；每张图展示一种类型的表达模式，即体现这组circRNA表达量变化的趋势。
+
+

@@ -1,0 +1,13 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/hifi /opt/src/
+    /mnt/ilustre/users/sanger-dev1/app/bioinfo/dna/env/bin/tabix /opt/bioinfo/bin/
+%post
+    mkdir -p /opt/bioinfo/bin 
+    cp /opt/src/hifi/hificnv /opt/bioinfo/bin/ \
+    && chmod +x /opt/bioinfo/bin/hificnv
+
+    apt-get clean -y
+%environment

@@ -1,0 +1,38 @@
+### ridit 方法
+
+***
+
+<style>
+img.inline-img {
+    display:inline;
+    width:auto;
+}
+
+img.independent-img {
+    display:block;
+    width:auto;
+}
+</style>
+&emsp;&emsp;相比于常规的BSA方法，GPS方法新增了一个中间表型混池，与两个极端表型混池共同构成高中低三组，形成三个或三个以上的混池。这三个混池共同构成了该变异位点基因型频率的背景分布，而与表型相关的SNP会在这三个混池中表现出出不同的基因型频率，利用Ridit检验比较Ref（参考基因型）和Alt（突变基因型）的这种频率差异是否显著偏离标准正态分布。
+
+&emsp;&emsp;其总体建库策略如下图所示:
+
+<img class="normal3" src="./src/ridit_method.png">
+
+&emsp;&emsp;Ridit方法在多混池BSA中的应用就是基于多个混池的等位基因频率差异进行检验，最终获得多组差异显著的基因区域，基本方法保持：
+(1).标记过滤和等位基因频率计算；
+(2).ridit统计根据分级信息进行计算；
+(3).筛选关联区域，为降低噪音，我们选择连续10个位点达到阈值线的连续片段作为候选关联区域。
+图3-9是ridit方法的曼哈顿结果图。
+
+单个染色体的曼哈顿结果图详见结题文件夹目录下的：Result/data_release/02.ridit/loess.*.index.png/pdf（*代表染色体ID）
+
+```{r echo=FALSE}
+library(slickR)
+state_plots <- list.files("../file","ridit.png",full.names=TRUE)
+slickR(obj=state_plots,height=400,width='95%',)
+```
+<p class='mark'>图3–9 ridit的曼哈顿结果图</p>
+
+<p class='mark1'>注：</p>
+图中的一个点代表一个SNP/InDel标记，横轴为标记的染色体位置信息，纵轴是ED值；图中的黑线表示拟合的曲线，红线表示阈值线。

@@ -1,0 +1,40 @@
+
+### SSR引物设计
+
+SSR（Simple Sequence Repeats），是一种以特异引物PCR为基础的分子标记技术，也称为微卫星DNA（Microsatellite DNA），是一类由几个核苷酸（一般为1-6个）为重复单位组成的长达几十个核苷酸的串联重复序列。每个SSR两侧的序列一般是相对保守的单拷贝序列。通过序列分析，首先找出参考基因组上存在的SSR位点，再进行比对，提取各样本SSR分布情况，整个过程由HipSTR软件完成。SSR统计结果见表\@ref(tab:ssrstat-table)：。
+
+
+```{r get-ssrstat-table}
+ssr_stat <- read.delim('info/ssr_stat.xls',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- ssr_stat %>% tbl_prettier(c(NA,0,0,0,0,0,0,0,0))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Sample ID：样本编号；",
+"SSR number：SSR位点个数统计；",
+"c*：不完全型SSR标记；",
+"c：复合型SSR标记；",
+"p1：1个碱基重复10次及10次以上的SSR标记; ",
+"p2：2个碱基重复6次及6次以上的SSR标记；",
+"p3：3个碱基重复5次及5次以上的SSR标记；",
+"p4：4个碱基重复5次及5次以上的SSR标记；",
+"p5：5个碱基重复5次及5次以上的SSR标记；",
+"p6：6个碱基重复5次及5次以上的SSR标记。"
+)
+```
+
+```{r ssrstat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("SSR数据统计表","ssrstat-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r ssrstat-table,eval=pdffmt}
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="SSR数据统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```
+
+
+
+

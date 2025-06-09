@@ -1,0 +1,57 @@
+## BSA关联分析
+
+***
+ 
+### 亲本标记开发
+
+***
+
+<style>
+img.inline-img {
+    display:inline;
+    width:auto;
+}
+
+img.independent-img {
+    display:block;
+    width:auto;
+}
+</style>
+&emsp;&emsp;BSA关联分析的核心思路是通过在表型差异最大的两组子代间，寻找基因型频率差异最大的位点，并将其鉴定为与表型相关的位点。之所以要用构建子代分离群体、而不用具有极端性状的亲本直接分析，是因为亲本之间的遗传背景通常差异较大，除了关注的目标性状位点的差异之外，其他变异位点也会存在差异；而通过两亲本杂交所产生的子代群体的遗传背景一致，通过挑选具有极端目标表型差异的两组子代构建混池进行分析，使非相关变异在两个子代混池中均有分布，这样就消除了目标性状外背景差异的干扰。
+
+&emsp;&emsp;BSA关联分析的核心思路是通过在表型差异最大的两组子代间，寻找基因型频率差异最大的位点，并将其鉴定为与表型相关的位点。之所以要用构建子代分离群体、而不用具有极端性状的亲本直接分析，是因为亲本之间的遗传背景通常差异较大，除了关注的目标性状位点的差异之外，其他变异位点也会存在差异；而通过两亲本杂交所产生的子代群体的遗传背景一致，通过挑选具有极端目标表型差异的两组子代构建混池进行分析，使非相关变异在两个子代混池中均有分布，这样就消除了目标性状外背景差异的干扰。
+
+&emsp;&emsp;实际过滤条件如下：（1）过滤去除非二态性（有多种基因型）的变异位点；（2）筛选两个亲本间纯合差异的遗传标记（除F1群体）。过滤后的SNP及InDel标记信息见下表3-13。
+
+<p class='mark'>表 3-13 关联分析标记信息统计表</p>
+
+```{r echo=FALSE}
+library(DT)
+data <- read.delim('./file/snp_indel_gene.stat.xls',sep='\t',header=T,check.names = F)
+show_data <- data[c("CHROM", "SNP_Number", "Effective_SNP", "INDEL_Number", "Effective_INDEL")]
+datatable(show_data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('./file/chr_snp_indel_stat.xls')///pdf
+show_data <- data[c("CHROM", "SNP_Number", "Effective_SNP", "INDEL_Number", "Effective_INDEL")]
+kable(show_data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>CHROM：染色体编号；</p>
+
+- <p class='mark1'>SNP_Number：过滤后对应染色体上 SNP 数目；</p>
+
+- <p class='mark1'>Effective_SNP：过滤后对应染色体上 SNP 数目；</p>
+
+- <p class='mark1'>INDEL_Number：过滤后对应染色体上 InDel 数目。</p>
+
+- <p class='mark1'>Effective_INDEL：过滤后对应染色体上 InDel 数目。</p>
+
+&emsp;&emsp;基于标记过滤所得到的SNP和INDEL位点，分别通过Index（Takagietal.2013），G′value统计（Magweneetal.2011），欧式距离（EuclideanDistance，ED）（Hilletal.2013）三种方法进行关联分析。
+
+

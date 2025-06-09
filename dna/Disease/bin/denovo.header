@@ -1,0 +1,2 @@
+##INFO=<ID=Denovo_Mutation,Number=1,Type=String,Description="whether denovo mutation">
+##INFO=<ID=GeneticModels,Number=.,Type=String,Description="':'-separated list of genetic models for this variant.">

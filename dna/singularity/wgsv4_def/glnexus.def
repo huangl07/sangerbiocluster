@@ -1,0 +1,12 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/GLnexus/ /opt/bioinfo/bin/
+    
+%post
+    mkdir -p /opt/bioinfo/bin 
+    chmod +x /opt/bioinfo/bin/GLnexus/glnexus.tar.gz
+    apt-get clean -y
+
+%environment

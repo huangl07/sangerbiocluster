@@ -1,0 +1,119 @@
+## QTL定位
+
+### QTL定位分析
+
+基于遗传学原理，将遗传图谱上的分子标记与性状进行连锁分析，确认与性状相关的分子标记，即数量性状基因座（QTL）。寻找QTL在染色体上位置并估计其遗传效应的过程，成为QTL作图（QTL mapping）。基于遗传图谱和性状数据，使用Rqtl进行定位分析，具体方法如下：
+
+1. 利用区间作图方法（Interval Mapping）进行QTL定位；
+2. 使用有放回的随机抽样方法（Permutation test），随机抽样1000次，确认置信水平大于95%的LOD值作为QTL阈值，筛选获得QTL区域；
+3. 基于定位区域提取功能基因，并进行富集分析。
+
+性状定位结果如表\@ref(tab:qtl-table)所示，QTL定位如\@ref(fig:qtl-plot)所示。
+```{r get-qtl-table}
+qtl_result_dir <-  file.path(data_release_dir, "04.qtl")
+files <- list.files(qtl_result_dir,pattern="*/*.qtl-result.result",recursive=T,full.names=T)
+new_files <- vector()
+for (i in files){
+if (file.size(i) != 0){
+new_files <- append(new_files, i)
+}
+}
+lf <- map_dfr(new_files,read.delim,sep=" ", header = TRUE, check.names = FALSE) %>%
+  select(qname, lod.chr, lod.pos, lod.lod, var, pos1, pos2)
+colnames(lf) <- c("Trait ID","LG ID","LOD Peak","LOD","Variance","Pos1","Pos2")
+lf_unique <- lf %>% distinct()
+tempdf <- lf_unique %>% tbl_prettier(c(NA,0,2,2,2,NA,NA))
+
+tempfn <- c(
+"Trait ID：性状名",
+"LG ID：QTL定位检索到的连锁群编号；",
+"LOD Peak：定位区域内最大的LOD值所在的遗传图谱位置；",
+"LOD：定位区域内最大的LOD值；",
+"Variant：定位区域内的表型贡献率；",
+"Pos1：定位区域中边缘的分子标记；",
+"Pos2：定位区域中边缘的分子标记；"
+)
+```
+```{r qtl-table-html,eval=htmlfmt,results="asis"}
+dt_caption("qtl定位结果统计表","qtl-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r qtl-table,eval=pdffmt}
+tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+tempdf[,6]=gsub("_","\\\\_",tempdf[,6])
+tempdf[,7]=gsub("_","\\\\_",tempdf[,7])
+kbl(row.names=FALSE, tempdf, "latex",caption="qtl定位结果统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',escape=FALSE,align="c") %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+kbl_foot(tempfn) %>% table_bline()
+```
+
+```{r qtl-plot, echo=FALSE, fig.cap="QTL定位结果图"}
+state_plots <- list.files(qtl_result_dir, pattern="*/*.scan.png",recursive=T, full.names=T)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+### 候选区域内基因的 GO 富集分析
+
+GO（Gene Ontology）数据库是一个结构化的标准生物学注释系统，建立了基因及其产物功能的标准词汇体系，适用于各个物种。该数据库结构分为多个层级，层级越低，节点所代表的功能越具体。通过GO分析并按照Cellular component、Molecular Function、Biological process对基因进行分类。
+
+候选区域内基因 GO 分类统计结果见下图(若某个性状未定位到区间则无GO富集分析结果)：
+
+> *本项目更详细的候选基因GO富集结果可查看结题文件夹目录下的：*
+>
+> *[data_release/04.qtl/Pm2/GO_result](./data_release/04.qtl/Pm2/GO_result)文件夹下的Pm2_GOenrichment.xls（Pm2性状）文件*
+>
+> *[data_release/04.qtl/Pm30/GO_result](./data_release/04.qtl/Pm30/GO_result)文件夹下的Pm30_GOenrichment.xls（Pm30性状）文件*
+>
+> *[data_release/04.qtl/Pm36/GO_result](./data_release/04.qtl/Pm36/GO_result)文件夹下的Pm2_GOenrichment.xls（Pm36性状）文件*
+>
+> *[data_release/04.qtl/DIR/GO_result](./data_release/04.qtl/DIR/GO_result)文件夹下的DIR_GOenrichment.xls（DIR性状）文件*
+
+
+```{r go-plot, fig.cap="候选区域内基因 GO 注释聚类图", out.width = "100%"}
+state_plots <- list.files(qtl_result_dir,pattern="*_GOenrichment.png",full.names=TRUE, recursive = TRUE)
+if(params$docfmt == "html"){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注：**固定绘制按p.adjust排序后的前20个GO通路，不代表全部显著。
+
+### 候选区域内基因的 KEGG 富集分析
+
+在生物体内，不同基因相互协调来行使生物学功能，不同的基因间相同的作用通路为一个Pathway，基于Pathway分析有助于进一步解读基因的功能。KEGG（Kyoto Encyclopedia of Genes and Genomes）是关于Pathway的主要公共数据库。
+
+候选区域内基因的KEGG富集分析结果见下图（若某个性状未定位到区间则无KEGG富集分析结果）：
+
+> *本项目更详细的候选基因KEGG富集结果可查看结题文件夹目录下的：*
+>
+> *[data_release/04.qtl/Pm2/KEGG_result](./data_release/04.qtl/Pm2/KEGG_result)文件夹下的Pm2_KEGGenrichment.xls（Pm2性状）文件*
+>
+> *[data_release/04.qtl/Pm30/KEGG_result](./data_release/04.qtl/Pm30/KEGG_result)文件夹下的Pm30_KEGGenrichment.xls（Pm30性状）文件*
+>
+> *[data_release/04.qtl/Pm36/KEGG_result](./data_release/04.qtl/Pm36/KEGG_result)文件夹下的Pm2_KEGGenrichment.xls（Pm36性状）文件*
+>
+> *[data_release/04.qtl/DIR/KEGG_result](./data_release/04.qtl/DIR/KEGG_result)文件夹下的DIR_KEGGenrichment.xls（DIR性状）文件*
+
+```{r kegg-plot, fig.cap="候选区域内基因 KEGG 注释聚类图", out.width = "100%"}
+state_plots <- list.files(qtl_result_dir,pattern="*_KEGGenrichment.png",full.names=TRUE, recursive = TRUE)
+if(params$docfmt == "html"){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注：**固定绘制按p.adjust排序后的前20个KEGG通路，不代表全部显著。
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n')
+```

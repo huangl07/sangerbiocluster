@@ -1,0 +1,53 @@
+
+### 肿瘤突变频谱和突变特征分析
+
+肿瘤突变频谱(Mutation Spectrum) 和突变特征(Mutation Signature) 是对于体细胞变异的一种分析，可以帮助了解到肿瘤发生在点突变水平上的分布类型与特征。通过突变频谱分析，可以得知各个肿瘤样本各种类型突变(如C>A/G>T) 的数量及样本是否有某种类型突变的偏好性；通过分析体细胞突变频谱以及突变特征，可以研究不同癌种的体细胞点突变特点。
+
+本项目利用Mutational Patterns软件考虑点突变位点上、下游各1 bp 位置的碱基种类，可以将点突变分为96 种类型。突变特征分析根据各肿瘤样本中96 种突变类型的频率， 通过非负矩阵分解（ Nonnegative MatrixFactorization, NMF）的方法将点突变分解为多个不同的突变特征，将样品突变特征与COSMIC网站中67 种已知的突变特征进行聚类（http://cancer.sanger.ac.uk/cosmic/signatures），利用与样本突变特征相似的已知特征的注释信息解释样本突变过程。
+
+突变频谱和突变特征分析结果见如下所示。
+
+```{r ms-plot, echo=FALSE, fig.cap="肿瘤突变频谱全景图"}
+state_plots <- list.files("info","mutation_spectrum_all.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='100%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+> **注**：6种单碱基替换类型联合16种左右两侧的碱基组合构成96种三核苷酸替换类型。Y轴表示96种三核苷酸替换类型的突变频率。
+
+
+```{r mp-plot, echo=FALSE, fig.cap="肿瘤突变特征全景图"}
+state_plots <- list.files("info","mutation_pattern_all.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注**：COSMIC拟合结果中不同突变特征所占比例。每个特征代表不同的突变过程
+
+```{r mss-plot, echo=FALSE, fig.cap="突变频谱差异比较图（肿瘤样本与对照样本）"}
+state_plots <- list.files("info","*_mutation_spectrum.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+图的上部显示了给定肿瘤的三核苷酸替换频率，中部显示了对照的三核苷酸替换频率，下部则显示了两者之间的差异
+
+```{r mps-plot, echo=FALSE, fig.cap="突变特征差异比较图（肿瘤样本与对照样本）"}
+state_plots <- list.files("info","*_mutation_pattern.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```

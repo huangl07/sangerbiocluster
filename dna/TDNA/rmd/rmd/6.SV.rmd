@@ -1,0 +1,34 @@
+
+### SV检测
+
+结构变异（Structural variation， SV ）通常指基因组上大长度的序列变化和位置关系变化，SVs对基因组的影响比起SV更大，一旦发生往往会给生命体带来重大影响。有研究发现，基因组上的 SVs 比起 SV 而言，更能代表人类群体的多样性特征；稀有且相同的一些结构性变异往往和疾病（包括癌症）的发生相互关联甚至还是其直接的致病诱因。根据断点的位置及方向可以分为如下五种类型：(1)缺失(DEL)，(2)插入(INS)，(3)倒位(INV)，(4)易位 (BND)，(5)重复(DUP)。
+
+本项目利用软件manta检测样本的SV，统计结果见表\@ref(tab:svstat-table)：。
+
+
+```{r get-svstat-table}
+sv_stat <- read.delim('info/sv_stat.xls',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- sv_stat %>% tbl_prettier(c(NA,0,0,0,0,0))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Sample ID：样本编号；",
+"DEL：发生序列缺失的SV变异个数；",
+"INS：发生序列插入的SV变异个数；",
+"INV：DNA片段发生倒位的SV变异个数；",
+"BND：染色体序列发生易位的SV变异个数；",
+"DUP：染色体序列发生重复的SV变异个数。"
+)
+```
+
+```{r svstat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("SV数据统计表","svstat-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r svstat-table,eval=pdffmt}
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="SV数据统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

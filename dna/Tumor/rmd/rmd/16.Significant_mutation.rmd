@@ -1,0 +1,51 @@
+
+### 肿瘤高频突变基因分析
+
+高频突变基因（Significantly mutated genes, SMG）综合考虑了体细胞SNV 和InDel 等变异，是指突变频率显著高于背景突变频率（Background mutation rate, BMR）的基因。鉴定出体细胞中突变频率高于背景突变率的基因，可以帮助了解肿瘤的发生和发展过程。
+
+
+本项目利用MuSiC 软件（Dees N D et al. 2012）和MuSiC2软件（Jiaxin Fan et al. 2022），以所有或部分肿瘤样本为背景，对各个突变类型进行统计检验（SMG test）。MuSic通过卷积检验（Convolution test）、Fisher检验（Fisher’s combined P-value test, FCPT）、似然比检验（likelihood ratio test，LRT）进行SMG test。通过显著性富集能确定高频突变基因参与的最重要生化代谢途径和信号转导途径等，对鉴定出来的高频突变进行KEGG/GO数据库注释。
+
+肿瘤高频突变基因全景图等结果见如下所示。
+
+
+```{r pgm-plot, echo=FALSE, fig.cap="高频突变基因全景图"}
+state_plots <- list.files("info","panorama_of_genomic_mutations.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='100%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+```{r mr-plot, echo=FALSE, fig.cap="高频突变基因相互作用图", eval=file.exists("info/mutation_relation.png")}
+state_plots <- list.files("info","mutation_relation.png",full.names=TRUE)
+
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+```{r kegg-plot, echo=FALSE, fig.cap="高频突变基因显著富集KEGG结果展示图", eval=file.exists("info/all_KEGGenrichment.png")}
+state_plots <- list.files("info","*KEGGenrichment.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+```{r go-plot, echo=FALSE, fig.cap="高频突变基因显著富集GO结果展示图",eval=file.exists("info/all_GOenrichment.png")}
+state_plots <- list.files("info","*GOenrichment.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```

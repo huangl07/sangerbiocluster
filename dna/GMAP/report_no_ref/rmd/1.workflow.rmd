@@ -1,0 +1,42 @@
+# 项目信息
+
+## 项目研究背景
+
+遗传图谱（Genetic Map）（Vision et al., 2000）是指分子标记在染色体上的相对位置与遗传距离的线性排列，其构建的理论基础是染色体的交换与重组。重组率的高低取决于交换的频率，而两个基因的交换频率取决于它们之间的物理距离，因此，重组率用来表示图距，单位厘摩（centi-Morgan ，cM），1cM表示1%的重组率。QTL（Quantitative Trait Locus）定位就是分析分子标记和数量性状表型值之间的关系，将数量性状位点逐一定位到连锁群的相应位置上，并估计其遗传效应。
+
+本项目利用全基因组测序技术（Whole genome sequencing，WGS），在已知物种基因组信息的情况下，对物种内的不同个体进行基因组重测序（Re-sequencing），开发全基因组范围内的SNP和InDel分子标记，并利用分子标记进行遗传图谱构建。
+
+
+## 项目服务内容
+
+按照合同约定，对样本进行以下实验及分析：
+
+1. 遗传图谱构建：分子标记筛选过滤，binmarker构建，遗传图谱构建，图谱质量评估。
+
+## 分析结果概述
+
+# 项目流程
+
+## 全基因组重测序实验流程
+
+样品基因组DNA检测合格后，利用超声波将DNA序列片段化形成随机片段，对片段化的DNA依次进行末端修复、3′端加A、连接测序接头后，再利用磁珠吸附富集长度为350bp左右的片段，经过PCR扩增形成测序文库。建好的文库先进行文库质检，质检合格的文库用`r platform`$\rm{^{TM}}$平台进行测序，测序策略为`r platform0` PE150，总测序读长为300bp。建库流程见图 \@ref(fig:library-plot)。
+
+```{r library-plot,fig.cap = "全基因组重测序实验建库流程"}
+include_graphics("static/images/library.png")
+```
+
+
+## 生物信息分析流程
+
+在`r platform`$\rm{^{TM}}$测序数据（Raw Data）下机之后，对下机数据进行质量控制，过滤其中低质量的数据，获得高质量的数据（Clean Data）。利用BWA-MEME软件（Jung and Han 2022）将Clean Data比对到参考基因组序列上，获得序列的位置归属（即BAM文件）。利用GATK软件（McKenna A *et al.* 2010）的Best Practices流程对BAM文件进行校正，并进行SNP标记的检测。利用SNPEff软件（Cingolani *et al.* 2012）和参考基因组的基因预测信息进行变异功能注释，得到SNP的功能注释信息。基于获得的SNP分子标记进一步进行图谱构建及QTL定位分析。分析流程见图\@ref(fig:pipeline-plot)。
+
+
+```{r pipeline-plot,fig.cap = "遗传图谱构建流程图",out.width="100%"}
+include_graphics(ifelse(platform != "DNBSeq", "static/images/library.png", "static/images/dnbseq.png"))
+```
+
+
+\clearpage
+
+\clearpage
+

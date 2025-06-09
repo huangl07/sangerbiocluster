@@ -1,0 +1,66 @@
+## 基因组比对
+
+### 基因组比对效率
+
+样本基因组比对率反映了样本测序数据与参考基因组的相似性，该结果可以帮助判断参考基因组的选择是否合理以及排除异常样本。在本项目中，我们以`r genome_name`的基因组序列作为参考基因组。利用`r ifelse(rna,"HISAT2","BWA-MEME")`软件将质控后的测序片段(Clean Reads)比对参考基因组。表\@ref(tab:mapping-stat-table)为比对结果的数据统计表。
+
+```{r get-mapping-stat-table}
+arrange_align_stat <- arrange_align_stat %>%
+  tbl_prettier(c(NA, 2, 2, 0, 2, 2, 2))
+tempfn <- c(
+"Sample ID：样品编号；",
+"Mapped Ratio(%)：定位到基因组的Clean Reads数占所有Clean Reads数的百分比；",
+"Proper Ratio(%)：双端均定位到基因组上且距离符合测序片段长度的Reads数百分比；",
+"Insert Size：样品平均插入片段长度；",
+"Real Depth：相对于整体基因组中覆盖度大于1部分序列的平均覆盖深度；",
+"Coverage(%) (>=1x)：至少有一条Reads覆盖的碱基占基因组长度的百分比；",
+"Coverage(%) (>=4x)：至少有四条Reads覆盖的碱基占基因组长度的百分比。"
+)
+```
+
+```{r mapping-stat-table-html, results="asis", eval=htmlfmt}
+dt_caption("比对结果数据统计表","mapping-stat-table")
+datatable(arrange_align_stat, rownames=FALSE,options = list(scrollX=T, columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r mapping-stat-table, eval=pdffmt}
+arrange_align_stat[,1]<-gsub("_","\\\\_",arrange_align_stat[,1])
+kbl(row.names=FALSE, arrange_align_stat, "latex", caption="比对结果数据统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(c("Sample ID", "Mapped\nRatio(\\%)", "Proper\nRatio(\\%)", "Insert Size", "Real Depth", "Coverage(\\%)\n(>=1x)","Coverage(\\%)\n(>=4x)"),align="c"),escape=FALSE) %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+
+```{r insert-length-module, results='asis',eval=!rna}
+cat(
+  knitr::knit_child('rmd/03.insert.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+### 深度分布统计
+
+Reads定位到参考基因组后，可以统计参考基因组上碱基的覆盖情况。参考基因组上被 reads 覆盖到的碱基数占基因组总长度的百分比称为基因组覆盖度；碱基上覆盖的 reads 数为覆盖深度，样品的碱基深度分布图见图\@ref(fig:basedepth-plot)。覆盖深度和覆盖度能够直接反应测序数据的均一性及与参考序列的同源性。基因组覆盖度可以反映参考基因组上变异检测的完整性，覆盖到的区域越多，可以检测到的变异位点也越多基因组的覆盖深度会影响变异检测的准确性，在覆盖深度较高的区域（非重复序列区），变异检测的准确性也越高。另外，若基因组上碱基的覆盖深度分布较均匀，也说明测序随机性较好。碱基在基因组上的覆盖深度分布如图\@ref(fig:genomecoverage-plot)所示。
+
+```{r basedepth-plot, fig.cap="样品的深度分布图"}
+state_plots <- list.files("../file","*depth.png",full.names=TRUE)
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注：**横坐标表示测序深度，图中左侧的纵坐标轴（红色）对应红色曲线，表示对应深度的位点占全基因组的百分比，图中右侧的纵坐标（蓝色）对应蓝色曲线，表示小于或等于该深度的位点占全基因组的百分比。
+
+```{r genomecoverage-plot, fig.cap="样品的染色体覆盖深度分布图"}
+state_plots <- list.files("../file","*coverage.png",full.names=TRUE)
+if(params$docfmt == "html"){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注：**横坐标为染色体位置，纵坐标为染色体上对应位置的覆盖深度取对数（log2）得到的值。基因组被覆盖的较均匀，说明测序随机性较好。图上深度不均一的地方可能是由于重复序列、PCR偏好性、或着丝粒部分引起的。
+

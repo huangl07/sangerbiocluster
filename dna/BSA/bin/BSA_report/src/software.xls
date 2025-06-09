@@ -1,0 +1,7 @@
+步骤	第三方软件列表	版本
+原始数据质控	Fastp	0.19.6
+参考基因组比对	BWA	0.7.17
+SNP、InDel变异检测	GATK/SAMtools/sentieon	4.0.11.0/ 1.9/ 201808.02
+变异功能注释	SnpEff	4.3T
+基因功能注释	Blast	2.8.1
+变异可视化	Circos	0.69-6

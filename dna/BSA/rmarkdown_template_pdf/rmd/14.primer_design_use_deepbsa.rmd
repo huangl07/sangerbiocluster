@@ -1,0 +1,91 @@
+## 候选区域引物设计
+
+在BSA定位到目标区域以后,会对目标区域进行候选基因筛选,后续会通过实验的手段对目标基因进行验证。由于生物实验的复杂性，引物设计的结果仅供参考。
+
+主要有两种方法:
+
+(1). 将候选标记所在区段进行 PCR扩增，然后利用Sanger测序验证扩增产物。
+
+我们基于primer3对目标区域内的SNP和INDEl位点进行引物设计, 设计参数为(1).产物长度在600-800bp之间、(2).最低退火温度为$57^{\circ}C$、(3).最高退火温度为$63^{\circ}C$,每个位点设计3对引物、(4).将设计出的引物比对到基因组序列，如果出现多比对（错配率低于5%），移除该对引物：
+
+> *本项目更详细的常规引物设计结果结果可查看(如果该方法有定位结果)：*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/index)文件夹下的index.variation.result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/loess)loess.variation.result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/ED)文件夹下的ED.variation.result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/Gprime)文件夹下的Gprime.variation.result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/DeepBSA_DL)文件夹下的DeepBSA_DL.variation.result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/DeepBSA_K)文件夹下的DeepBSA_K.variation.result.xls文件*
+>
+
+(2). 将候选SNPs转化成CAPS或dCAPS等标记进行验证。即：对候选的 SNPs进行限制性内切酶识别位点分析，筛选出引起酶切识别位点改变的SNPs， 使用相应的引物扩增这些SNPs所在的片段，然后对扩增产物进行酶切和电泳检测，将SNPs转化为CAPS标记；对CAPS标记进行多态性分析,以验证标记的可用性。
+
+对于CAPs，dCAPS，KASP引物设计我们预先选取上下游30bp内没有其他变异位点，且位点上下游50bp的序列在参考基因组中不具有其他高相似度序列的位点。
+
+KASP的设计参数为(1).最大退火温度为$63^{\circ}C$、(2).引物最大长度为25bp。
+
+CAPs/dCAPS的设计参数为(1).最大退火温度为$63^{\circ}C$、(2).引物最大长度为25bp、(3)最大酶价为200U。
+
+> *本项目更详细的CAPS/dCAPS引物设计结果结果可查看(如果该方法有定位结果)：*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/index)文件夹下的index.caps_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/loess)loess.caps_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/ED)文件夹下的ED.caps_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/Gprime)文件夹下的Gprime.caps_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/DeepBSA_DL)文件夹下的DeepBSA_DL.caps_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/DeepBSA_K)文件夹下的DeepBSA_K.caps_primers_result.xls文件*
+>
+
+> *本项目更详细的kasp引物设计结果结果可查看(如果该方法有定位结果)：*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/index)文件夹下的index.kasp_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/loess)loess.kasp_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/ED)文件夹下的ED.kasp_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/Gprime)文件夹下的Gprime.kasp_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/DeepBSA_DL)文件夹下的DeepBSA_DL.kasp_primers_result.xls文件*
+>
+> *[data_release/09.primer_design](./data_release/09.primer_design/DeepBSA_K)文件夹下的DeepBSA_K.kasp_primers_result.xls文件*
+>
+
+以下是不同方法定位到的候选区域内的引物设计的相关统计结果，见表\@ref(tab:all-primer-design-stat-table)：
+
+```{r get-all-primer-design-stat-table}
+data <- read.delim('../file/primer_design_stat.xls',sep='\t',header=T,check.names = F)
+colnames(data) <- c("Method", "CAPS Count", "dCAPS Count", "KASP Count", "Sanger Count")
+show_data <- data %>%
+  tbl_prettier(c(NA, 0, 0, 0, 0))
+tempfn <- c(
+"Method：BSA的具体方法；",
+"CAPS Count：可设计的CAPS位点数；",
+"dCAPS Count：可设计的dCAPS位点数；",
+"KASP Count：可设计的KASP位点数；",
+"Sanger Count：可设计的Sanger位点数。"
+)
+```
+```{r all-primer-design-stat-table-html, results="asis", eval=htmlfmt}
+dt_caption("候选区域内的引物设计统计表","all-primer-design-stat-table")
+datatable(show_data, rownames=FALSE,options = list(scrollX=T, columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r all-primer-design-stat-table, eval=pdffmt}
+show_data[, 1] <- gsub("_", "\\\\_", show_data[, 1])
+kbl(row.names=FALSE, show_data, "latex", caption="候选区域内的引物设计统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(show_data)),align="c"), escape=FALSE) %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```

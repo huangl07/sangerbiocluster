@@ -1,0 +1,79 @@
+# 项目信息
+
+***
+
+## 项目研究背景
+
+***
+
+&emsp;&emsp;BSA (Bulked Segregant Analysis)（Michelmore R W et al., 1991）集群分离分析法，是指利用目标性状存在差异的两个亲本构建家系，在子代分离群体中，选取目标性状个体构建 DNA 混合池，结合高通量测序技术对混合 DNA 样本测序，根据基因型频率的差异筛选基因组上与目标性状相关联的位点，并对其进行功能注释，进而研究控制目标性状的基因及其分子机制。
+
+&emsp;&emsp;最常见的 BSA 分析流程，即所谓 QTL-seq 方法（Takagi H et al., 2013），针对自然变异中的 “高×低” 性状亲本杂交群体类型，按照 “两个亲本（>20×/亲本）+两个混池（>30 个样本/混池）” 的标准设计选择测序样本；针对亲本和混池分别建库测序后，在两个混池中寻找显著基因型频率差异的位点和区域，即可完成全基因组性状的关联分析。基于目标性状的不同特点，衍生出了一系列的拓展方法，如单点诱变产生的隐性纯和突变，可以只进行隐形混池测序，即 MutMap（Abe A et al., 2012）。
+
+&emsp;&emsp;本项目利用高通量测序技术对 genome_chinese 的双亲/野生型亲本和两个极端表型/突变型的 F2 代个体进行混池测序，开发全基因组范围内的 SNP 和 InDel 标记（Singh V K et al., 2017），以其基因频率为基础，在全基因组范围内定位与目标表型相关的区域，筛选候选基因。
+
+## 材料基本信息
+
+```{r echo=FALSE}
+library(knitr)
+data <- read.delim('file/project.info.xls',sep='\t',header=T,check.names = F)
+kable(data,table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+## 项目服务内容
+
+***
+
+&emsp;&emsp;按照合同约定，对 sample_num 个检测合格的样本进行以下实验及分析：
+
+- 1、全基因组重测序，每个混池各提供 Bulk_rawdata Raw Data，Q30≥80%。
+
+- 2、比对参考基因组进行变异检测分析，具体内容包括：SNP 检测和注释、InDel 检测和注释。
+- 3、关联分析：根据混池中基因型频率的差异，全基因组上筛选与目标性状相关联的位点，并对其进行注释。
+
+## 分析结果概述
+
+***
+
+&emsp;&emsp;测序数据概述：
+
+&emsp;&emsp;本次测序共获得到 Cleandata_size 的 clean data，Q30 达到 Q30_num ，混池平均测序深度为 Bulk_deoth 。样品与参考基因组平均比对效率为 Mapping_ratio，平均覆盖深度为 Avg_depth，基因组覆盖度为 Ref_coverage （至少一个碱基覆盖）。
+
+&emsp;&emsp;变异检测：
+
+&emsp;&emsp;SNP 检测：共获得 SNP_num 个 SNP。
+
+&emsp;&emsp;InDel 检测：共获得 Indel_num 个 InDel。
+
+&emsp;&emsp;关联分析：
+
+&emsp;&emsp;采用 QTL-seq、欧式距离（ED）、G' value 三种算法，共得到 region_num 个与性状相关的侯选区域，候选区域总长度为 region_len，候选区域总的基因数为 region_gene。
+
+
+# 项目流程
+
+***
+
+## 全基因组重测序实验流程
+
+***
+
+&emsp;&emsp;样品基因组 DNA 检测合格后，每个混池中 DNA 等量混合，利用超声波将亲本和混池 DNA 序列片段化形成随机片段，对片段化的 DNA 依次进行末端修复、3′ 端加 A、连接测序接头后，再利用磁珠吸附富集基因组长度为 350 bp 左右的片段，经过PCR扩增形成测序文库。建好的文库先进行文库质检，质检合格的文库用 Illumina NovaSeq 平台进行测序，测序策略为 Illumina PE150，总测序读长为 300 bp。建库流程见图 2-1。
+
+<img class="normal4" src="src/library.png">
+
+<p class='mark'>图 2-1 全基因组重测序实验建库流程</p>
+
+
+## 生物信息分析流程
+
+***
+
+&emsp;&emsp;在 Illumina NovaSeq 测序数据（Raw Data）下机之后，对下机数据进行质量控制，过滤其中低质量的数据，获得高质量的数据（Clean Data）。利用 BWA 软件（Li H et al., 2009）将Clean Data比对到参考基因组序列上，获得序列的位置归属（即 BAM 文件）。利用 GATK 软件（McKenna A et al., 2010）的 Best Practices 流程对 BAM 文件进行校正，并进行 SNP 标记的检测。利用 SNPEff 软件（Cingolani P et al., 2012）和参考基因组的基因预测信息进行变异功能注释，并进一步使用 SNP 及 InDel 进行性状定位分析。分析流程见图 2-2。
+
+<img class="normal3" src="src/pipeline.png">
+
+<p class='mark'>图 2-2 生信分析流程图</p>
+
+

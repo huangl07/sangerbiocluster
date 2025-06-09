@@ -1,0 +1,23 @@
+比对统计结果汇总
+
+结果文件说明：
+1.	readme.txt：文件详细介绍说明
+2.	*depth.png/pdf：基因组比对测序深度图
+3.	*coverage.png/pdf：基因组比对覆盖度图
+4.	*insert.png/pdf：基因组比对插入片段长度图
+4.	all.summary.stats：样品比对统计结果汇总表
+
+
+表头具体说明：
+all.summary.stats
+Sample ID：样品名；
+Mapped Ratio: 定位到基因组的Clean Reads数占所有Clean Reads数的百分比；
+Proper Ratio：双端测序序列均比对到参考基因组上且距离符合测序片段的长度的Reads数占所有Clean Reads的百分比；
+Duplicate Ratio：测序数据中冗余序列的比例，即由于PCR产生的Reads复制序列；
+Average Insert Size：插入片段长度；
+Average Depth：平均覆盖深度；
+Real Depth：该样品实际深度；
+Coverage (>0x)：至少有一条Reads覆盖的碱基占基因组长度的百分比；
+Coverage (>=4x)：至少有五条Reads覆盖的碱基占基因组长度的百分比；
+Target Ratio：目标区域对应reads的碱基总数占总碱基数的比例；（WES项目）
+Region covered：覆盖到的捕获区域；（WES项目）

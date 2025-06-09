@@ -1,0 +1,168 @@
+## 遗传图谱构建
+
+### 遗传标记筛选及分析
+
+基于遗传学基本原理，对所有的SNP和InDel标记进行筛选，获得符合遗传图谱构建的分子标记，筛选和处理标准如下：
+
+1. 保留两个亲本测序深度均超过5X的变异位点，如果某个子代在当前位点测序深度低于2x，则将子代基因型在该位点基因型定义为缺失
+2. 针对F2、BC或其他近交群体，选择双亲纯和且差异（aaxbb型）的变异位点，并对变异位点进行分型重编码，用于后续图谱构建
+3. 针对F1群体，选择至少有一个亲本杂合（abxcc，ccxab，abxcd，efxeg，hkxhk，nnxnp，lmxll）的变异位点，并对变异位点进行分型重编码用于后续图谱构建
+4. 在完成上述处理的基础上，对于子代缺失超过30%或偏离孟德尔分离比例（偏分离，p< 0.05）的变异位点进行过滤，保留下来的数据作为图谱构建的分子标记
+
+基于上述过滤标准，获得可以用于构建遗传图谱的分子标记，用于后续的遗传分析，在各个基因组序列中的分子标记数量如\@ref(tab:filter-table)所示。
+
+```{r get-filter-table}
+filtered_stat_file <- file.path(gmap_result_dir, "08.evaluate", "total.filtered.stat")
+filtered_stat <- read.delim(filtered_stat_file,sep='\t',header=TRUE,check.names = FALSE)
+#if(params$devmode){snp_stat <- snp_stat[order(snp_stat[,1])[1:10],]}
+tempdf <- filtered_stat[,c("CHROM","SNP","INDEL")]
+colnames(tempdf) <- c("CHROM","SNP Number","INDEL Number")
+tempdf <- tempdf %>% tbl_prettier(c(NA,0,0))
+tempdf <- tempdf[str_order(tempdf$CHROM, numeric = T),]
+tempfn <- c(
+"CHROM：染色体编号",
+"SNP Number：检测到的单核苷酸多态性位点的数量；",
+"INDEL Number：检测到的插入/缺失位点的数量；"
+)
+```
+```{r filter-table-html,eval=htmlfmt,results="asis"}
+dt_caption("标记筛选统计表","filter-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r filter-table,eval=pdffmt}
+tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+kbl(row.names=FALSE, tempdf, "latex",caption="标记筛选统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',escape=FALSE,align="c") %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+kbl_foot(tempfn) %>% table_bline()
+```
+
+```{r bin-module, results='asis'}
+qtl_result <- file.path(gmap_result_dir, "08.evaluate", "total.bin.stat")
+if(file.exists(qtl_result)){
+    cat(
+    knitr::knit_child('rmd/6.bin.rmd', envir = globalenv(), quiet = TRUE)
+      )
+}
+```
+
+### 连锁分群和图谱构建
+
+根据标记之间的连锁关系和物理位置，一般确定连锁群个数与染色体个数一致，以LOD > 5 为指标，将标记划分为对应的连锁群，使用统计学软件，将标记按照重组率线性排列，构建遗传图谱;遗传图谱构建结果如图\@ref(fig:lmap-plot)所示:
+
+```{r lmap-plot, echo=FALSE, fig.cap="遗传图谱示意图"}
+state_plots <- file.path(gmap_result_dir, "08.evaluate", "total.map.png")
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+根据构建遗传图谱构建结果，进行遗传图谱质量统计，最终确定图谱评估，如\@ref(tab:lg-table)所示.
+
+```{r get-map-table}
+total_mapstat_file <- file.path(gmap_result_dir, "08.evaluate", "total.mapstat")
+total_mapstat <- read.delim(total_mapstat_file,sep='\t',header=TRUE,check.names = FALSE)
+#if(params$devmode){snp_stat <- snp_stat[order(snp_stat[,1])[1:10],]}
+tempdf <- total_mapstat[,c("#LGID","Number Marker","Total Distance","Avarage Distance","Gap>5cM(%)","Max Gap")]
+colnames(tempdf) <- c("LGID","Marker Number","Distance","Average Distance","Gap > 5 cM(\\%)","Max Gap")
+tempdf <- tempdf %>% tbl_prettier(c(NA,0,2,2,2,2))
+tempdf <- tempdf[str_order(tempdf$LGID, numeric = T),]
+tempfn <- c(
+"LGID：连锁群编号",
+"Marker Number：该连锁群的标记数",
+"Distance：该连锁群的遗传图距",
+"Average Distance：该连锁群的平均图距",
+"Gap > 5 cM(%)：分子标记在遗传图谱上大于5cM的个数",
+"Max Gap：该连锁群最大的gap大小"
+)
+```
+```{r lg-table-html,eval=htmlfmt,results="asis"}
+dt_caption("binmarker统计表","lg-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r lg-table,eval=pdffmt}
+tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+kbl(row.names=FALSE, tempdf, "latex",caption="binmarker统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',escape=FALSE,align="c") %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+kbl_foot(tempfn) %>% table_bline()
+```
+
+### 单体来源评估
+
+由亲本获得子代分离群体，根据孟德尔遗传定律，子代中的遗传物质必定是源于父本和母本；此外，根据交换定律，染色体之间的交换一般为较大区段的互换，区段距离越小，发生交换的概率将越低；所以从理论上讲每个个体应该多数区段来源保持一致。统计各个样品在全部连锁群中的单体来源。CP群体每行代表一个单体型，绿色代表来源于亲本1，蓝色代表来源于亲本2，灰色代表缺失；F2群体每行代表一个个体，红色和蓝色代表不同的亲本来源，金色代表杂合，灰色代表缺失。连锁群的单体来源图见\@ref(fig:binmap-plot)。
+
+```{r binmap-plot, echo=FALSE, fig.cap="单体来源评估图"}
+state_plots <- file.path(gmap_result_dir, "08.evaluate", "total.bin.png")
+if(!file.exists(state_plots)){state_plots <- file.path(gmap_result_dir, "08.evaluate", "total.sexAver.bin.png")}
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+### 重组关系评估
+
+遗传图谱实质上是多点重组分析，Marker 间距离越近，重组率越小。分析 Marker 与周围 Marker 的重组关系，可以找到其中存在潜在排图问题的 Marker 。绘制 Marker 重组关系热图， 染色体连锁群的连锁关系见\@ref(fig:heatmap-plot)。
+
+```{r heatmap-plot, echo=FALSE, fig.cap="重组关系热图"}
+state_plots_dir <- file.path(gmap_result_dir, "08.evaluate")
+state_plots <- list.files(state_plots_dir,"*.heatMap.png",full.names=TRUE)
+if(length(state_plots)==0){state_plots <- list.files(state_plots_dir,"*.heatMap.sexAver.png",full.names=TRUE)}
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+### 共线性分析
+
+通过上图标记在基因组上的位置和遗传图谱进行共线性分析，中性遗传图谱和基因组的共线性分析见图\@ref(fig: col-plot) 。统计每个连锁群与物理图的 Spearman 相关系数，Spearman 系数绝对值越 接近于 1 ，代表遗传图谱与物理图共线性越好，本图谱spearman相关系数\@ref(tab:col-table)所示
+
+```{r col-plot, echo=FALSE, fig.cap="遗传图谱与基因组线性图"}
+state_plots <- file.path(gmap_result_dir, "08.evaluate", "total.phy.png")
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+
+```{r get-spearman-table}
+total_phy_spearman_file <- file.path(gmap_result_dir, "08.evaluate", "total.phy.spearman.xls")
+total_phy_spearman <- read.delim(total_phy_spearman_file,sep='\t',header=TRUE,check.names = FALSE)
+#if(params$devmode){snp_stat <- snp_stat[order(snp_stat[,1])[1:10],]}
+tempdf <- total_phy_spearman[,c("#LGID","MarkerNum","MaxChr","Spearman")]
+colnames(tempdf) <- c("LGID","MarkerNum","MaxChr","Spearman")
+tempdf <- tempdf %>% tbl_prettier(c(NA,0,0,0,2,2,0))
+tempdf <- tempdf[str_order(tempdf$LGID, numeric = T),]
+tempfn <- c(
+"LGID：连锁群编号",
+"MarkerNum：该连锁群的标记数",
+"MaxChr：与该连锁群匹配的染色体编号",
+"Spearman：连锁群和染色体的共线性热图"
+)
+```
+```{r col-table-html,eval=htmlfmt,results="asis"}
+dt_caption("共线性统计表","col-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r col-table,eval=pdffmt}
+tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+kbl(row.names=FALSE, tempdf, "latex",caption="共线性统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',escape=FALSE,align="c") %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+kbl_foot(tempfn) %>% table_bline()
+```

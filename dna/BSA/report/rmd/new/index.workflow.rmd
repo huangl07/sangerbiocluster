@@ -1,0 +1,2 @@
+&emsp;&emsp;采用 QTL-seq 的算法，使用 windowSize 滑窗进行统计；共得到 index_region_num 个与性状相关的侯选区域，候选区域总长度为 index_region_len，候选区域总的基因数为 index_region_gene。
+

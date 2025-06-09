@@ -1,0 +1,68 @@
+## 材料与方法
+
+**Genomic DNA Library preparation and sequencing**
+
+DNA was extracted from the tissue using CTAB method. The quality of isolated genomic DNA was verified by using these two methods in combination: (1) DNA degradation and contamination were monitored on 1% agarose gels. (2) DNA concentration was measured by ND-2000 (NanoDrop Technologies). Only high-quality DNA sample ($OD260/280 = 1.8 \sim 2.0, OD260/230 \ge 2.0$) was used to construct sequencing library.
+
+A total amount of 0.5 μg DNA per sample was used as input material for the DNA library preparations. The sequencing library was generated using `r prepkit` following the manufacturer’s recommendations and index codes were added to each sample. Briefly, the genomic DNA sample was fragmented by sonication to a size of 350 bp. Then DNA fragments were end-polished, A-tailed, and ligated with the full-length adapter for `r platform` sequencing, followed by further PCR amplification. After PCR products were purified (AMPure XP system), libraries were analyzed for size distribution by Agilent 2100 Bioanalyzer and quantified by real-time PCR (3nM). Paired-end DNA-seq sequencing library was sequenced with the `r platform` system at Shanghai Majorbio Bio-pharm Technology Co.,Ltd.
+
+**Variant discovery**
+
+Raw reads of low quality (mean phred score < 20), including reads containing adapter contamination and unrecognizable nucleotide (N base > 10) were trimmed or discarded by the software *Fastp* (Chen et al. 2018).
+
+
+## 参考文献
+
+1. [Chen S, Zhou Y, Chen Y, et al. fastp: an ultra-fast all-in-one FASTQ preprocessor, *Bioinformatics*, 2018, 34, i884–i890.](https://doi.org/10.1093/bioinformatics/bty560)
+
+2. [Danecek P, Auton A, Abecasis G et al. The variant call format and VCFtools, *Bioinformatics*, 2011, 27(15): 2156–2158](https://academic.oup.com/bioinformatics/article/27/15/2156/402296)
+
+3. [Li H, Handsaker B, Wysoker A, et al. The Sequence Alignment/Map Format and SAMtools. *Bioinformatics*, 2009, 25(16): 2078–79. ](https://doi.org/10.1093/bioinformatics/btp352)
+
+4. [N. Rochette, A. Rivera‐Colón, and J. Catchen. Stacks 2: Analytical methods for paired‐end sequencing improve RADseq‐based population genomics. *Molecular Ecology*, 2019, 28(21):4737-4754. ](https://onlinelibrary.wiley.com/doi/full/10.1111/mec.15253)
+
+\newpage
+
+## 软件列表
+
+```{r software-table, echo=FALSE}
+software_df <- data.frame(
+    V1=c(
+        "原始数据质控",
+        "比对结果处理",
+        "SNP变异检测",
+        "VCF文件处理"
+    ),
+    V2=c(
+        "fastp",
+        "SAMtools",
+        "Stacks",
+        "VCFtools"
+    ),
+    V3=c(
+        "0.23.2",
+        "1.16.1",
+        "v2.62",
+        "v0.1.16"
+    )
+)
+colnames(software_df)<-c("步骤","应用软件","版本")
+if(htmlfmt){
+kable(software_df, "html", caption="分析软件介绍") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+}else{
+kbl(row.names=FALSE, software_df, "latex",  format.args = list(big.mark = ",",scientific = FALSE), caption="分析软件介绍", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>% table_bline()
+}
+```
+
+## 简化基因组使用软件版本与下载链接
+
+- fastp 0.23.2：https://github.com/OpenGene/fastp
+
+- SAMtools 1.16.1：http://www.htslib.org/
+
+- Stacks v2.62：https://catchenlab.life.illinois.edu/stacks/
+
+- VCFtools v0.1.16：https://vcftools.github.io/
+

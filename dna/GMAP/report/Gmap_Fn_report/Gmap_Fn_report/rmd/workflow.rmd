@@ -1,0 +1,81 @@
+# 项目信息
+
+***
+
+## 项目研究背景
+
+***
+
+&emsp;&emsp;遗传图谱（Genetic Map）（Vision et al., 2000）是指分子标记在染色体上的相对位置与遗 传距离的线性排列，其构建的理论基础是染色体的交换与重组。重组率的高低取决于交换的频率，而两个基因的交换频率取决于它们之间的物理距离，因此，重组率用来表示图距，单位厘摩（centi-Morgan ，cM），1cM表示1%的重组率。QTL（Quantitative Trait Locus）定位就是分析分子标记和数量性状表型值之间的关系，将数量性状位点逐一定位到连锁群的相应位置上，并估计其遗传效应。
+
+&emsp;&emsp;遗传图谱 QTL 定位针对的一般是遗传群体，如F1、F2、DH 、BC 、RILs 、NILs 等，需要获得亲本及子代的基因组变异和表型值数据。亲本又分为纯合型和杂合型，大多数动物和野生树木等基因组高度杂合，杂交子一代（F1 ）的性状就会产生分化，可以取样进行测序分析；而栽培水稻、小麦等自交作物，经过长期选育，稳定品种的性状位点一般是纯合的，最早到 F2 代才会 出现目标性状的分离，此时再根据性状值（通常呈正态分布）选取样品；或者继续多传几代，从基因组近乎纯合、性状基本稳定的高世代 RILs（建议>F6 ）中挑选子代样本进行测序分析。
+
+&emsp;&emsp;本项目利用全基因组重测序(Whole Genome Sequencing, WGS)技术对Pop_type群体（2 个亲本和 多个子代）开发全基因组范围内的 SNP 和 InDel 标记，通过ASMap构建遗传图谱，利用R/qtl 软件$^{[1]}$根据遗传图谱进行QTL 定位并筛选候选基因。
+
+
+## 材料基本信息
+
+```{r echo=FALSE}
+library(knitr)
+data <- read.delim('file/project.info.xls',sep='\t',header=T,check.names = F)
+kable(data,table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+
+## 项目服务内容
+
+***
+
+&emsp;&emsp;按照合同约定，对 sample_num 个检测合格的样本进行以下实验及分析：
+
+- 1、全基因组重测序，每个样本平均数据量 Bulk_rawdata , Q30≥ 80%；
+
+- 2、比对参考基因组进行变异检测分析，具体内容包括：SNP 检测和注释、InDel 检测和 注释；
+
+- 3、遗传图谱构建：亲本标记筛选，子代标记过滤，连锁图谱构建，图谱质量评估；
+
+- 4、QTL定位分析：根据遗传图谱构建结果，对个性状进行QTL定位，对定位基因进行功能分析。
+
+## 分析结果概述
+
+&emsp;&emsp;测序数据概述：
+
+&emsp;&emsp;本次测序共获得 Cleandata_size 数据量 ，Q30 达到 Q30_num ，平均测序深度为 Bulk_deoth 。样品与参考基因组平均比对效率为 Mapping_ratio， 平均覆盖深度为 Avg_depth ，基因组覆盖度为 Ref_coverage  （至少一个碱基覆盖）。
+
+&emsp;&emsp;变异检测：
+
+&emsp;&emsp;SNP 检测：共获得 total_snp_num 个 SNP 。InDel 检测：共获得 total_indel_num 个 InDel。
+
+&emsp;&emsp;图谱构建及 QTL 定位：
+
+&emsp;&emsp;通过对SNP及Indel标记的筛选与过滤：共剩余total_fileter_num个标记用于后续图谱构建，并通过使用bin的方法进行构建。最终上图（bin）的标记数为Bin_num个，分布于LP_num个连锁群上，单条连锁群最大gap GAP_cM cM。对Trait_num个数量性状表型值进行QTL 定位分析，获得Association_num个关联区域。
+
+
+
+
+# 项目流程
+
+***
+
+## 全基因组重测序实验流程
+
+***
+
+&emsp;&emsp;样品基因组DNA检测合格后，利用超声波将DNA序列片段化形成随机片段，对片段化的DNA依次进行末端修复、3′端加A、连接测序接头后，再利用磁珠吸附富集基因组长度为350bp左右的片段，经过PCR扩增形成测序文库。建好的文库先进行文库质检，质检合格的文库用Illumina NovaSeq$^{TM}$平台进行测序，测序策略为Illumina PE150，总测序读长为300bp。建库流程见图2-1。
+
+<img class="normal4" src="src/library.png">
+
+<p class='mark'>图2-1 全基因组重测序实验建库流程</p>
+
+
+## 生物信息分析流程
+
+***
+
+&emsp;&emsp;在Illumina NovaSeq$^{TM}$测序数据（Raw Data）下机之后，对下机数据进行质量控制，过滤其中低质量的数据，获得高质量的数据（Clean Data）。利用BWA软件$^{[3]}$将Clean Data比对到参考基因组序列上，获得序列的位置归属（即BAM文件）。利用GATK软件$^{[4]}$的Best Practices流程对BAM文件进行校正，并进行SNP标记、InDel标记的检测。利用SNPEff软件$^{[5]}$（Cingolan1iP,2012）和参考基因组的基因预测信息进行变异功能注释，并进一步使用SNP及InDel进行图谱构建及QTL定位分析。分析流程见图2-2。
+
+<img class="normal4" src="src/pipeline.png">
+
+<p class='mark'>图2-2 遗传进化分析流程图</p>
+

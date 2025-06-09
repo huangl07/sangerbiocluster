@@ -1,0 +1,50 @@
+### T-LOC检测结果
+T-LOC(Li *et al.* 2022)
+
+运行原理：插入T-DNA的转基因植物的WGS数据包含植物基因组和整合T-DNA的reads。T-LOC将reads分别比对到载体和植物基因组，根据比对情况将reads分为三种类型：
+
+1) REF-TDNA：部分映射到植物参考基因组(REF)和载体；
+
+2) REF-REF：映射到植物参考基因组的两个位置；
+
+3) TDNA-TDNA：映射到载体的两个位置。
+
+T-LOC对REF-TDNA的reads进行分组和排序，输出T-DNA插入位点(TISs)信息。
+
+T-LOC结果见表\@ref(tab:tloc-table)。
+
+```{r get-tloc-table}
+gene_stat <- read.delim('info/tloc.stat.xls',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- gene_stat %>% tbl_prettier(c(NA,NA,NA,NA,NA,NA,NA))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Sample： 样品名；",
+"Chr：匹配到的参考基因组染色体",
+"Position： T-DNA插入的位置（'~'代表附近的插入位置,但是无法判别准确位置）；",
+"SuppRead： CLR代表clipped reads（双端序列中的一端分别能对上参考基因组和T-DNA）个数；",
+"DIR 表示discordant reads（双端序列中的一端能对上参考基因组，另一端能对上T-DNA）的读数；",
+"TDNA_info： tdna 和 tdna_end 表示插入参考基因组时截短的 T-DNA 序列的开始和结束位置，",
+"'-'表示没有截短；",
+"Orientation： 插入参考基因组的正向或反向T-DNA；",
+"Freq： 插入频率，这个频率可以表示为每个接受T-DNA的细胞中,",
+"有多少个转化事件中成功插入T-DNA的百分比（对于非组织类样品无意义）。"
+)
+```
+
+
+```{r tloc-table-html,eval=htmlfmt,results="asis"}
+dt_caption("T-LOC结果统计表","tloc-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r tloc-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    tempdf[,2]=gsub("_","\\\\_",tempdf[,2])
+    tempdf[,6]=gsub("_","\\\\_",tempdf[,6])
+    tempdf[,5]=gsub("_","\\\\_",tempdf[,5])
+    kbl(row.names=FALSE, tempdf, "latex",caption="T-LOC结果统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

@@ -1,0 +1,18 @@
+**3.关联分析：**
+
+采用SNP-index、SNP-loess、欧式距离（ED）、G′ value、DeepBSA_DL、DeepBSA_K 6种算法进行关联分析:
+
+- (1). 基于滑窗降噪的SNP-index算法共得到 `r index_num` 个与性状相关的候选区域，长度为 `r index_length` ，其中包含 `r prettier(index_transcript, 0)` 个转录本, `r prettier(index_gene, 0)` 个基因；
+
+- (2). 基于loess拟合降噪的SNP-index算法共得到 `r loess_num` 个候选区域，长度为 `r loess_length` ，其中包含 `r prettier(loess_transcript, 0)` 个转录本, `r prettier(loess_gene, 0)` 个基因；
+
+- (3). 基于滑窗降噪的ED算法共得到 `r ed_num` 个候选区域，长度为 `r ed_length` ，其中包含 `r prettier(ed_transcript, 0)` 个转录本, `r prettier(ed_gene, 0)` 个基因；
+
+- (4). 基于滑窗降噪的G′ value算法共得到 `r gprime_num` 个候选区域，长度为 `r gprime_length` ，其中包含 `r prettier(gprime_transcript, 0)` 个转录本, `r prettier(gprime_gene, 0)` 个基因。
+
+- (5). 基于DeepBSA_DL算法共得到 `r deepbsa_dl_num` 个与性状相关的候选区域，长度为 `r deepbsa_dl_length` ，其中包含 `r prettier(deepbsa_dl_transcript, 0)` 个转录本, `r prettier(deepbsa_dl_gene, 0)` 个基因；
+
+- (6). 基于DeepBSA_K算法共得到 `r deepbsa_k_num` 个与性状相关的候选区域，长度为 `r deepbsa_k_length` ，其中包含 `r prettier(deepbsa_k_transcript, 0)` 个转录本, `r prettier(deepbsa_k_gene, 0)` 个基因；
+
+\clearpage
+

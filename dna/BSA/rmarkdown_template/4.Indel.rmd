@@ -1,0 +1,82 @@
+
+### InDel 检测
+
+***
+
+&emsp;&emsp;利用 GATK 的 Best Practices 流程处理比对结果（BAM 文件），利用 GATK 的 Haplotyper 方法进行 InDel 检测及过滤，过滤条件按照 GATK 推荐的参数进行，具体可见：（https://software.broadinstitute.org/gatk/documentation/article.php?id=3225）。
+
+&emsp;&emsp;对项目样品进行 InDel 标记开发，这里的 InDel 指能够明确获得序列组成的 InDel 标记。最终样本获得 Insertion 和 Deletion 详情如下。本次分析统计结果如表 3.9 所示：
+
+<p class="mark">表 3.9 InDel数据统计表</p>
+
+```{r echo=FALSE}
+arrange_indel_stat <- arrange_indel_stat %>%
+  tbl_prettier(c(NA, 0, 0, 0, 0))
+datatable(arrange_indel_stat, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+<p class="mark1">**注**：</p>
+
+- <p class="mark1">Sample ID：样品编号；</p>
+
+- <p class="mark1">Insert Number：检测到的插入变异的位点个数；</p>
+
+- <p class="mark1">Delete Number：检测到的缺失变异的位点个数；</p>
+
+- <p class="mark1">Heterozygosity Number：杂合分型的 InDel 的位点个数； </p>
+
+- <p class='mark1'>Homozygosity Number：纯合分型的 位点总数。</p>
+
+### InDel 功能注释
+
+***
+
+&emsp;&emsp;采用 SnpEff 程序结合本项目`r genome_chinese`基因组注释信息，对检测到的 SNP 进行功能注释，SnpEff 会根据基因组的基因和功能区域的分布进行分析，对每个 InDel 所在的位置和功能进行统计，并对每个变异类型的功能进行统计。表 3.10 为 InDel 位置分布信息统计表，表 3.11 为 InDel 功效信息统计表：
+
+完整的 InDel 功效信息统计表详见结题文件夹目录下的：<br>
+Result/data_release/01.vcf2table/indel_anno.xls
+
+<p class="mark">表 3.10 InDel 位置分布信息统计表</p>
+
+```{r echo=FALSE}
+arrange_indel_anno <- arrange_indel_anno %>%
+  tbl_prettier(c(NA, 0, 0, 0, 0, 0, 0))
+datatable(arrange_indel_anno, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+<p class="mark1">**注**：</p>
+
+- <p class="mark1">Sample ID：样品编号；</p>
+
+- <p class="mark1">Exon Loss Variant：外显子缺失 InDel 个数；</p>
+
+- <p class="mark1">Frameshift Variant：导致移码突变的 InDel 个数；</p>
+
+- <p class="mark1">Intergenic Region：在基因间区的 InDel 的个数；</p>
+
+- <p class="mark1">Start Lost：由于InDel的突变导致启动子缺失的 InDel 位点个数及所占比例；</p>
+
+- <p class="mark1">Stop Gained：由于InDel的突变导致终止子获得的 InDel 位点个数及所占比例；</p>
+
+- <p class="mark1">Stop Lost：由于InDel的突变导致终止子缺失的 InDel 位点个数及所占比例。</p>
+
+<p class="mark">表 3.11 InDel 功效信息统计表</p>
+
+```{r echo=FALSE,message=FALSE}
+arrange_indel_impact <- arrange_indel_impact %>%
+  tbl_prettier(c(NA, 0, 0, 0, 0))
+datatable(arrange_indel_impact, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+<p class="mark1">**注**：</p>
+
+- <p class="mark1">Sample ID：样品编号；</p>
+
+- <p class="mark1">HIGH：具有破坏性影响，可能导致蛋白质功能丧失；</p>
+
+- <p class="mark1">MODERATE：该类变异可能改变蛋白质的有效性；</p>
+
+- <p class="mark1">LOW：该类变异大部分无害，不太可能改变蛋白质；</p>
+
+- <p class="mark1">MODIFIER：非编码变异或影响非编码基因的变异。</p>
+

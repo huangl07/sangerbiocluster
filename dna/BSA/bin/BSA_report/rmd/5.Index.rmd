@@ -1,0 +1,71 @@
+## 关联分析
+
+***
+
+&emsp;&emsp;通过上述的变异检测结果，根据参考基因组的序列信息，开发父本和母本间的分子标记（如F2群体，开发父本、母本纯合
+的标记类型），选择亲本测序深度10×以上，且混池测序深度10×以上的分子标记进行混池关联分析，过滤后标记统计如表3-12：
+
+<p class='mark'>SNP/表3-10 关联分析标记信息统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/chr_snp_indel_stat.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/chr_snp_indel_stat.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+**注：**
+
+- Chromosome ID：染色体编号；
+
+- SNP Number：过滤后对应染色体上SNP数目；
+
+- InDel Number：过滤后对应染色体上InDel数目。
+
+&emsp;&emsp;变异位点的variant-Index值在全基因组范围内的分布如图3-9所示：
+
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*index.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*index.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class='mark'>图3-8 Index在染色体上的分布</p>
+
+
+**注：蓝色水平线是99%置信区间阈值线。根据本项目群体的理论分离比，计算关联阈值为0.9978。**
+
+&emsp;&emsp;根据计算机模拟实验计算结果，当置信度为0.99时，得到的定位区域区间，总长度等信息如下表。
+
+**注：**
+
+- Chromosome ID：染色体编号；
+
+- Start：起始位点；
+
+- End：终止位点；
+
+- SNP Number：关联区域内SNP的个数；
+
+- InDel Number：关联区域内InDel的个数；
+
+- Eff SNP：关联区域内具有功能变异的SNP的个数；
+
+- Eff InDel：关联区域内具有功能变异的InDel的个数。
+
+                                                                                                                      
+
+

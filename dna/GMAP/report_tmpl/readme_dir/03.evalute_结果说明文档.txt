@@ -1,0 +1,18 @@
+此文件夹为图谱评估结果，如下所述（如有缺少请第一时间联系本公司售后技术人员）：
+1. 03.evalute_结果说明文档.txt： 文件详细介绍说明
+2. total.bin.pdf： 连锁群的单体来源图(pdf版本)
+3. total.bin.png： 连锁群的单体来源图(png版本)
+4. *.heatMap*.pdf： 重组关系热图，图片上方的编号代表染色体号(pdf版本)
+5. *.heatMap*.png： 重组关系热图，图片上方的编号代表染色体号(png版本)
+6. total.phy.pdf： 遗传图谱与基因组线性图(pdf版本)
+7. total.phy.png： 遗传图谱与基因组线性图(pdf版本)
+8. total.phy.spearman.xls: 共线性统计表
+
+以下为文本文件详细说明：
+文件：total.phy.spearman.xls
+以下是表头详细说明：
+表头说明：
+LGID：连锁群编号,
+MarkerNum：该连锁群的标记数,
+MaxChr：与该连锁群匹配的染色体编号,
+Spearman：连锁群和染色体的共线性热图

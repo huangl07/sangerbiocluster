@@ -1,0 +1,38 @@
+## BSA关联分析
+ 
+### 亲本标记开发
+
+野生型亲本通过EMS诱变得到突变型，筛选感兴趣的突变体与野生型亲本杂交，得到F1代，再自交得到F2代，在F2代中选择突变个体进行混池测序，然后与亲本参考基因组进行比对，计算每个SNP位点对应的index值。
+
+其中过滤标准如下过滤条件如下：（1）过滤去除非二态性（有多种基因型）的变异位点；（2）mutmap方法可只需要一个野生型清本，如果在有两个亲本的情况下，筛选两个亲本间纯合差异的遗传标记（除F1群体）。过滤后的SNP及InDel标记信息见下表\@ref(tab:snpindelgenestat-table)。
+
+> 过滤后详细的统计结果详见结题文件夹目录下[data_release/01.vcf2table](./data_release/01.vcf2table)文件夹下的snp_indel_gene.stat.xls文件和pop.final.anno.xls文件
+
+```{r get-snpindelgenestat-table}
+data <- read.delim('../file/snp_indel_gene.stat.xls',sep='\t',header=T,check.names = F)
+show_data <- data[c("CHROM", "SNP_Number", "Effective_SNP", "INDEL_Number", "Effective_INDEL")]
+colnames(show_data) <- c("Chrom", "SNP Number", "Effective SNP", "INDEL Number", "Effective INDEL")
+show_data <- show_data %>%
+  tbl_prettier(c(NA, 0, 0, 0, 0))
+tempfn <- c(
+    "Chrom：染色体编号；",
+    "SNP Number：过滤后对应染色体上 SNP 数目；",
+    "Effective SNP：过滤后对应染色体上变异功效为 HIGH 或 MODERATE SNP 的数量；",
+    "INDEL Number：过滤后对应染色体上 InDel 数目；",
+    "Effective INDEL：过滤后对应染色体上变异功效为 HIGH 或 MODERATE INDEL 的数量。"
+)
+```
+
+```{r snpindelgenestat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("关联分析标记信息统计表","snpindelgenestat-table")
+datatable(show_data, rownames=FALSE,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r snpindelgenestat-table,eval=pdffmt}
+kbl(row.names=FALSE, show_data, "latex", caption="关联分析标记信息统计表", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+

@@ -1,0 +1,138 @@
+## BSA关联分析
+
+***
+
+### 亲本标记开发
+
+***
+
+<style>
+img.inline-img {
+    display:inline;
+    width:auto;
+}
+
+img.independent-img {
+    display:block;
+    width:auto;
+}
+</style>
+&emsp;&emsp;基于上述变异检测结果，筛选两个亲本间纯合差异的遗传标记（除 F1 群体）， 挑选 SNP 标记及 InDel 标记信息见下表。
+
+
+<p class='mark'>表 3-13 关联分析标记信息统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/chr_snp_indel_stat.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/chr_snp_indel_stat.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>Chromosome ID：染色体编号；</p>
+
+- <p class='mark1'>SNP Number：过滤后对应染色体上 SNP 数目；</p>
+
+- <p class='mark1'>InDel Number：过滤后对应染色体上 InDel 数目。</p>
+
+&emsp;&emsp;基于标记过滤所得到的亲本间差异的SNP和INDEL位点，分别进行 QTL-seq（Takagi et al., 2013），欧式距离（Euclidean Distance，ED）（Hill et al., 2013），G' value 统计（Magwene et al., 2011）三种方法进行关联分析。
+
+### QTL-seq 方法
+
+***
+
+&emsp;&emsp;对开发所得到的亲本间 SNP 和 InDel 位点，以亲本 1 为参考，分别计算混池 1 和混池 2 中每个位点的 SNP-index 和 InDel-index 值。Index 值指在突变池和野生池中突变基因型占所有基因型中的深度比例，由于突变位点与周围标记具有连锁效应，在突变位点附近，混池 1 中的 Index 值更接近于 1，而混池中 2 的 Index 值更接近于 0 ；由于连锁效应较弱或不连锁的位点，呈现出随机分布，应符合孟德尔分离比例，正常位点 Index 值为 0.5；两混池间的 Index 差值关联的区域即是目标性状关联的候选区域。
+
+&emsp;&emsp;以突变型和野生型混池为例，QTL-seq 计算方法简述如下：
+
+&emsp;&emsp;Index(Mut)=DepM/(DepM+DepW) 
+
+&emsp;&emsp;Index(Wild)= DepW/(DepM+DepW) 
+
+&emsp;&emsp;ΔIndex=Index(Mut)-Index(Wild) 
+
+&emsp;&emsp;其中，DepM 和 DepW 分别为突变型和野生型的等位基因在突变池与野生池中的 Reads 数目。
+
+<img class="normal4" src="src/snpindex.png">
+
+<p class='mark'>图 3-5 Index 计算方法示意图</p>
+
+&emsp;&emsp;为了降低单一变异位点带来的随机波动，我们采用 index_windowSize 滑窗 和 loess 拟合两种方法对 ΔSNP-index 值进行进行降噪处理。为了提高分析准确性，我们对滑窗和 loess 拟合结果均使用 bootstrap 法针对不同位点深度和混池大小进行随机抽样 1000 次，之后分别取 p = Index_pvalue 和 p = loess_pvalue 获得阈值，同时为了避免标记不均匀带来的误差，我们要求候选区域内至少包含 variant_num 个阈值线之上的变异位点。变异位点 Index 在全基因组范围内的分布如图 3-6 所示。
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*index.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=400,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*index.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class='mark'>图 3-6 BSA QTL-seq 法的曼哈顿结果图</p>
+
+<p class='mark1'>分别是 SNP-Index 滑窗法和 loess 拟合方法结果图；横轴：染色体长度（Mb）；纵轴分别是SNP/InDel-index、Loess 统计值；图中的点表示每个 SNP/InDel 对应的位置和上述2种方法计算的结果值，图中的黑线表示拟合的曲线，红色线表示阈值线。</p>
+
+### G' value 统计方法
+&emsp;&emsp; G 统计方法基于高通量、短读测序进行 QTL 定位的统计框架。该方法是基于标准统计量 G 的重新统计计算出的的 G’ 平滑版本，并考虑到由于分离子取样形成个体以及个体测序过程中引入的变异而导致的等位基因频率估计值的变化。通过模拟实验研究发现该方法可以用于检测到甚至是弱效应的 QTL。
+
+&emsp;&emsp;每个 SNP 数据的自然统计量即标准 G 统计量计算公式如下：
+
+<img src="src/gongshi.png" class="independent-img" />
+
+&emsp;&emsp;其中是$\widehat{n_{i}}$数的期望值（$n_{i}$表示从分离体序列中产生的等位基因$A_{0}$和$A_{1}$的计数）。无效假设是没有显著的 SNP 或 indel 定位到 QTL。这意味着可按照列联表的标准预期计数，例如，<img src="src/zhushi1.png" class="inline-img" />，如果无假设正确，则<img src="src/zhushi2.png" class="inline-img" />。如果假设失效，则<img src="src/zhushi3.png" class="inline-img" />（C 是覆盖度）。 
+
+&emsp;&emsp;G’ 是平滑版的 G 统计量，是基于每个窗口的 G 值使用局部回归模型来进行拟合得到的值。为了提高准确性，采用 G_windowSize 滑窗计算 G’ 值，并取 p = Gprime_pvalue 对应的 G’值作为筛选阈值，图 3-7 是 G 统计方法的曼哈顿结果图。
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","2.Gprime.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=400,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","2.Gprime.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class='mark'>图 3-7 BSA G' value 法的曼哈顿结果图</p>
+
+<p class='mark1'> G' value 法的曼哈顿结果图；横轴：染色体长度（Mb）；纵轴是 G’ 统计值；图中的点表示每个 SNP/InDel 对应的位置和 G' value 方法计算的结果值，图中的黑线表示拟合的曲线，红色线表示阈值线。</p>
+
+### 欧式距离（ED）法
+
+&emsp;&emsp;欧式距离（Euclidean Distance，ED）算法，是利用测序数据寻找混池间存在显著差异标记，并以此评估与性状关联区域的方法。理论上，BSA项目构建的两个混池间除了目标性状相关位点存在差异，其他位点均趋向于一致，因此非目标位点的ED值应趋向于0。ED方法的计算公式如下所示，ED值越大表明该标记在两混池间的差异越大。
+
+<img src="src/ED.gongshi.png" class="independent-img" />
+
+&emsp;&emsp;其中，Amut为A碱基在突变混池中的频率，Awt为A碱基在野生型混池中的频率；Cmut为C碱基在突变混池中的频率，Cwt为C碱基在野生型混池中的频率；Gmut为G碱基在突变混池中的频率，Gwt为G碱基在野生型混池中的频率；Tmut为T碱基在突变混池中的频率，Twt为T碱基在野生型混池中的频率。
+
+&emsp;&emsp;为了降低单一SNP位点带来的随机波动，我们采用滑窗方法对 ED 值进行进行降噪处理，ED使用的滑窗大小为：ED_windowSize，同时，为了避免标记不均匀带来的误差，我们要求阈值线之上的窗口必须包含至少 variant_num 个阈值线之上的变异位点。为了提高分析准确性，我们使用分位数 ED_quantile 为阈值进行候选区域筛选。图 3-8 是 ED 方法的曼哈顿结果图：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","3.ED.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=400,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","3.ED.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class='mark'>图 3-8 BSA ED 法的曼哈顿结果图</p>
+
+<p class='mark1'> ED 法的曼哈顿结果图；横轴：染色体长度（Mb）；纵轴是 ED 值；图中的点表示每个 SNP/InDel 对应的位置和 ED 方法计算的结果值，图中的黑线表示拟合的曲线，红色线表示阈值线。</p>
+

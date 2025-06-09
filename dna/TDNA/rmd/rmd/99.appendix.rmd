@@ -1,0 +1,68 @@
+
+\newpage
+
+# 附录
+
+## 写作方法
+
+**Genomic DNA Library preparation and sequencing**
+
+DNA was extracted from the tissue using CTAB method.The quality of isolated genomic DNA was verified by using these two methods in combination: (1) DNA degradation and contamination were monitored on 1% agarose gels. (2) DNA concentration was measured by ND-2000 (NanoDrop Technologies). Only high-quality DNA sample (OD260/280 = 1.8~2.0, OD260/230 ≥ 2.0) was used to construct sequencing library.
+
+A total amount of 0.5 μg DNA per sample was used as input material for the DNA library preparations. Sequencing library was generated using Truseq Nano DNA HT Sample Prep Kit (`r platform0` USA) following manufacturer’s recommendations and index codes were added to each sample. Briefly, genomic DNA sample was fragmented by sonication to a size of 350 bp. Then DNA fragments were endpolished, A-tailed, and ligated withthe full-length adapter for `r platform0` sequencing, followed by further PCR amplification. After PCR products were purified (AMPure XP system), libraries were analyzed for size distribution by Agilent 2100 Bioanalyzer and quantified by real-time PCR (3nM). Paired-end DNA-seq sequencing library was sequenced with the `r platform` system at Shanghai Majorbio Bio-pharm Technology Co.,Ltd.
+
+## 参考文献
+
+1. [Chen X. *et al.* Manta: rapid detection of structural variants and indels for germline and cancer sequencing applications. *Bioinformatics*, 2016, 32, 1220-1222.](https://academic.oup.com/bioinformatics/article/32/8/1220/1743909?login=false)
+
+2. [Youngmok J and Dongsu H. BWA-MEME: BWA-MEM emulated with a machine learning approach. bioinformatics, 2022, 38, 9.](https://academic.oup.com/bioinformatics/article/38/9/2404/6543607)
+
+3. [Krzywinski M. *et al.* Circos: an information aesthetic for comparative genomics. Genome research, 2009, 19, 9.](https://genome.cshlp.org/content/19/9/1639.long)
+
+4. [Chen S. *et al.* fastp: an ultra-fast all-in-one FASTQ preprocessor, Bioinformatics, 2018, 34, i884–i890.](https://doi.org/10.1093/bioinformatics/bty560)
+
+5. [Vander A. *et al.* From FastQ Data to High-Confidence Variant Calls: The Genome Analysis Toolkit Best Practices Pipeline. Curr Protoc Bioinformatics, 2013, 43, 11.10.1-11.10.33.](https://pubmed.ncbi.nlm.nih.gov/25431634/)
+
+6. [McKenna A. *et al.* The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome research, 2010;20(9): 1297- 1303.](https://pubmed.ncbi.nlm.nih.gov/20644199/)
+
+7. [Li H. *et al.* Genome Project Data Processing S: The Sequence Alignment/Map format and SAMtools. PubMed, 2009.](https://pubmed.ncbi.nlm.nih.gov/19505943/)
+
+8. [Esher SK. *et al.* Rapid mapping of insertional mutations to probe cell wall regulation in Cryptococcus neoformans. Fungal Genet Biol. 2015, 9.](https://pubmed.ncbi.nlm.nih.gov/26112692/)
+
+9. [Sun L. *et al.* TDNAscan: A Software to Identify Complete and Truncated T-DNA Insertions. Front Genet. 2019, 7, 25.](https://pubmed.ncbi.nlm.nih.gov/31428129/)
+
+10. [Li S. *et al.* T-LOC: A comprehensive tool to localize and characterize T-DNA integration sites. Plant Physiol. 2022 Oct 27;190(3):1628-1639. ](https://doi.org/10.1093/plphys/kiac225)
+
+## 变异检测分析使用软件版本与下载链接
+
+- fastp：https://github.com/OpenGene/fastp
+
+- BWA-meme：https://github.com/bwa-meme/
+
+- GATK：https://software.broadinstitute.org/gatk/
+
+- AIM-HII：https://github.com/granek/aimhii/
+
+- TDNAscan：https://github.com/BCH-RC/TDNAscan/
+
+## 附件说明
+
+### 文件解压缩方法
+
+所有提供的文件均为Linux系统下的文件，压缩包使用`tar -zcvf`命令压缩，以下为不同系统用户解压缩的方法：
+
+Unix/Linux/Mac用户：使用`tar -zcvf *.tar.gz`命令；
+
+Windows 用户：使用WinRAR软件解压缩。
+
+### 文件打开或浏览方法
+
+如果在本附录中无特殊说明，所有提供的文件均为Linux系统下文本文件，Unix/Linux用户可以使用`more`或`less`命令查看文本文件内容。对于Windows用户，一般文本文件可以使用写字板或者Excel打开。推荐使用NotePad软件打开超过10M以上的文本文件，或选择Unix/Linux/MacOS系统在终端中打开相关文件。
+
+数据中可能包含部分图像文件，一般图像文件后缀名为png、pdf、gif、tiff等，对于图像文件，Windows用户可以使用图片浏览器打开，Linux/Unix用户使用`display`命令打开。
+
+后缀名为svg的文件为文本格式描述的图像文件，Windows用户需要安装 Adobe Illustrator 软件打开。Linux/Unix用户可以使用`rsvg-view`命令查看。公司默认提供pdf格式的矢量图，可利用Adobe Illustrator软件对该格式图片进行编辑。Linux下的表格均为制表符（Tab）分割的文本，为了便于阅读，建议使用Excel或OpenOffice等办公软件用表格形式打开，打开时请用“Tab 分割”方式。
+
+
+
+

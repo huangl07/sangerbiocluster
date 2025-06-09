@@ -1,0 +1,37 @@
+
+### 肿瘤HLA分型
+
+HLA基因是编码人类主要组织相容性复合体（MHC）蛋白的基因，​是人体免疫系统的重要组成部分。帮助了解个体HLA基因的组成，这对于移植医学、自身免疫性疾病的研究和治疗等方面都有重要的应用价值。
+
+本项目利用HLAscan 软件，使用免疫遗传学项目(IMGT)及HLA数据库中的HLA序列作为参考，基于序列比对确定HLA单倍型。
+
+HLA分型结果如下表所示\@ref(tab:MHC-table)。
+
+```{r get-hla-table}
+hla_stat <- read.delim('info/hla.stat',sep='\t',header=TRUE,check.names = FALSE)
+hla_temp <- hla_stat[,c(1,2,3,4,5)]
+tempdf <- hla_temp %>% tbl_prettier(c(NA,NA,NA,NA,NA))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Sample:肿瘤样本编号;",
+"Neoantigen:新抗原;",
+"Type:类型;",
+"Feature:特征;",
+"Exon:作用外显子;"
+)
+```
+
+```{r hla-table-html,eval=htmlfmt,results="asis"}
+dt_caption("肿瘤HLA分型结果表","hla-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r hla-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    tempdf[,5]=gsub("_","\\\\_",tempdf[,5])
+    kbl(row.names=FALSE, tempdf, "latex",caption="肿瘤HLA分型结果表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

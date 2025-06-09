@@ -1,0 +1,34 @@
+crispr脱靶率的结果文件
+
+结果文件说明：
+1.	homo_region.result.xls：同源区域结果文件
+2.	homo_region.stat.xls：同源区域结果统计
+3.	target_info.xls：靶点和脱靶位点结果
+4.	target_stat：靶点和脱靶位点统计表
+5.	homo_region_seqlogo.pdf/png：同源区域seqlogo图(pdf版/png版)
+
+target_info.xls
+CHROM: 变异位点染色体编号
+POS: 变异位点位置
+Ref: 变异位点参考基因组上的碱基
+Alt: 变异位点变异的碱基
+Vtype: 变异类型
+*.GT: 样品在变异位点的基因型
+*.AD: 样品在变异位点的各基因型深度
+*.DP: 样品在变异位点的总深度
+Allele: 突变碱基的类型
+Annotation: 突变类型
+PutativeImpact: snpeff软件对变异位点产生的影响程度进行简单评估，有四个程度（HIGH, MODERATE, LOW, MODIFIER）
+GeneName:   该变异位点所在基因的基因名，如果变异位点的突变类型是intergenic_region，则显示的是离该变异位点最近的一个基因
+GeneID: 基因ID
+FeatureType: 变异位点所在的区域类型
+FeatureID: Feature_Type所对应的ID
+TranscriptBioType: 转录本类型
+Rank: 只有当变异位点位于基因区域时才有值，当变异位点位于基因区域以外（intergenic_region）时，该字段的值为空。该值给出的是变异位点所处的exton/intron和该基因的exon/intron的总数
+HGVS.c: 在DNA水平上，采用HGVS标准命名的变异位点的情况
+HVGS.p: 在蛋白质水平上，采用HGVS标准命名的变异位点的情况
+cDNA_position_len: 变异位点在cDNA上的位置/cDNA的长度
+CDS_position_len: 变异位点在CDS的位置/CDS的长度
+Protein_position_len: 变异位点在氨基酸上的位置/氨基酸的长度
+Distance: 不同的情况，距离的含义是不同的，因此可能会是空值。Up/Downstream：到第一个/最后一个密码子的距离。Intergenic：到最近基因的距离。到外显子中最近的内含子边界的距离（+/-代表上游/下游）。如果相同，使用正数。在内含子中离最近外显子边界的距离（+/-上/下）。到基序中第一碱基的距离。到miRNA中第一碱基的距离。在剪接位点或剪接区域中，离外显子-内含子边界的距离ChipSeq peak：到顶点（或峰中心）的距离。Histone/Histone state：到顶点（或峰中心）的距离。
+ERRORS: 添加可能影响批注准确性的错误、警告或信息性消息

@@ -1,0 +1,28 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/htslib-1.16.tar.bz2       /opt/src/
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/bcftools-1.17.tar.bz2 /opt/src/
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/samtools-1.17.tar.bz2 /opt/src/
+
+%post
+    mkdir -p /opt/src/build \
+    /opt/bioinfo/bin 
+    # 4. 编译安装 HTSlib 1.16（Samtools/Bcftools 依赖）
+    tar -xjf /opt/src/htslib-1.16.tar.bz2 -C /opt/src/build && \
+    cd /opt/src/build/htslib-1.16 && \
+    ./configure --prefix=/opt/bioinfo && \
+    make && make install
+
+    # 5. 编译安装 Samtools 1.17
+    tar -xjf /opt/src/samtools-1.17.tar.bz2 -C /opt/src/build && \
+    cd /opt/src/build/samtools-1.17 && \
+    ./configure --prefix=/opt/bioinfo --with-system-htslib && \
+    make && make install
+
+    # 6. 编译安装 Bcftools 1.17
+    tar -xjf /opt/src/bcftools-1.17.tar.bz2 -C /opt/src/build && \
+
+    apt-get clean -y
+%environment

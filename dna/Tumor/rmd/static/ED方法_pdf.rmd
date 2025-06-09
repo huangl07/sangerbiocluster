@@ -1,0 +1,50 @@
+## BSA关联分析
+
+***
+
+### 欧式距离（ED）方法
+
+***
+
+<style>
+img.inline-img {
+    display:inline;
+    width:auto;
+}
+
+img.independent-img {
+    display:block;
+    width:auto;
+}
+</style>
+&emsp;&emsp;欧式距离（Euclidean Distance，ED）算法，是利用测序数据寻找混池间存在显著差异标记，并以此评估与性状关联区域的方法。理论上BSA分析构建的两个混池间除了目标性状相关位点存在差异，其他位点均趋向于一致，因此非相关位点的欧式距离即ED值应趋向于0，ED值越大表明该标记在两混池间的差异越大。
+
+&emsp;&emsp;ED方法的计算公式如下所示：
+
+<img class="normal3" src="src/ED.gongshi.png">
+
+&emsp;&emsp;其中，Amut为A碱基在突变混池中的频率，Awt为A碱基在野生型混池中的频率；Cmut为C碱基在突变混池中的频率，Cwt为C碱基在野生型混池中的频率；Gmut为G碱基在突变混池中的频率，Gwt为G碱基在野生型混池中的频率；Tmut为T碱基在突变混池中的频率，Twt为T碱基在野生型混池中的频率。
+
+&emsp;&emsp;对经过亲本过滤的子代变异位点，首先计算混池间每个位点的ED值。为了降低单一变异位点带来的随机波动，我们取原始ED值的4次方，并同样采用滑窗方法（1Mb窗口长度、10kb步长）对ED值进行降噪处理。之后以分位数99.9%作为阈值获得候选区间。为了避免标记不均匀带来的误差，同样也要求候选区间内必须包含至少10个阈值线之上的变异位点。图3-9是ED方法的曼哈顿结果图。
+
+单个染色体的曼哈顿结果图详见结题文件夹目录下的：
+Result_BSA/02.ED-slid/pop.ED.*.index.png/pdf（*代表染色体ID）
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","2.ED-slid.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=400,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","2.ED-slid.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class='mark'>图3–9 ED法的曼哈顿结果图</p>
+
+<p class='mark1'>注：</p>
+图中的一个点代表一个SNP/InDel标记，横轴为标记的染色体位置信息，纵轴是ED值；图中的黑线表示拟合的曲线，红线表示阈值线。
+
+

@@ -1,0 +1,12 @@
+标识	英文描述
+E00491	Unique instrument name
+23	Run ID
+HVT7LCCXX	Flowcell ID
+8	Flowcell lane
+1101	Tile number within the flowcell lane
+13352	'x'-coordinate of the cluster within the tile
+1520	'y'-coordinate of the cluster within the tile
+1	Member of a pair, 1 or 2 (paired-end or mate-pair reads only)
+N	Y if the read fails filter (read is bad), N otherwise
+0	0 when none of the control bits are on, otherwise it is an even number
+CTATAC	Index sequence

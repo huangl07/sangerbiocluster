@@ -1,0 +1,49 @@
+CNV变异结果汇总
+
+结果文件说明：
+1.	结果说明文档.txt：文件详细介绍说明
+2.	all.cnvkit.stats.xls：所有样本CNV变异长度统计表
+3.	pop.cnv.merge.vcf.gz：所有样品CNV变异文件
+4.	pop.cnv.merge.vcf.gz.tbi：所有样品CNV变异文件索引文件
+5.	*/cnvkit.DEL.pdf：样品CNV-缺失类型的图
+6.	*/cnvkit.DEL.png：样品CNV-缺失类型的图
+7.	*/cnvkit.DUP.pdf：样品CNV-重复类型的图
+8.	*/cnvkit.DUP.png：样品CNV-重复类型的图
+9.	*/cnvkit.length.xls：样品CNV变异长度统计表
+10.	*/cnvkit.stat.xls：样本CNV变异结果统计表
+
+表头具体说明：
+all.cnvkit.stats.xls：所有样本CNV变异长度统计表
+1、Sample ID: 样本编号；
+2、Deletion：拷贝数减少的CNV个数；
+3、Duplication：拷贝数增加的CNV个数；
+4、Gene：CNV发生的区段所包含的基因个数。
+
+
+pop.cnv.merge.vcf.gz：所有样品CNV变异文件
+1、CHROM：SNP位点所在染色体
+2、POS：SNP位点坐标
+3、ID: SNP的ID,如在dbSNP中有该SNP的id，则会在此行给出；若没有，则用’.'表示其为一个novel variant
+4、REF：参考序列在该位点的基因型
+5、ALT：该位点的其它基因型
+6、QUAL: Phred格式(Phred_scaled)的质量值，表示在该位点存在SNP的可能性；该值越高，则SNP的可能性越大；计算方法：Phred值 = -10 * log (1-p) p为SNP存在的概率; 通过计算公式可以看出值为10的表示错误概率为0.1，该位点为SNP的概率为90%,qual值与p成正比例
+7、FILTER: 使用上一个QUAL值来进行过滤的话，是不够的。GATK能使用其它的方法来进行过滤，过滤结果中通过则该值为"PASS";若SNP不可靠，则该项不为"PASS"或"."
+8、INFO: 这一行是SNP的详细信息
+9、FORMAT: SNP的格式
+10、other coloums：每个个体该位点的基因型(数字代表支持该位点的reads个数)具体每个代表查看：https://samtools.github.io/hts-specs/VCFv4.2.pdf
+
+
+cnvkit.length.xls：
+style：CNV变异类型；
+0-50k：长度为0-50k的CNV个数；
+50-100k：长度为50-100k的CNV个数；
+100-150k：长度为100-150k的CNV个数；
+150-200k：长度为150-200k的CNV个数；
+200-250k：长度为200-250k的CNV个数；
+250-300k：长度为250-300k的CNV个数；
+300-350k：长度为300-350k的CNV个数；
+350-400k：长度为350-400k的CNV个数；
+400-450k：长度为400-450k的CNV个数；
+450-500k：长度为450-500k的CNV个数；
+>500k：长度>500k的CNV个数。
+

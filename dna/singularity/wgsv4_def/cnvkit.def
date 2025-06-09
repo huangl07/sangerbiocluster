@@ -1,0 +1,14 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%post
+    echo "安装 CNVkit"
+    pip3 install --no-cache-dir cnvkit==0.9.9
+
+    mkdir -p /opt/bioinfo/bin
+    ln -s $(which cnvkit.py) /opt/bioinfo/bin/cnvkit.py
+
+    apt-get clean -y
+
+%environment
+    export PATH=/opt/bioinfo/bin:$PATH

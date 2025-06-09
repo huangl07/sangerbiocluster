@@ -1,0 +1,24 @@
+# 项目流程
+
+***
+
+## 全基因组重测序实验流程
+
+***
+
+&emsp;&emsp;样品基因组 DNA 检测合格后，每个混池中 DNA 等量混合，利用超声波将亲本和混池 DNA 序列片段化形成随机片段，对片段化的 DNA 依次进行末端修复、3′ 端加 A、连接测序接头后，再利用磁珠吸附富集基因组长度为 350 bp 左右的片段，经过PCR扩增形成测序文库。建好的文库先进行文库质检，质检合格的文库用 Illumina NovaSeq 平台进行测序，测序策略为 Illumina PE150，总测序读长为 300 bp。建库流程见图 2-1。
+
+<img class="normal4" src="src/library.png">
+
+<p class='mark'>图 2-1 全基因组重测序实验建库流程</p>
+
+
+## 生物信息分析流程
+
+***
+
+&emsp;&emsp;在 Illumina NovaSeq 测序数据（Raw Data）下机之后，对下机数据进行质量控制，过滤其中低质量的数据，获得高质量的数据（Clean Data）。利用 BWA 软件（Li H et al., 2009）将Clean Data比对到参考基因组序列上，获得序列的位置归属（即 BAM 文件）。利用 GATK 软件（McKenna A et al., 2010）的 Best Practices 流程对 BAM 文件进行校正，并进行 SNP 标记的检测。利用 SNPEff 软件（Cingolani P et al., 2012）和参考基因组的基因预测信息进行变异功能注释，并进一步使用 SNP 及 InDel 进行性状定位分析。分析流程见图 2-2。
+
+<img class="normal3" src="src/pipeline.png">
+
+<p class='mark'>图 2-2 生信分析流程图</p>

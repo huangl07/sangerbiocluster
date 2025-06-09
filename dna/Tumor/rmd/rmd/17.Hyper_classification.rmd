@@ -1,0 +1,50 @@
+
+### 肿瘤超突样本分类
+
+MSI，即微卫星不稳定性，是指DNA复制过程中，错配修复机制（DNA mismatch repair, MMR）失灵，致使重复片段增加或减少无法被机体修复，引起微卫星长度变化的现象。
+
+不是所有的癌症患者都出现MSI，因此根据MSI出现的频率对MSI进行了定义。
+
+（1）MSS：
+
+Microsatellite Stability，微卫星稳定性。即微卫星不发生突变。
+
+（2）MSI-H：
+
+High-frequency MSI，高频微卫星不稳定性，即患者微卫星突变检测出的频率高。
+
+（2）MSI-L：
+
+Low-frequency MSI，低频微卫星不稳定性，即患者微卫星突变检测出的频率低。
+
+本项目利用MSIsensor-pro，通过配对的肿瘤和正常样本中测序深度均大于等于20的微卫星位点，建立每个微卫星重复序列的预期（正常）和观察（肿瘤）长度的分布，并使用Chi-Squared进行检验， 若显著不同, 则认为该微卫星位点不稳定; 最后统计不稳定位点的比例, 若该比例超过阈值, 则判定为MSI-H, 其中, 阈值是根据该指标在一组样本上(包括MSI-H和MSS的样本)的累积分布确定。统计结果见表\@ref(tab:oncogene-table)：。
+
+```{r get-msi-table}
+msi_stat <- read.delim('info/msi.stat',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- msi_stat %>% tbl_prettier(c(NA,NA,0,0,2,NA))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Tumor:肿瘤样本编号;",
+"Control:对照样本编号;",
+"Total_Number_of_Sites:总微卫星位点;",
+"Number_of_Somatic_Sites:体细胞微卫星位点;",
+"%:体细胞微卫星位点占比;",
+"MSI_state:MSI类型;"
+)
+```
+
+```{r msi-table-html,eval=htmlfmt,results="asis"}
+dt_caption("肿瘤超突样本分类统计表","msi-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r msi-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    colnames(tempdf) <- gsub("%","\\\\%",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    tempdf[,2]=gsub("_","\\\\_",tempdf[,2])
+    kbl(row.names=FALSE, tempdf, "latex",caption="肿瘤超突样本分类统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

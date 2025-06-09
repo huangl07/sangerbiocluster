@@ -1,0 +1,497 @@
+data:
+  fastq_qc:
+    - mkdir: './{id}.vcf_filter'
+      check: vcf_filter
+      desc: 变异检测结果目录
+    - from: readme
+      to: './{id}.vcf_filter'
+      pattern: 变异位点过滤结果说明.txt
+      check: readme
+      desc: 变异检测与位点过滤结果目录说明
+    - from: vcf_filter
+      to: './{id}.vcf_filter'
+      pattern: pop.snp_anno.status.xls
+      check: vcf_filter
+      desc: 变异检测SNP功能注释
+    - from: vcf_filter
+      to: './{id}.vcf_filter'
+      pattern: pop.indel_anno.status.xls
+      check: vcf_filter
+      desc: 变异检测InDel功能注释
+    - from: vcf_filter
+      to: './{id}.vcf_filter'
+      pattern: pop.sample.status.xls
+      check: vcf_filter
+      desc: 过滤后变异样品统计
+    - from: vcf_filter
+      to: './{id}.vcf_filter'
+      pattern: 'pop.total.status.xls'
+      check: vcf_filter
+      desc: 过滤后变异总体统计
+    - from: vcf_filter
+      to: './{id}.vcf_filter'
+      pattern: 'raw.vcf.gz'
+      check: vcf_filter
+      desc: 变异检测原始vcf文件
+    - from: vcf_filter
+      to: './{id}.vcf_filter'
+      pattern: 'raw.vcf.gz.tbi'
+      check: vcf_filter
+      desc: 变异检测原始vcf索引文件
+    - from: vcf_filter
+      to: './{id}.vcf_filter'
+      pattern: 'raw.vcf.gz.md5.txt'
+      check: vcf_filter
+      desc: 变异检测原始结果MD5文件
+    - from: vcf_filter
+      to: './{id}.vcf_filter'
+      pattern: 'ref.genome.summary.xls'
+      check: vcf_filter
+      desc: 染色体重命名和序列信息统计表
+  structure:
+    - mkdir: './{id}.structure'
+      check: structure
+      desc: Structure分析结果目录
+    - from: readme
+      to: './{id}.structure'
+      pattern: 遗传结构分析结果说明.txt
+      check: readme
+      desc: Structure分析结果目录说明
+    - mkdir: './{id}.structure/best'
+      check: structure
+      desc: Structure分析最佳K值结果汇总
+    - mkdir: './{id}.structure/best/figures'
+      check: structure/summary
+      desc: Structure分析最佳K值结果图汇总
+    - from: structure/summary
+      to: './{id}.structure/best/figures'
+      pattern: 'pop.cv_error.(?:png|pdf)'
+      check: structure/summary
+      desc: Structure分析交叉验证误差随K值分布图
+    - from: structure/summary
+      to: './{id}.structure/best/figures'
+      pattern: 'pop_(?:ad|fs).bestK.(?:png|pdf)'
+      check: structure/summary
+      desc: Structure分析最佳K值对应的样品遗传成分堆积分布图
+    - from: structure/summary
+      to: './{id}.structure/best/figures'
+      pattern: 'pop_(?:ad|fs).bestK3.(?:png|pdf)'
+      check: structure/summary
+      desc: Structure分析最佳K值与最近K值对应的样品遗传成分堆积分布图
+    - mkdir: './{id}.structure/best/results'
+      check: structure/summary
+      desc: Structure分析最佳K值相关信息汇总
+    - from: structure/summary
+      to: './{id}.structure/best/results'
+      pattern: 'pop.cv_error.xls'
+      check: structure/summary
+      desc: Structure分析交叉验证误差信息表
+    - from: structure/summary
+      to: './{id}.structure/best/results'
+      pattern: 'pop_(?:ad|fs).bestK.plot.xls'
+      check: structure/summary
+      desc: Structure分析最佳K值遗传成分表
+    - from: structure/summary
+      to: './{id}.structure/best/results'
+      pattern: 'pop.new_group.xls'
+      check: structure
+      desc: Structure分析分组
+    - mkdir: './{id}.structure/all'
+      check: structure/summary
+      desc: Structure分析所有结果汇总
+    - mkdir: './{id}.structure/all/figures'
+      check: structure/summary
+      desc: Structure分析所有结果图汇总
+    - from: structure/summary
+      to: './{id}.structure/all/figures'
+      pattern: 'pop_(?:ad|fs).(?P<K>\d+).(?:png|pdf)'
+      check: structure
+      desc: 'K={K}时对应的样品遗传成分占比分布图'
+    - mkdir: './{id}.structure/all/results'
+      check: structure/summary
+      desc: Structure分析所有结果表汇总
+    - from: structure/summary
+      to: './{id}.structure/all/results'
+      pattern: 'pop_(?:ad|fs).(?P<K>\d+).plot.xls'
+      check: structure
+      desc: 'K={K}时对应的样品遗传成分占比表'
+  tree:
+    - mkdir: './{id}.tree'
+      check: tree
+      desc: 进化树分析结果目录
+    - from: readme
+      to: './{id}.tree'
+      pattern: 进化树分析结果说明.txt
+      check: readme
+      desc: 进化树分析结果目录说明
+    - mkdir: './{id}.tree/figures'
+      check: tree
+      desc: 进化树分析结果图汇总
+    - from: tree
+      to: './{id}.tree/figures'
+      pattern: 'pop.(?P<M>ML|NJ).rectangular.tree.(?:png|pdf)'
+      check: tree
+      desc: '矩形进化枝长图（{M}法）'
+    - from: tree
+      to: './{id}.tree/figures'
+      pattern: 'pop.(?P<M>ML|NJ).rectangular.clado.(?:png|pdf)'
+      check: tree
+      desc: '矩形进化分支图（{M}法）'
+    - from: tree
+      to: './{id}.tree/figures'
+      pattern: 'pop.(?P<M>ML|NJ).circular.tree.(?:png|pdf)'
+      check: tree
+      desc: '圆形进化枝长图（{M}法）'
+    - from: tree
+      to: './{id}.tree/figures'
+      pattern: 'pop.(?P<M>ML|NJ).circular.clado.(?:png|pdf)'
+      check: tree
+      desc: '圆形进化分支图（{M}法）'
+    - mkdir: './{id}.tree/results'
+      check: tree
+      desc: 进化树分析树文件汇总
+    - from: tree
+      to: './{id}.tree/results'
+      pattern: pop.(?P<M>ML|NJ).nwk
+      check: tree
+      desc: '{M}法构建的进化树'
+  pca:
+    - mkdir: './{id}.pca'
+      check: pca
+      desc: PCA分析结果目录
+    - from: readme
+      to: './{id}.pca'
+      pattern: 主成分分析结果说明.txt
+      check: readme
+      desc: PCA分析结果目录说明
+    - mkdir: './{id}.pca/results'
+      check: pca
+      desc: PCA分析结果表汇总
+    - from: pca
+      to: './{id}.pca/results'
+      pattern: 'pop.eigenval.xls'
+      check: pca
+      desc: 前20主成分对应的方差解释度表
+    - from: pca
+      to: './{id}.pca/results'
+      pattern: 'pop.eigenvec.xls'
+      check: pca
+      desc: 前20主成分特征向量表
+    - from: pca
+      to: './{id}.pca/results'
+      pattern: 'pca.eigenval.xls'
+      check: pca
+      desc: 前20主成分对应的方差解释度表
+    - mkdir: './{id}.pca/figures'
+      check: pca
+      desc: PCA分析结果图汇总
+    - from: pca
+      to: './{id}.pca/figures'
+      pattern: 'pop.pca.PC(?P<a>\d)vs(?P<b>\d)_O.(?:png|pdf)'
+      check: pca
+      desc: '基于主成分{a}和主成分{b}的样品分布散点图'
+    - from: pca
+      to: './{id}.pca/figures'
+      pattern: 'pop.pca.val.(?:png|pdf)'
+      check: pca
+      desc: 不同的主成分的方差解释度柱形图
+    - from: pca
+      to: './{id}.pca/figures'
+      pattern: 'pop.pca.3D_PCA.(?:png|pdf)'
+      check: pca
+      desc: 基于前三主成分的样品分布散点图（3D）
+  populations:
+    - mkdir: './{id}.genetic_diversity'
+      check: populations
+      desc: 遗传多样性分析结果目录
+    - from: readme
+      to: './{id}.genetic_diversity'
+      pattern: 遗传多样性分析结果说明.txt
+      check: readme
+      desc: 遗传多样性分析结果目录说明
+    - mkdir: './{id}.genetic_diversity/figures'
+      check: populations
+      desc: 遗传多样性分析结果图汇总
+    - from: populations
+      to: './{id}.genetic_diversity/figures'
+      pattern: 'pop.divergence.(?:png|pdf)'
+      check: populations
+      desc: 群体fst值和pi值结果图（多群体限定）
+    - mkdir: './{id}.genetic_diversity/results'
+      check: populations
+      desc: 遗传多样性分析结果表汇总
+    - from: populations
+      to: './{id}.genetic_diversity/results'
+      pattern: 'pop.diversity.xls'
+      check: populations
+      desc: 不同群体的遗传多样性指数表
+    - from: populations
+      to: './{id}.genetic_diversity/results'
+      pattern: 'pop.fst.(?:long|matrix).xls'
+      check: populations
+      desc: 群体fst值结果汇总表（多群体限定）
+    - from: populations
+      to: './{id}.genetic_diversity/results'
+      pattern: 'pop.pic.stat.xls'
+      check: populations
+      desc: 不同群体的PIC和Shannon's Index计算结果
+  ld:
+    - mkdir: './{id}.LD'
+      check: ld
+      desc: 连锁不平衡分析结果目录
+    - from: readme
+      to: './{id}.LD'
+      pattern: 连锁不平衡分析结果说明.txt
+      check: readme
+      desc: 连锁不平衡分析结果目录说明
+    - mkdir: './{id}.LD/figures'
+      check: ld
+      desc: 连锁不平衡分析结果图汇总
+    - from: ld
+      to: './{id}.LD/figures'
+      pattern: 'pop.ld_(?P<pop>.+)_O.(?:png|pdf)'
+      check: ld
+      desc: '{pop}群体的连锁不平衡衰减图'
+    - mkdir: './{id}.LD/results'
+      check: ld
+      desc: 连锁不平衡分析结果表汇总
+    - from: ld
+      to: './{id}.LD/results'
+      pattern: pop.ld_decay_distance.xls
+      check: ld
+      desc: 不同群体连锁不平衡衰减汇总表
+    - from: ld
+      to: './{id}.LD/results'
+      pattern: pop.ld_decay_total.xls
+      check: ld
+      desc: 不同群体连锁不平衡衰减拟合结果表
+  heatmap:
+    - mkdir: './{id}.kinship'
+      check: heatmap
+      desc: 亲缘关系分析结果目录
+    - from: readme
+      to: './{id}.kinship'
+      pattern: 亲缘关系分析结果说明.txt
+      check: readme
+      desc: 亲缘关系分析结果目录说明
+    - mkdir: './{id}.kinship/figures'
+      check: heatmap
+      desc: 亲缘关系分析结果图汇总
+    - from: heatmap
+      to: './{id}.kinship/figures'
+      pattern: 'pop.relatedness.(?:png|pdf)'
+      check: heatmap
+      desc: 所有群体的kinship关系热图
+    - mkdir: './{id}.kinship/results'
+      check: heatmap
+      desc: 亲缘关系分析结果表汇总
+    - from: heatmap
+      to: './{id}.kinship/results'
+      pattern: pop.kin.matrix.xls
+      check: heatmap
+      desc: 不同样品间的kinship矩阵
+    - from: heatmap
+      to: './{id}.kinship/results'
+      pattern: pop.kin.xls
+      check: heatmap
+      desc: 不同样品间的亲缘关系统计表
+  selective_calc:
+    - mkdir: './{id}.sweep'
+      check: sweep_details
+      desc: 选择清除分析结果目录
+    - from: readme
+      to: './{id}.sweep'
+      pattern: 选择清除结果说明.txt
+      check: sweep_details
+      desc: 选择清除分析结果目录说明
+    - mkdir: './{id}.sweep/windowed_data'
+      check: sweep_details
+      desc: 选择清除分析滑窗统计结果目录
+    - mkdir: './{id}.sweep/windowed_data/figures'
+      check: sweep_details
+      desc: 选择清除分析滑窗统计结果图汇总
+    - from: sweep_details
+      to: './{id}.sweep/windowed_data/figures'
+      pattern: '(?P<comp>.+).(?P<met>fst|dxy|pi05|pi95|pi.two_tail|tajimad).(?:png|pdf)'
+      check: sweep_details
+      desc: '{comp}差异方案的{met}曼哈顿图'
+    - mkdir: './{id}.sweep/windowed_data/results'
+      check: sweep_details
+      desc: 选择清除分析滑窗统计结果表汇总
+    - from: sweep_details
+      to: './{id}.sweep/windowed_data/results'
+      pattern: '(?P<comp>.+).detail.xls'
+      check: sweep_details
+      desc: '{comp}差异方案的滑窗参数计算结果'
+    - mkdir: './{id}.sweep/functional'
+      check: sweep_details
+      desc: 选择清除分析功能统计结果目录
+    - mkdir: './{id}.sweep/functional/figures'
+      check: sweep_details
+      desc: 选择清除分析功能分析结果图汇总
+    - from: sweep_function
+      to: './{id}.sweep/functional/figures'
+      pattern: '(?P<comp>.+).(?P<met>fst|dxy|pi_ratio1|pi_ratio2).(?P<db>go|kegg).enrichment.(?:png|pdf)'
+      check: sweep_details
+      desc: '{comp}差异方案的{met}显著区域关联基因{db}富集分析气泡图'
+    - mkdir: './{id}.sweep/functional/results'
+      check: sweep_details
+      desc: 选择清除分析功能统计表汇总
+    - from: sweep_details
+      to: './{id}.sweep/functional/results'
+      pattern: '(?P<comp>.+).(?P<met>fst|dxy|pi_ratio1|pi_ratio2).select.xls'
+      check: sweep_details
+      desc: '{comp}差异方案的{met}显著区域（top5%）信息表'
+    - from: sweep_function
+      to: './{id}.sweep/functional/results'
+      pattern: '(?P<comp>.+).(?P<met>fst|dxy|pi_ratio1|pi_ratio2).variant.xls'
+      check: sweep_details
+      desc: '{comp}差异方案的{met}显著区域内的变异位点与注释信息表'
+    - from: sweep_function
+      to: './{id}.sweep/functional/results'
+      pattern: '(?P<comp>.+).(?P<met>fst|dxy|pi_ratio1|pi_ratio2).gene.xls'
+      check: sweep_details
+      desc: '{comp}差异方案的{met}显著区域关联基因与注释信息表'
+    - from: sweep_function
+      to: './{id}.sweep/functional/results'
+      pattern: '(?P<comp>.+).(?P<met>fst|dxy|pi_ratio1|pi_ratio2).(?P<db>go|kegg).enrichment.xls'
+      check: sweep_details
+      desc: '{comp}差异方案的{met}显著区域关联基因{db}富集分析结果表'
+  gwas_calc:
+    - mkdir: './{id}.GWAS'
+      check: gwas_calc
+      desc: 全基因组关联分析（GWAS）结果目录
+    - from: readme
+      to: './{id}.GWAS'
+      pattern: GWAS分析结果说明.txt
+      check: gwas_data
+      desc: GWAS分析结果目录说明
+    - mkdir: './{id}.GWAS/pheno'
+      check: gwas_data
+      desc: 表型分析结果目录
+    - mkdir: './{id}.GWAS/pheno/figures'
+      check: gwas_data
+      desc: 表型分析结果图汇总
+    - from: gwas_data
+      to: './{id}.GWAS/pheno/figures'
+      pattern: 'pop.(?P<trt>.+).Phe_Dist.(?:png|pdf)'
+      check: gwas_data
+      desc: '{trt}性状分布图'
+    - mkdir: './{id}.GWAS/pheno/results'
+      check: gwas_data
+      desc: 表型分析结果表汇总
+    - from: gwas_data
+      to: './{id}.GWAS/pheno/results'
+      pattern: 'pop.blup.herit.xls'
+      check: gwas_data
+      desc: 表型分析遗传力结果表（多年多点表型限定）
+    - from: gwas_data
+      to: './{id}.GWAS/pheno/results'
+      pattern: 'pop.blup.result.xls'
+      check: gwas_data
+      desc: GWAS分析性状表
+    - mkdir: './{id}.GWAS/calc'
+      check: gwas_calc
+      desc: GWAS分析关联结果目录
+    - mkdir: './{id}.GWAS/calc/figures'
+      check: gwas_calc
+      desc: GWAS分析关联结果图汇总
+    - mkdir: './{id}.GWAS/calc/figures/GLM'
+      check: gwas_calc
+      desc: GWAS分析关联结果图汇总
+    - mkdir: './{id}.GWAS/calc/figures/MLM'
+      check: gwas_calc
+      desc: GWAS分析关联结果图汇总
+    - mkdir: './{id}.GWAS/calc/figures/FarmCPU'
+      check: gwas_calc
+      desc: GWAS分析关联结果图汇总
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/figures/{met}'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).manhattan.(?:png|pdf)'
+      check: gwas_calc
+      desc: '{trt}性状GWAS-{met}法分析曼哈顿图'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/figures/{met}'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).circle-manhattan.(?:png|pdf)'
+      check: gwas_calc
+      desc: '{trt}性状GWAS-{met}法分析圆形曼哈顿图'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/figures/{met}'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).qqplot.(?:png|pdf)'
+      check: gwas_calc
+      desc: '{trt}性状GWAS-{met}法分析QQ图'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/figures/{met}'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).epi.(?:png|pdf)'
+      check: gwas_calc
+      desc: '{trt}性状GWAS-{met}法上位性分析圈图'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/figures/{met}'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).signal.(?P<db>kegg|go).enrichment.(?:png|pdf)'
+      check: gwas_calc
+      desc: '{trt}性状GWAS-{met}法分析{db}富集分析图'
+    - mkdir: './{id}.GWAS/calc/results'
+      check: gwas_calc
+      desc: GWAS分析关联结果信息表汇总
+    - mkdir: './{id}.GWAS/calc/results/GLM'
+      check: gwas_calc
+      desc: GWAS-GLM分析关联结果信息表汇总
+    - mkdir: './{id}.GWAS/calc/results/MLM'
+      check: gwas_calc
+      desc: GWAS-MLM分析关联结果信息表汇总
+    - mkdir: './{id}.GWAS/calc/results/FarmCPU'
+      check: gwas_calc
+      desc: GWAS-FarmCPU分析关联结果信息表汇总
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/results'
+      pattern: '(?P<trt>.+).GWAS.result.xls.gz'
+      check: gwas_calc
+      desc: '{trt}性状GWAS分析所有位点结果'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/results'
+      pattern: '(?P<trt>.+).GWAS.result.xls.gz.csi'
+      check: gwas_calc
+      desc: '{trt}性状GWAS分析所有位点结果索引'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/results'
+      pattern: '(?P<trt>.+).GWAS.signal_regions.xls'
+      check: gwas_calc
+      desc: '{trt}性状GWAS分析显著关联区域汇总表'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/results/{met}'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).variant.xls'
+      check: gwas_calc
+      desc: '{trt}性状GWAS-{met}方法分析显著关联区域内变异汇总表'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/results'
+      pattern: '(?P<trt>.+).GWAS.signals.xls'
+      check: gwas_calc
+      desc: '{trt}性状GWAS分析显著关联位点汇总表'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/results'
+      pattern: '(?P<trt>.+).lambda.xls'
+      check: gwas_calc
+      desc: '{trt}性状GWAS分析不同方法lambda值汇总表'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/results/{met}'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).signal.gene.xls'
+      check: gwas_calc
+      desc: '{trt}性状GWAS-{met}分析显著关联区域汇总表'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/results/{met}'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).epi.xls'
+      check: gwas_calc
+      desc: '{trt}性状GWAS-{met}方法显著关联位点上位性分析结果表'
+    - from: gwas_calc
+      to: './{id}.GWAS/calc/results/{met}'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).signal.(?P<db>kegg|go).enrichment.xls'
+      check: gwas_calc
+      desc: '{trt}性状GWAS-{met}方法显著关联区域基因{db}富集分析结果表'
+    - mkdir: './{id}.GWAS/ldheatmap'
+      check: gwas_calc
+      desc: 关联区域热图汇总
+    - from: gwas_calc
+      to: './{id}.GWAS/ldheatmap'
+      pattern: '(?P<trt>.+).(?P<met>FarmCPU|GLM|MLM).(?P<region>.+).ldheatmap.(?:png|pdf)'
+      check: gwas_calc
+      desc: '{trt}性状{met}法GWAS分析{region}区域连锁不平衡热图'

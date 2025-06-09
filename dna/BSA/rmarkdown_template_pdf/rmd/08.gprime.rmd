@@ -1,0 +1,20 @@
+### $G^\prime$ value方法
+
+G统计方法是基于高通量、短读测序进行QTL定位的统计框架。该方法是基于标准统计量G的重新统计计算出的G的平滑版本，并考虑到由于分离子取样形成个体以及个体测序过程中引入的变异而导致的等位基因频率估计值的变化。通过模拟实验研究发现，该方法可以用于检测到甚至是弱效应的QTL。
+
+每个位点的标准G统计量计算公式如下：
+
+$$G=2\sum_{i=1}^{4}n_iln(\frac{n_i}{\widehat n_i})$$
+
+其中$\widehat n_i$是数的期望值（表示从分离体序列中产生的等位基因$A_0$和$A_1$的计数）。无效假设是没有显著的SNP或InDel定位到QTL。这意味着可按照列联表的标准预期计数，例如，$\widehat n_i = (n_1 + n_2)(n_1+n_3)/(n_1 + n_2 + n_3 + n_4)$，如果无效假设正确，则$\epsilon[n_1] = \epsilon[n_2] = qC$且$\epsilon[n_3] = \epsilon[n_4] = (1-q)C$。如果假设失效，则$\epsilon[n_1] = \epsilon[n_2] =\epsilon[n_3] = \epsilon[n_4] = C/2$（C是覆盖度）。$G^\prime$又称Gprime，是平滑版的G统计量，是基于每个窗口的G值使用局部回归模型来进行拟合得到的值。
+
+对经过亲本过滤的子代变异位点，首先计算混池间每个位点的G统计值。为了降低背景噪音、提高准确性，采用1Mb窗口长度计算平滑后的$G^\prime$值，取`r gprime_q`分位数对应的$G^\prime$值作为筛选阈值，并挑选至少包含`r gprime_minmarker`个阈值线之上变异位点的候选区域。图\@ref(fig:gprime-plot)是$G^\prime$ value统计方法的曼哈顿结果图。
+
+> *Gprime方法的单条染色体的曼哈顿结果图详见结题文件夹目录下[data_release/05.Gprime](./data_release/05.Gprime)文件夹下的Gprime.\*.png/pdf（\*代表染色体ID）文件*
+
+```{r gprime-plot, fig.cap="$G^\\prime$ value方法拟合曼哈顿结果图", out.width = "100%"}
+include_graphics("../file/Gprime.png")
+```
+
+> **注**：图中的一个点代表一个SNP/InDel标记，横轴为标记的染色体位置信息，纵轴是$G^\prime$ value统计值；图中的黑线表示拟合的曲线，红线表示阈值线。
+

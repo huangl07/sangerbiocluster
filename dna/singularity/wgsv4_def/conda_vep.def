@@ -1,0 +1,30 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    ./Miniconda3-py39_23.1.0-1-Linux-x86_64.sh /opt/src/
+    /mnt/lustre/users/sanger-dev/sg-users/yexiaoya/human_exon/vep_env.tar.gz /opt/vep_env.tar.gz
+
+%post
+    mkdir -p /opt/bioinfo/bin 
+    bash /opt/src/Miniconda3-py39_23.1.0-1-Linux-x86_64.sh -b -p /opt/bioinfo/bin/miniconda3
+    
+    
+    export PATH=/opt/bioinfo/bin/miniconda3/bin:$PATH
+    echo 'export PATH=/opt/bioinfo/bin/miniconda3/bin:$PATH' >> ~/.bashrc
+    . /opt/bioinfo/bin/miniconda3/etc/profile.d/conda.sh
+    #conda install conda=23.1.0 -y
+    # 创建软连接，确保 perl 是 conda 里的
+    conda init bash
+    conda create -n ensembl-vep -c bioconda -c conda-forge perl-compress-raw-zlib ensembl-vep=109.3 perl -y
+   
+    conda clean -a
+    apt-get clean -y
+
+    mkdir -p /opt/bioinfo/bin/miniconda3/envs/ensembl-vep
+    tar -xzf /opt/vep_env.tar.gz -C /opt/bioinfo/bin/miniconda3/envs/ensembl-vep
+
+%environment
+    export PATH=/opt/bioinfo/bin/miniconda3/bin:$PATH
+
+   

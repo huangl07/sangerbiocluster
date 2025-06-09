@@ -1,0 +1,74 @@
+基因注释信息结果汇总
+
+结果文件说明：
+1.	结果说明文档.txt: 文件详细介绍说明
+2.	pop.summary.xls: 变异注释信息结果样品汇总统计表
+3.	pop.stat.xls: 变异注释信息结果各样品统计表
+4.	pop.*.stat.xls: 变异注释信息结果各类方法统计表（kegg/go/eggnog/pfam）
+5.	kegg.enrichment.xls: 变异检测kegg富集分析结果表
+6.	kegg.enrichment.pdf/png: 变异检测kegg富集分析图
+7.	go.enrichment.xls: 变异检测go富集分析结果表
+8.	go.enrichment.pdf/png: 变异检测go富集分析图
+
+表头具体说明：
+pop.summary.xls: 变异注释信息结果样品汇总统计表
+1. Gene_name: 基因名；
+2. Gene_id: 基因编号；
+3. Transcript_id: 转录ID；
+4. Bio_Type: 基因类型；
+5. Chr: 基因所在染色体；
+6. Pos1: 起始位置；
+7. Pos2: 终止位置；
+8. High：对变异位点有害程度的简单评估的个数；
+9. Moderate: 对变异位点有害程度的简单评估的个数；
+10. Low: 对变异位点有害程度的简单评估的个数；
+11. Modifier: 对变异位点有害程度的简单评估的个数；
+12. NR_ID: NR数据库ID；
+13. NR_ANNO: NR数据库注释；
+14. Uni_ID: Uniprot数据库ID；
+15. Uni_ANNO: Uniprot数据库注释；
+16. KEGG_ID: Kegg数据库ID；
+17. KEGG_ANNO: Kegg数据库注释；
+18. GO_ID: Go数据库ID；
+19. GO_ANNO: Go数据库注释；
+20. EggNOG_ID: EGGNOG数据库ID；
+21. EggNOG_ANNO: EGGNOG数据库注释；
+22. PfamAccession: Pfam数据库编号；
+23. PfamAnno: Pfam数据库注释；
+24. InterProAccession: InterPro数据库编号；
+25. InterProAnno: InterPro数据库注释；
+26. KO_ID:  KEGG Orthology数据库编号；
+
+pop.stat.xls: 变异注释信息结果各样品统计表
+#type：类型；
+NR：NR数据库中注释的基因数目；
+Uniprot：Uniprot数据库中注释的基因数目；
+KEGG：KEGG数据库中注释的基因数目；
+GO：GO数据库中注释的基因数目；
+EGGNOG：EGGNOG数据库中注释的基因数目；
+Pfam：Pfam数据库中注释的基因数目。
+
+pop.*.stat.xls:
+eggnogid：表示基因的EggNOG注释ID；
+eggnog_detail：是EggNOG注释的详细信息；
+goid：表示基因的GO注释ID；
+koid：表示基因的KEGG注释ID；
+Pfam Accession：表示基因的pafm注释ID；
+Pfam Annotation：是pafm注释的详细信息；
+eff_variant：表示突变的影响类型，包括HIGH、LOW、MODERATE和MODIFIER等级；
+all_gene：表示突变位点所在的所有基因；
+total_eff：表示所有基因的突变影响类型的总和；
+total_gene：表示所有基因的数量；
+all_gene_list表示所有基因的列表。
+
+kegg/go.enrichment.xls: 变异检测kegg/go富集分析结果表
+ID： ID编号；
+Description： 数据库描述；
+GeneRatio： 通路中富集基因出现比例；
+BgRatio： 通路中background出现比例；
+pvalue： pvalue；
+p.adjust： 校正后的pvalue；
+qvalue： qvalue；
+geneID： 数据库中的编号；
+Count：	在样品中出现次数；
+logp： log(pvalue)

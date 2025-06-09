@@ -1,0 +1,289 @@
+## QTL定位分析
+
+***
+
+### QTL定位简介
+
+***
+
+&emsp;&emsp;数量性状是指表型呈现连续变化的性状，容易受环境影响，控制数量性状的基因在基因组中的位置称为数量性状基因座（QTL）。数量性状一般由一组效应大小不同，数量不同的基因控制，效应大的基因为易于察觉其效应的主基因，效应小的基因为不易察觉的微效基因。许多重要的农艺性状都是数量性状。QTL定位是根据标记基因型与数量性状表型的关系，应用一定的统计学方法，在遗传连锁图谱上标定有关的QTL位置（以重组率表示），并估计其效应。寻找QTL在染色体上的位置并估计其遗传效应的过程，称为QTL作图（QTL mapping）。QTL定位应用于于新基因发掘、分子标记辅助选择以及数量性状基因的克隆及表达调控研究。
+
+### QTL分析结果
+
+***
+
+&emsp;&emsp;结合LP_num个连锁群的图谱和标记分型数据， 以及Trait_num个性状表型值，采用软件 R/qtl$^{[1]}$的进行QTL分析。具体分析方法如下：
+
+&emsp;&emsp;(1) 利用区间作图法（ Interval Mapping )$^{[8]}$进行 QTL 定位；
+
+&emsp;&emsp;(2) 利用PT 检验（Permutation test,1000次）确定阈值，当置信水平大于95%时的LOD值为QTL筛选阈值，若该阈值下没有获得定位区域，可适当降低。
+
+&emsp;&emsp; 各性状定位结果如表3-15所示。其中性状的定位结果如图3-9所示，其他表型定位结果见附件。
+
+<p class='mark'>表3-15 性状QTL定位区间及基因筛选结果</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/t.qtl.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/snp_anno.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>marker：snp-indel的位点信息</p>
+
+- <p class='mark1'>chr：染色体位置</p>
+
+- <p class='mark1'>pos：最高 LOD 值位置</p>
+
+- <p class='mark1'>lod：该性状的关联阈值</p>
+
+- <p class='mark1'>var：解释表现变异率</p>
+
+- <p class='mark1'>pm1：阈值1（置信水平大于95%时的LOD值为QTL筛选阈值）</p>
+
+- <p class='mark1'>pm2：阈值2</p>
+
+- <p class='mark1'>start：阈值1置信水平线在该位点的起始LOD值位置</p>
+
+- <p class='mark1'>end： 阈值1置信水平线在该位点的终止LOD值位置</p>
+
+- <p class='mark1'>start_chr：关联区域在遗传图谱上的起点位置</p>
+
+- <p class='mark1'>end_chr：关联区域在遗传图谱上的终点位置</p>
+
+- <p class='mark1'>mark1：关联区域内次高 LOD 值位置的snp-indel的位点信息</p>
+
+- <p class='mark1'>mark2：关联区域内第三高LOD 值位置的snp-indel的位点信息</p>
+
+
+
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","t.scan.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*indel.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-9 性状QTL定位结果</p>
+ 
+<p class="mark1">注：横坐标标记在连锁群上的位置，纵坐标是对应的 LOD 值。红色线为阈值线，超出阈值线部分即为定位区间。</p>
+
+
+### 候选区域基因分析 
+
+***
+
+&emsp;&emsp;根据标记在染色体上的位置信息，确定关联区域的标记和功能，其中有蛋白结构编码影响的分子标记是我们建议重点关注的标记。根据性状的定位结果，寻找性状候选区域内的基因，各个性状的定位区域及基因统计见表3-16。
+
+
+<p class='mark'>表3-16 各性状定位区间信息统计</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/region.anno.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/snp_anno.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>chr：染色体名称 </p>
+
+- <p class='mark1'>pos1：起始位点 </p>
+
+- <p class='mark1'>pos2：终止位点 </p>
+
+- <p class='mark1'>snp：候选区域内snp数目 </p>
+
+- <p class='mark1'>effsnp： 候选区域内有效snp数目</p>
+
+- <p class='mark1'>indel： 候选区域内indel数目</p>
+
+- <p class='mark1'>effindel： 候选区域内有效indel数目</p>
+
+
+
+### 候选基因注释
+
+***
+
+&emsp;&emsp;通过 BLAST（Altschul S F, 1997）将候选区域内变异基因与 NR（Yangyang Deng, 2006）， Uniprot ，GO  （Ashburner M, 2000） ，EggNOG ，KEGG  （Kanehisa M, 2004）等功能数据库比对，得到这些基因的注释，用以分析基因功能。
+
+&emsp;&emsp;在候选区域内，共注释到数据库的基因具体统计结果见表3-17。
+
+
+<p class='mark'>表3-17 基因功能注释结果列表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/t.gene_anno.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/snp_anno.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>chr：染色体名称 </p>
+
+- <p class='mark1'>pos1：滑窗位置1 </p>
+
+- <p class='mark1'>pos2：滑窗位置2 </p>
+
+- <p class='mark1'>total：候选区域呢所有基因数目 </p>
+
+- <p class='mark1'>eff： 候选区域呢所有有功能影响的基因数目</p>
+
+- <p class='mark1'>totalnr，totalun，totalkegg，totalgo，totaleggnog：分别表示在NR，Uniprot，KEGG，GO，EggNOG数据库中>注释到的基因数目</p>
+
+- <p class='mark1'>effnr，effun，effkegg，effgo，effkeggnog：分别表示在NR，Uniprot，KEGG，GO，EggNOG数据库中注释到的存
+在功能变异的基因数></p>
+
+### 候选区域内基因的GO富集分析
+
+***
+
+&emsp;&emsp;GO数据库是一个结构化的标准生物学注释系统，建立了基因及其产物功能的标准词汇体系，适用于各个物种。该数据库结构分为多个层级，层级越低，节点所代表的功能越具体。通过GO分析并按照Cellular component、Molecular Function、Biological process对基因进行分类。
+
+&emsp;&emsp;候选区域内基因GO分类统计结果见下图：
+
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","genes_GOenrichment_bubble.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*indel.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-10 候选区域内基因GO注释聚类图</p>
+
+<p class="mark1">注：纵坐标为GO的Term，横坐标为富集因子，图中点的大小代表基因数目，点颜色代表-log10(padjust)。</p>
+
+&emsp;&emsp;候选区域基因GO的富集分析结果见下表：
+
+<p class='mark'>表3-18 候选区域内基因的 GO富集分析结果</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/genes_GOenrichment.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/snp_anno.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+- <p class='mark1'>ONTOLOGY：GO数据库分类，包括生物过程BP、细胞组分CC、分子功能MF</p>
+
+- <p class='mark1'>ID：GO编号</p>
+
+- <p class='mark1'>Description：GO编号对应的功能描述</p>
+
+- <p class='mark1'>GeneRatio：注释到GO编号上的候选基因数与候选基因总数的比值</p>
+
+- <p class='mark1'>BgRatio：注释到GO编号上的背景基因数与背景基因总数的比值</p>
+
+- <p class='mark1'>pvalue：显著性检验p值</p>
+
+- <p class='mark1'>p.adjust：多重假设检验校正后的p值</p>
+
+- <p class='mark1'>qvalue：显著性检验q值</p>
+
+- <p class='mark1'>geneID：注释到GO编号上的候选基因ID</p>
+
+- <p class='mark1'>Count: 注释到GO编号上的候选基因数</p>
+
+### 候选区域内基因的KEGG富集分析
+
+***
+
+&emsp;&emsp;在生物体内，不同基因相互协调来行使生物学功能，不同的基因间相同的作用通路为一个Pathway，基于Pathway分析有助于进一步解读基因的功能。KEGG是关于Pathway的主要公共数据库。
+
+&emsp;&emsp;候选区域内基因的KEGG注释结果按照通路类型进行分类，分类图如下：
+
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","genes_KEGGenrichment_bubble.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*indel.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-11 候选区域内基因的通路分布图</p>
+
+**注：纵坐标为KEGG的代谢通路，横坐标为富集因子，图中点的大小代表基因数目，点颜色代表-log10(padjust)。**
+
+&emsp;&emsp;候选区域KEGG的富集分析结果见下表：
+
+<p class='mark'>表3-19 候选区域内基因的KEGG富集部分结果</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/genes_KEGGenrichment.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/snp_anno.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+- <p class='mark1'>ID: KEGG通路编号</p>
+
+- <p class='mark1'>Description: KEGG通路编号对应的功能描述</p>
+
+- <p class='mark1'>GeneRatio: 注释到KEGG通路编号上的候选基因数与候选基因总数的比值</p>
+
+- <p class='mark1'>BgRatio：注释到KEGG编号上的背景基因数与背景基因总数的比值</p>
+
+- <p class='mark1'>pvalue：显著性检验p值</p>
+
+- <p class='mark1'>p.adjust：多重假设检验校正后的p值</p>
+
+- <p class='mark1'>qvalue：显著性检验q值</p>
+
+- <p class='mark1'>geneID：注释到KEGG编号上的候选基因ID</p>
+
+- <p class='mark1'>Count: 注释到KEGG编号上的候选基因数</p>
+

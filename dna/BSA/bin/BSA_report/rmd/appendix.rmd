@@ -1,0 +1,57 @@
+# 附件说明与数据下载
+ 
+***
+
+## 文件解压缩方法
+
+***
+
+&emsp;&emsp;所有提供的文件均为Linux系统下的文件，压缩包使用“tar –zcvf ”命令压缩，以下为不同系统用户解压缩的方法
+
+- Unix/Linux/Mac用户: 使用tar –zxvf *.tar.gz命令 
+
+- Windows用户：使用WinRAR软件解压缩 
+
+## 文件打开或浏览方法
+
+***
+
+&emsp;&emsp;如果在本附录中无特殊说明，所有提供的文件均为Linux系统下文本文件，Unix/Linux用户可以使用more或less命令查看文本文件内容。对于Windows用户，一般文本文件可以使用写字板打开。推荐使用开源文本编辑器gedit for win32版本或者商业文本编辑器UltraEdit。当文件比较大时，打开文件可能导致Windows系统死机，建议使用性能较好的计算机或者使用更适合处理大量数据的Unix/Linux系统打开。
+
+&emsp;&emsp;数据中可能包含部分图像文件，一般图像文件后缀名为.png、.jpg、.gif等，对于图像文件，Windows用户可以使用图片浏览器打开，Linux/Unix用户使用display命令打开。
+
+&emsp;&emsp;后缀名为svg的文件为文本格式描述的图像文件，Windows用户需要安装Adobe Illustrator软件打开。Linux/Unix用户可以使用rsvg-view命令查看。公司默认提供“pdf“格式的矢量图，可利用"Adobe Illustrator"软件对该格式图片进行编辑。
+
+&emsp;&emsp;Linux下的表格均为制表符(Tab)分割的文本，为了便于阅读，建议使用excel或openoffice等办公软件用表格形式打开，打开时请用“Tab分割”方式。
+
+## 附件说明
+
+***
+
+<p class='mark'>表4-1 附件文件说明</p>
+
+```{r echo=FALSE}
+library(knitr)
+data <- read.delim('src/fujian.xls',sep='\t',header=T,check.names = F)
+kable(data,table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+# 参考文献
+
+- 1. [Abe A, Kosugi S, Yoshida K, et al. (2012). Genome sequencing reveals agronomically important loci in rice using MutMap[J]. Nature Biotechnol, 22, 30(2): 174-8.](https://www.nature.com/articles/nbt.2095)
+- 2. [Apweiler R, Bairoch A, Wu C H, et al. (2004). UniProt: the universal protein knowledgebase[J]. Nucleic acids research, 32(suppl_1): D115-D119.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5210571/)
+- 3. [Ashburner, M., Ball, C. A., Blake, J. A., Botstein, D., Butler, H., Cherry, J. M., et al. (2000). Gene ontology: tool for the unification of biology. The Gene Ontology Consortium. Nature genetics, 25(1), 25-29.](https://www.nature.com/articles/ng0500_25/)
+- 4. [Cingolani P, Platts A, Wang L L, et al. (2012). A program for annotating and predicting the effects of single nucleotide polymorphisms, SnpEff: SNPs in the genome of Drosophila melanogaster strain w1118; iso-2; iso-3[J]. Fly, 6(2): 80-92.](https://pubmed.ncbi.nlm.nih.gov/22728672/)
+- 5. [Deng, Y., Li, J. Q., Wu, S. F., Zhu, Y. P., Chen, Y. W., and He, F. C. (2006). Integrated nr database in protein annotation system and its localization. Comput. Eng. 32, 71–72.](https://www.semanticscholar.org/paper/Integrated-nr-Database-in-Protein-Annotation-System-Fu-chu/3af364c2b527024a2502f002455c54f582140ba3)
+- 6. [Jaime H.C., Damian S., Kristoffer F., Helen C., Davide H., Mathias C. W., et al.(2016). eggNOG 4.5: a hierarchical orthology framework with improved functional annotations for eukaryotic, rokaryotic and viral sequences. Nucleic acids research, 44 (D1): D286-D293.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4702882/)
+- 7. [Kanehisa, M., Goto, S., Kawashima, S., Okuno, Y., & Hattori, M. (2004). The KEGG resource for deciphering the genome. Nucleic acids research,32 (suppl 1), D277-D280.](https://academic.oup.com/nar/article/32/suppl_1/D277/2505239?login=false)
+- 8. [Krzywinski, M., Schein, J., Inanc Birol, Connors, J., Gascoyne, R. and Horsman, D., et al. (2009). Circos: an information aesthetic for comparative genomics. Genome Research, 19(9), 1639-1645.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2752132/)
+- 9. [Li, H., & Durbin, R. (2009). Fast and accurate short read alignment with Burrows-Wheeler transform. Bioinformatics, 25(14), 1754-1760.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2705234/)
+- 10. [McKenna, A., Hanna, M., Banks, E., Sivachenko, A., Cibulskis, K., Kernytsky, A., et al. (2010). The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome research, 20(9), 1297-1303.](https://genome.cshlp.org/content/20/9/1297.long)
+- 11. [Hill, J.T., Demarest, B.L., Bisgrove, B.W., Gorsi, B., Su, Y.C., Yost, H.J.etal.(2013) MMAPPR: mutation mapping analysis pipeline for pooled RNA-seq.Genome Research,23, 687–697](https://genome.cshlp.org/content/23/4/687.long)
+- 12. [Takagi, H., Abe, A., Yoshida, K., Kosugi, S., Natsume, S., Mitsuoka, C.etal. QTL-seq: rapid mapping of quantitative trait loci in rice by wholegenome Resequencing of DNA from two bulked populations.The PlantJournal,74, 174–183](https://onlinelibrary.wiley.com/doi/10.1111/tpj.12105)
+- 13. [Magwene, P.M., Willis, J.H. & Kelly, J.K.(2011) The statistics of bulk segre-gant analysis using next generation sequencing.PLoS ComputationalBiology,7, e1002255](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3207950/)
+- 14. [Wang, C., Tang, S., Zhan, Q., Hou, Q., Zhao, Y., Zhao, Q.etal.(2019) Dis-secting a heterotic gene through GradedPool-Seq mapping informs arice-improvement strategy.Nature Communications,10, 2982 ](https://www.nature.com/articles/s41467-019-11017-y)
+
+

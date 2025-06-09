@@ -1,0 +1,88 @@
+## 原始测序数据质控
+
+***
+
+&emsp;&emsp;Illumina测序属于第二代测序技术，单次运行能产生数十亿级的reads，如此海量的数据无法逐个展示每条read的质量情况；运用统计学的方法，对所有测序reads的每个cycle进行碱基分布的统计，可以从宏观上直观地反映出样本的测序质量和文库构建质量。 我们针对每一个样本的原始测序数据进行测序相关质量评估，包括(1) A/T/G/C碱基含量分布统计，(2)  碱基错误率分布统计。
+
+&emsp;&emsp;结果目录：**01_RawdataStat**，下文对目录下的每个文件进行了详细的解释。
+
+**（1）A/T/G/C 碱基含量分布统计**
+
+&emsp;&emsp;碱基含量分布检查一般用于检测有无 AT、GC 分离现象。    对于RNA-seq来说鉴于序列的随机性打断和G/C、 A/T含量分别相等的原则，理论上每个测序循环上的GC含量相等、AT 含量相等(如果是链特异性建库，可能会 出现 AT 分离和/或 GC 分离)，且在整个测序过程基本稳定不变，呈水平线。但在 circRNA测序技术中，采用链特异性方式建库，GC含量相等、AT含量不一定相等。部分 circRNA 由于长度较短，测序结果中容易有接头序列出现。如下图所示：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*base.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*base.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3.2.1 碱基组成分布例图</p>
+
+<p class="mark">(所有样品结果请查看  **RawdataStat** 文件夹下_base.pdf)</p>
+
+&emsp;&emsp;注：横坐标是reads碱基坐标，坐标表示reads上从5’到3’端依次碱基的排列；纵坐标是所有reads在该测序位置（如第一个测序碱基）A、C、G、T、N碱基分别占的百分比，不同碱基用不同颜色表示（见右上角图注）。序列的起始位置与测序的引物接头相连，因此A、C、G、T在起始端会有所波动，后面会趋于稳定。一般情况下A与T相等，C与G相等，各碱基所占百分比会因物种的差异而不同。模糊碱基N所占比例越低，说明未知碱基越少，测序样本受系统AT偏好影响越小。
+
+**（2）碱基错误率分布统计**
+
+&emsp;&emsp;对于RNAseq而言，测序错误率会随着测序序列（Sequenced Reads）长度的增加而升高，这是由测序过程中化学试剂的消耗导致的，并且此现象为Illumina高通量测序平台的共有特征。另外，前6个碱基的位置也会发生较高的测序错误率，而这个长度也正好等于在RNA-seq建库过程中反转录所需要的随机引物的长度，所以推测这部分碱基的测序错误率较高的原因是：随机引物与RNA模版的不完全结合。一般情况下，单个碱基位置的测序错误率应该低于1%，在实际的实验项目当中，我们测序数据的碱基错误率均可以达到低于0.1%。
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*qual.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*qual.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图 3.2.3 碱基错误率分布例图</p>
+
+<p class="mark">（所有样品结果请查看 **RawdataStat** 文件夹下 _qual.pdf）</p>
+
+&emsp;&emsp;注：横坐标是reads碱基坐标，表示reads上从5’到3’端依次碱基的排列；纵坐标是所有reads在该位点处碱基的平均错误率（%）。图中绿色阴影对应的是各位点碱基错误率的平均值，反映了测序 reads 中碱基错误率的分布情况，一般错误率低于0.1%即认为在可接受范围内。
+
+## 测序数据质量剪切及统计
+
+***
+
+&emsp;&emsp;由于原始测序数据中会包含测序接头序列、低质量读段、N率较高序列及长度过短序列，这将严重影响后续分析的质量。为保证后续的生物信息分析的准确性，首先对原始测序数据进行过滤，从而得到高质量的测序数据（clean data）以保证后续分析的顺利进行，具体步骤及顺序如下：
+
+- 1） 去除reads中的接头序列，去除由于接头自连等原因导致没有插入片段的reads； 
+- 2） 将序列末端（3’端）低质量（质量值小于20）的碱基修剪掉，如剩余序列中仍然有质量值小于10则将整条序列剔除，否则保留；
+- 3） 去除含N比率超过10%的reads；
+- 4） 舍弃去adapter及质量修剪后长度小于20bp的序列。
+
+&emsp;&emsp;使用软件： Fastp（https://github.com/OpenGene/fastp）
+
+&emsp;&emsp;结果目录：**02_QC**
+
+&emsp;&emsp;对质量修剪后的序列进行数据量统计，结果如下：
+
+<p class="mark">表3.3.1数据统计结果</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/QC_stat.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/QC_stat.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+- Q20、Q30%：Phred 数值大于20、30的碱基占总体碱基的百分比
+
+- GC %：碱基G和C的数量总和占总的碱基数量的百分比
+

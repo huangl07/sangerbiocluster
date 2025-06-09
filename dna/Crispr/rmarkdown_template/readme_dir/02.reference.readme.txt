@@ -1,0 +1,18 @@
+参考基因组文件结果汇总
+
+结果文件说明：
+1.	readme.txt：文件详细介绍说明
+2.	ref.fa：参考基因组文件
+3.	ref.gtf：参考基因组注释文件
+4.	ref.cds.fa：参考基因组（编码区）文件
+5.	ref.protein.fa：参考基因组（蛋白）文件
+6.	ref.genome.summary.xls：参考基因组序列统计表
+
+表头具体说明：
+ref.genome.summary.xls
+1.	initial_name：染色体/scaffold原始序列名；
+2.	assembly_level：组装水平；
+3.	output_name：在参考基因组ref.fa输出的名字；
+4.	cache_name：在参考基因组ref.fa输出的名字；
+5.	length：片段长度；
+6.	GC：GC碱基占所有碱基的比例；

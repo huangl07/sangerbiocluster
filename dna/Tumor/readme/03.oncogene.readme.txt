@@ -1,0 +1,36 @@
+驱动基因统计结果汇总
+
+结果文件说明：
+1.	readme.txt：文件详细介绍说明
+2.	oncogene.stat：基因组比对测序深度图
+3.	*coverage.png/pdf：基因组比对覆盖度图
+4.	*insert.png/pdf：基因组比对插入片段长度图
+4.	all.summary.stats：样品比对统计结果汇总表
+
+
+表头具体说明：
+oncogene.stat
+Sample_Control：肿瘤样品名_对照样本名；
+Genes_all：统计到的驱动基因总数量；
+IntOGen：IntOGen注释到的驱动基因数量；
+CGC：CGC注释到的驱动基因数量；
+Com299：Com299文献注释到的驱动基因数量；
+Com435：Com435文献注释到的驱动基因数量；
+B125：B125文献注释到的驱动基因数量；
+
+Symbol：基因名；
+Chrom：染色体；
+Pos：位置；
+Ref：参考基因组碱基类型；
+Alt：变异碱基类型；
+Classification：变异所处区域；
+IntOGen_Cancer_Type：IntOGen肿瘤类型；
+IntOGen_Role：IntOGen中基因功能；
+CGC_Tumour_Types：CGC肿瘤类型；
+CGC_Cancer_Role：CGC基因功能；
+Com299_Pancaner_Frequency：Com299文献中计算得到的该基因驱动癌症的频率；
+Com435_Putative_DriveCategory：Com435文献中驱动基因分类；
+B125_Classification：B125文献中对基因的分类；
+B125_Core_pathway：B125文献中与基因相关的核心通路；
+B125_Process：B125文献中与基因相关的生物学进程；
+SMG127_Pancan12_Freq：SMG127文献中计算得到的该基因驱动癌症的频率；

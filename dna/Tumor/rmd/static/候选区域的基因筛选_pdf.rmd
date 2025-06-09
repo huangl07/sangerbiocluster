@@ -1,0 +1,60 @@
+## 候选区域定位分析
+
+***
+  
+### 候选区域的基因筛选
+  
+***
+  
+  <style>
+  img.inline-img {
+    display:inline;
+    width:auto;
+  }
+
+img.independent-img {
+  display:block;
+  width:auto;
+}
+</style>
+&emsp;&emsp;理论上候选区域内的基因都有可能与性状直接相关，在候选区域内的基因上、亲本之间或者混池之间发生了非同义突变的位点，影响了基因的功能和蛋白的结构编码。因此筛选候选区域中发生变异的位点，有助于我们更快速的找到与性状相关的功能基因。以下是通过4种统计方法分别定位到的候选区域内的相关统计结果，见表3-14：
+
+<p class='mark'>表3–14 候选区域内的相关信息统计表</p>
+  
+```{r echo=FALSE}
+library(DT)
+data <- read.delim('file/all.region.stat.xls',sep='\t',header=T,check.names = F)
+show_data <- data[c("Method", "Chrom", "Pos_Start", "Pos_End", "Gene", "SNP", "InDel", "Effsnp", "EffInDel")]
+datatable(show_data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/all.region.stat.xls')///pdf
+show_data <- data[c("Method", "Chrom", "Pos_Start", "Pos_End", "Gene", "SNP", "InDel", "Effsnp", "EffInDel")]
+kable(show_data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>Chrom：染色体编号；</p>
+
+- <p class='mark1'>Pos Start：起始位点；</p>
+
+- <p class='mark1'>Pos End：终止位点；</p>
+
+- <p class='mark1'>Gene：关联区域 Gene 的数量；</p>
+
+- <p class='mark1'>SNP：关联区域 SNP 的数量；</p>
+
+- <p class='mark1'>InDel：关联区域 INDEL 的数量；</p>
+
+- <p class='mark1'>Effsnp：关联区域有效突变 SNP 的数量；</p>
+
+- <p class='mark1'>EffInDel：关联区域有效突变 INDEL 的数量。</p>
+
+  
+&emsp;&emsp;本项目有关候选区间更详细的统计结果详见结题文件夹目录下的：Result_BSA/02.ED-slid/gene.total.xls（ED+滑窗）、Result_BSA/03.index-slid/gene.total.xls（SNP-index+滑窗）、Result_BSA/04.Gprime/gene.total.xls（G′ value+滑窗）、Result_BSA/05.index-loess/gene.total.xls（SNP-index+loess拟合）。
+
+

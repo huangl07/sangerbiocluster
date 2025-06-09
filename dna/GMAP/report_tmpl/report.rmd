@@ -1,0 +1,201 @@
+---
+title: |
+  | **动植物基因组重测序**
+  | **遗传图谱结题报告**
+date: "`r ifelse(params$docfmt == 'html','',format(Sys.time(), '%Y年%m月%d日'))`"
+params:
+  docfmt: html
+  devmode: false
+  wgs_result: wgs_result_dir
+  gmap_result: gmap_result_dir
+  data_release: data_release_dir
+  type: wgs
+  run_qtl : no
+documentclass: article
+classoption:
+  - a4paper
+  - titlepage
+output:
+  bookdown::html_document2:
+    css:
+      - static/css/bootstrap.min.css
+      - static/css/styles.css
+    df_print: paged
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    math_method: katex
+    self_contained: true
+    keep_md: true
+    pandoc_args:
+      - --standalone
+      - --metadata=title:遗传图谱结题报告
+    fig_caption: true
+    includes:
+      in_header: static/html/header.html
+      after_body: static/html/tailer.html
+  bookdown::pdf_document2:
+    toc: true
+    toc_depth: 3
+    includes:
+      in_header: tex/header.tex
+    keep_tex: true
+    latex_engine: xelatex
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+here::i_am("report.rmd")
+options(scipen=20)
+library(dplyr)
+library(latex2exp)
+library(kableExtra)
+library(knitr)
+library(DT)
+library(slickR)
+library(stringr)
+library(tidyverse)
+htmlfmt <- (params$docfmt == "html")
+pdffmt <- (params$docfmt != "html")
+root_dir <- here::here()
+knitr::opts_knit$set(
+  root.dir = root_dir
+)
+knitr::opts_chunk$set(
+  fig.align = 'center',
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  out.width = if(htmlfmt) "100%" else "50%",
+  fig.pos = "H",
+  fig.ext = ".png"
+)
+dt_foot <- function(foot_vector){
+  cat('<blockquote>\n<p>注：<p>\n<ul class="dt-footnotes">',
+  paste0('<li class="dt-footnotes">',foot_vector,'</li>\n'),
+  '</ul>','</blockquote>',sep="\n"
+  )
+}
+kbl_foot <- function(input,label){
+  footnote(
+    kable_input=input,
+    general = label,
+    threeparttable = FALSE,
+    general_title = "注："
+  )
+}
+table_bline <- function(input){
+  sub("\\\\endhead\n\n\\\\endfoot","\\\\endhead\n\\\\hline\n\\\\endfoot",input)
+}
+prettier <- function(number,small=0){
+  prettyNum(big.mark = ",",nsmall=small,scientific=FALSE,round(number,digits = small))
+}
+tbl_prettier <- function(table,small=NA){
+  out <- table
+  csmall <- rep_len(small,ncol(out))
+  for(i in seq_len(ncol(out))){
+    if(!is.na(csmall[i]) && is.numeric(out[,i])){
+      out[,i] <- prettier(out[,i],small=csmall[i])
+    }
+  }
+  out
+}
+dt_caption <- function(title,label){
+  cat('<table class="caption-only">', paste0("<caption>",
+                      paste0("(#tab:",label,")"),
+                      title,
+                      "</caption>"),
+                      "</table>", sep ="\n")
+}
+get_file <- function(dir, glob,recurse=TRUE){
+  fs::dir_ls(dir,glob=glob,recurse=recurse)
+}
+
+```
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\\setcounter{page}{1}\n')
+```
+
+```{r load_common_data}
+wgs_result_dir <- normalizePath(params$wgs_result)
+gmap_result_dir <- normalizePath(params$gmap_result)
+data_release_dir <- normalizePath(params$data_release)
+project_info_file <- file.path(wgs_result_dir,"output","tmp","02.reference", "project.info") #读取project.info信息文件
+genome_info_file <- file.path(wgs_result_dir,"output","tmp", "02.reference", "info.log") # 读取info.log信息文件
+project_info <- readLines(project_info_file)
+project_info <- project_info[project_info!=""]
+project_info <- unlist(strsplit(project_info[1],"\t"))
+genome_info <- read.delim(genome_info_file, sep='\t', header=TRUE, check.names = FALSE)[1:6,]
+contract_number <- project_info[1]
+project_number <- project_info[2]
+client_name <- project_info[3]
+sample_number <- project_info[6]
+genome_chinese <- genome_info[1,2]
+genome_latin <- gsub("_", " ", genome_info[2,2])
+genome_name <- paste0(genome_chinese, "(", genome_latin, ")")
+genome_size <- round(as.numeric(genome_info[4,2]), 2)
+genome_size <- prettier(genome_size,small=2)
+genome_info[4,1] <- "基因组大小（Mb）"
+genome_info[4,2] <- genome_size
+genome_scale <- genome_info[5,2]
+genome_link <- genome_info[6,2]
+if (length(project_info) < 7) {
+    platform <- "Illumina NovaSeq X Plus"
+    prepkit <- "Truseq Nano DNA HT Sample Prep Kit (Illumina USA)"
+} else if (project_info[7] == "DNBSEQ-T7") {
+    platform <- "DNBSeq T7"
+    prepkit <- "MGIEasy Cell-free DNA Library Prep Kit"
+} else {
+    platform <- "Illumina NovaSeq X Plus"
+    prepkit <- "Truseq Nano DNA HT Sample Prep Kit (Illumina USA)"
+}
+platform0 <- unlist(strsplit(platform, " "))[1]
+if (params$type == "wgs"){
+    rmd = "rmd/"
+}else if(params$type == "rad"){
+    rmd = "rmd_rad/"
+}else{
+    rmd = "rmd_gbs/"
+}
+```
+
+```{r workflow-module, results='asis'}
+cat(
+  knitr::knit_child(paste0(rmd,'1.workflow.rmd'), envir = globalenv(), quiet = TRUE)
+  )
+```
+```{r fastq-qc-module, results='asis'}
+cat(
+  knitr::knit_child(paste0(rmd,'2.Fastq_qc.rmd'), envir = globalenv(), quiet = TRUE)
+  )
+```
+```{r mapping-module, results='asis'}
+cat(
+  knitr::knit_child(paste0(rmd,'3.Mapping.rmd'), envir = globalenv(), quiet = TRUE)
+  )
+```
+```{r snp-module, results='asis'}
+cat(
+  knitr::knit_child(paste0(rmd,'4.SNV.rmd'), envir = globalenv(), quiet = TRUE)
+  )
+```
+```{r genetic-map-module, results='asis'}
+cat(
+  knitr::knit_child(paste0(rmd,'5.GeneticMap.rmd'), envir = globalenv(), quiet = TRUE)
+  )
+```
+```{r qtl-module, results='asis',eval=params$run_qtl=="yes"}
+cat(
+    knitr::knit_child(paste0(rmd,'7.QTL.rmd'), envir = globalenv(), quiet = TRUE)
+  )
+```
+```{r appendix-module, results='asis'}
+cat(
+  knitr::knit_child(paste0(rmd,'99.appendix.rmd'), envir = globalenv(), quiet = TRUE)
+  )
+```
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\n\\newpage\n')
+```

@@ -1,0 +1,98 @@
+## 变异检测及注释
+
+单核苷酸多态性（Single Nucleotide Polymorphism，SNP）是指在基因组水平上由单个核苷酸的变异所引起的DNA序列多态性，是基因组上多态性最高的遗传变异之一。SNP 变异类型分为转换和颠换两种，同种类型碱基（嘌呤与嘌呤、嘧啶与嘧啶）之间的突变称为转换（Transition）；不同类型碱基（嘌呤与嘧啶）之间的突变称为颠换（Transversion）。一般转换比颠换更容易发生，所以转换/颠换（Ts/Tv）的比例一般大于1，具体比值和所测物种有关。
+
+InDel是指基因组中小片段的插入（Insertion）和缺失（Deletion）序列，相对于一个样本或参考基因组而言，另一个样本的基因组中有一定数量的核苷酸插入或缺失，同样是基因组上多态性最高的遗传变异之一。
+
+### SNP 检测
+
+利用 GATK 的 Best Practices 流程处理比对结果（BAM 文件），利用 GATK 的 Haplotyper 方法进行 SNP 检测，过滤条件按照 GATK 推荐的参数进行，具体可见：具体可见[https://software.broadinstitute.org/gatk/documentation/article.php?id=3225](https://software.broadinstitute.org/gatk/documentation/article.php?id=3225)。与参考基因组进行比对，样品 SNP 统计结果见表\@ref(tab:snpstat-table)：
+
+```{r get-snpstat-table}
+arrange_snp_stat <- arrange_snp_stat %>%
+  tbl_prettier(c(NA, 0, 0, 0, 2, 0, 0))
+tempfn <- c(
+"Sample ID：样品编号；",
+"SNP Number：检测到的单核苷酸多态性位点的数量，表示材料与参考基因组之间的核苷酸变异；",
+"Transition：转换的SNP数量；",
+"Transversion：颠换的SNP数量；",
+"Ts/Tv：转换型SNP（Transition）和颠换型SNP（Transversion）的比值；",
+"Heterozygosity Number：杂合分型的SNP位点总数；",
+"Homozygosity Number：纯合分型的SNP位点总数。"
+)
+```
+
+```{r snpstat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("SNP数据统计表","snpstat-table")
+datatable(arrange_snp_stat, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r snpstat-table,eval=pdffmt}
+arrange_snp_stat[,1] <- gsub("_","\\\\_",arrange_snp_stat[,1])
+kbl(row.names=FALSE, arrange_snp_stat, "latex",caption="SNP数据统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(arrange_snp_stat)),align="c"),escape=FALSE) %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+
+
+### SNP 功能注释
+
+采用 SnpEff 程序结合本项目`r genome_name`基因组注释信息，对检测到的 SNP 进行功能注释，SnpEff 会根据基因组的基因和功能区域的分布进行分析，对每个 SNP 所在的位置和功能进行统计，并对每个变异类型的功能进行统计。表\@ref(tab:snpannostat-table)为 SNP 位置分布信息统计表，表\@ref(tab:effectstat-table)为 SNP 功效信息统计表：
+
+> *完整的 SNP 功效信息统计表详见结题文件夹目录下[data_release/01.vcf2table](./data_release/01.vcf2table)文件夹下的snp_anno.xls文件*
+
+```{r get-snpannostat-table}
+arrange_snp_anno <- arrange_snp_anno %>%
+  tbl_prettier(c(NA, 0, 0, 0, 0, 0, 0))
+tempfn <- c(
+    "Sample ID：样品编号；",
+    "Intergenic Variant：样本在基因间隔区的SNP位点个数；",
+    "Missense Variant：样本在外显子区域的错义突变的SNP位点个数；",
+    "Start Lost：由于SNP的突变导致启动子缺失的SNP位点个数；",
+    "Stop Gained：由于SNP的突变导致终止子获得的SNP位点个数；",
+    "Stop Lost：由于SNP的突变导致终止子突变的SNP位点个数；",
+    "Synonymous Variant：样本在外显子区域的同义突变的SNP位点个数。"
+)
+```
+
+```{r snpannostat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("全基因组区域SNP位置分布信息统计表","snpannostat-table")
+datatable(arrange_snp_anno, rownames=FALSE,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r snpannostat-table,eval=pdffmt}
+arrange_snp_anno[,1] <- gsub("_","\\\\_",arrange_snp_anno[,1])
+kbl(row.names=FALSE, arrange_snp_anno, "latex", caption="全基因组区域SNP位置分布信息统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(arrange_snp_anno)),align="c"),escape=FALSE) %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+
+```{r get-effectstat-table}
+arrange_snp_impact <- arrange_snp_impact %>%
+  tbl_prettier(c(NA, 0, 0, 0, 0))
+tempfn <- c(
+    "Sample ID：样品编号；",
+    "High：具有破坏性影响，可能导致蛋白质功能丧失；",
+    "Moderate：该类变异可能改变蛋白质的有效性；",
+    "Low：该类变异大部分无害，不太可能改变蛋白质；",
+    "Modifier：非编码变异或影响非编码基因的变异。"
+)
+```
+
+```{r effectstat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("全基因组区域SNP功效信息统计表","effectstat-table")
+datatable(arrange_snp_impact, rownames=FALSE,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r effectstat-table,eval=pdffmt}
+kbl(row.names=FALSE, arrange_snp_impact, "latex", caption="全基因组区域SNP功效信息统计表", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+

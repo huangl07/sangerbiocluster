@@ -1,0 +1,88 @@
+
+	   </tbody>
+      </table>
+    </div>
+
+    <script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-treetable/3.2.0/jquery.treetable.js"></script>
+    <script>
+      $("#example-basic").treetable({ expandable: true });
+
+      $("#example-basic-static").treetable();
+
+      $("#example-basic-expandable").treetable({ expandable: true });
+
+      $("#example-advanced").treetable({ expandable: true });
+
+      // Highlight selected row
+      $("#example-advanced tbody").on("mousedown", "tr", function() {
+        $(".selected").not(this).removeClass("selected");
+        $(this).toggleClass("selected");
+      });
+
+      // Drag & Drop Example Code
+      $("#example-advanced .file, #example-advanced .folder").draggable({
+        helper: "clone",
+        opacity: .75,
+        refreshPositions: true, // Performance?
+        revert: "invalid",
+        revertDuration: 300,
+        scroll: true
+      });
+
+      $("#example-advanced .folder").each(function() {
+        $(this).parents("#example-advanced tr").droppable({
+          accept: ".file, .folder",
+          drop: function(e, ui) {
+            var droppedEl = ui.draggable.parents("tr");
+            $("#example-advanced").treetable("move", droppedEl.data("ttId"), $(this).data("ttId"));
+          },
+          hoverClass: "accept",
+          over: function(e, ui) {
+            var droppedEl = ui.draggable.parents("tr");
+            if(this != droppedEl[0] && !$(this).is(".expanded")) {
+              $("#example-advanced").treetable("expandNode", $(this).data("ttId"));
+            }
+          }
+        });
+      });
+
+      $("form#reveal").submit(function() {
+        var nodeId = $("#revealNodeId").val()
+
+        try {
+          $("#example-advanced").treetable("reveal", nodeId);
+        }
+        catch(error) {
+          alert(error.message);
+        }
+
+        return false;
+      });
+    </script>
+
+	<form action="">
+	<fieldset>
+	<legend><p><button type="button" class="btn btn-default btn-sm">
+          <span class="glyphicon glyphicon-exclamation-sign"></span>提示:</button></p></legend>
+	<ul class='task-list'>
+		<li class='task-list-item task-list-done' >
+	    <input type='checkbox'  checked> </input><p style="color:#FF0000">点击该目录中文件名，可以直接链接到对应文件具体位置。</p>
+		</li>
+	</ul>
+	<ul class='task-list'>
+		<li class='task-list-item task-list-done' >
+	    <input type='checkbox'  checked> </input><p style="color:#FF0000">请您务必确保该目录、数据文件保持原相对位置，不要随意移动文件或文件夹，否则无法实现链接。</p>
+		</li>
+	</ul>
+
+	</fieldset>
+	</form>
+	<hr style="height:5px;border:none;border-top:5px ridge grey;" />
+	<table align="center"  height="100%" style="font-size:12px;font-weight:bold;color:#F5F5F5" >
+	<h6 style="text-align:center">如有疑问请咨询项目销售或运营，我们将竭诚为您服务。感谢您对美吉的信任！</h6>
+	<h6 style="text-align:center">COPYRIGHT@2017-2023MAJORBIO <a href="https://www.majorbio.com" target="_blank">上海美吉生物医药科技有限公司</a>    沪ICP备12031824号</h6>
+	<h6 style="text-align:center">公司地址:上海市浦东新区国际医学园区康新公路3399弄3号楼</h6>
+	<h6 style="text-align:center">电话：400 660 1216  邮箱： marketing@majorbio.com 传真：021-20987730  微信: Majorbio <a href="https://cloud.majorbio.com" target="_blank">美吉生物云平台</a></h6>
+  </body>
+</html>

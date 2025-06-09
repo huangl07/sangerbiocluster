@@ -1,0 +1,45 @@
+Name of files	Annotation of files
+--RawdataQC	原始数据质控图文件
+-Figure	质控结果图
+-*_qual.pdf	测序数据的碱基错误率分布图
+-*_base.pdf	测序数据的碱基组成分布图
+--Variant_calling	变异检测及注释结果文件夹
+-Figure	变异检测结果图
+-*insert.pdf	对应样本的插入片段长度分布图
+-*indel.pdf	对应样本的InDel长度分布图
+-*depth.pdf	对应样本的测序深度分布统计图
+-*genome.coverage.pdf	对应样本的染色体覆盖深度分布统计图
+-snp.diff.pdf	所有样本间的SNP差异分布图
+-snp.qual.pdf	SNP质量分布图
+-indel.diff.pdf	所有样本间的InDel差异分布图
+-indel.qual.pdf	InDel质量分布图
+-Result	变异检测结果文件
+-SNP	SNP检测及注释结果文件夹
+-*.snp.anno.primary.vcf	对应样本的SNP注释vcf文件
+-InDel	InDel检测及注释结果文件夹
+-*.indel.anno.primary.vcf	对应样本的InDel注释文件
+-Eff	变异位点的注释文件
+-Table	变异检测结果统计表
+-3-3.xls	测序质量统计表
+-3-4.xls	比对参考基因组结果数据统计表
+-3-5.xls	样本覆盖深度和覆盖度统计表
+-3-6.xls	SNP数据统计表
+-3-7.xls	SNP位置分布统计表
+-3-8.xls	全基因组区域SNP对蛋白翻译影响结果统计表
+-3-9.xls	InDel数据统计表
+-3-10.xls	InDel位置分布统计表
+-3-11.xls	全基因组区域InDel对蛋白翻译影响结果统计表
+--Association	关联分析结果文件
+-Figure	关联分析结果图
+-*.association analysis.png	全基因组关联分析结果
+-*.chr. association analysis.png	染色体区域关联分析结果
+-*.pop.final.vcf	所有变异位点的注释文件
+-*.pop.eggnog.stat	所有变异位点的eggnog注释文件
+-*.pop.go.start	所有变异位点的go注释文件
+-*.pop.kegg.start	所有变异位点的kegg注释文件
+-*.circos.png	Circos图
+-Table	关联分析结果统计表
+-3-12.xls	    关联分析标记信息统计表
+-3-13.xls	关联区域信息统计表
+-3-14.xls	基因区变异结果统计
+-3-15.xls	候选区域内基因注释统计表

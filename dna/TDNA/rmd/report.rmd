@@ -1,0 +1,175 @@
+---
+title: |
+  | **插入位点检测报告**
+date: "`r ifelse(params$docfmt == 'html','',format(Sys.time(), '%Y年%m月%d日'))`"
+params:
+  docfmt: html
+  run_cnv: 'No'
+  run_sv: 'No'
+  run_ssr: 'No'
+  variation_type: 'Germline'
+  devmode: false
+documentclass: article
+classoption:
+  - a4paper
+  - titlepage
+output:
+  bookdown::html_document2:
+    css:
+      - static/css/bootstrap.min.css
+      - static/css/styles.css
+    df_print: paged
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    math_method: katex
+    self_contained: true
+    keep_md: true
+    pandoc_args:
+      - --standalone
+      - --metadata=title:插入位点检测报告
+    fig_caption: true
+    includes:
+      in_header: static/html/header.html
+      after_body: static/html/tailer.html
+  bookdown::pdf_document2:
+    toc: true
+    toc_depth: 3
+    includes:
+      in_header: tex/header.tex
+    keep_tex: true
+    latex_engine: xelatex
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+here::i_am("report.rmd")
+options(scipen=20)
+library(dplyr)
+library(latex2exp)
+library(kableExtra)
+library(knitr)
+library(DT)
+library(slickR)
+library(stringr)
+htmlfmt <- (params$docfmt == "html")
+pdffmt <- (params$docfmt != "html")
+root_dir <- here::here()
+knitr::opts_knit$set(
+  root.dir = root_dir
+)
+knitr::opts_chunk$set(
+  fig.align = 'center',
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  out.width = if(htmlfmt) "100%" else "50%",
+  fig.pos = "H",
+  fig.ext = ".png"
+)
+dt_foot <- function(foot_vector){
+  cat('<blockquote>\n<p>注：<p>\n<ul class="dt-footnotes">',
+  paste0('<li class="dt-footnotes">',foot_vector,'</li>\n'),
+  '</ul>','</blockquote>',sep="\n"
+  )
+}
+kbl_foot <- function(input,label){
+  footnote(
+    kable_input=input,
+    general = label,
+    threeparttable = FALSE,
+    general_title = "注："
+  )
+}
+table_bline <- function(input){
+  sub("\\\\endhead\n\n\\\\endfoot","\\\\endhead\n\\\\hline\n\\\\endfoot",input)
+}
+prettier <- function(number,small=0){
+  prettyNum(big.mark = ",",nsmall=small,scientific=FALSE,round(number,digits = small))
+}
+tbl_prettier <- function(table,small=NA){
+  out <- table
+  csmall <- rep_len(small,ncol(out))
+  for(i in seq_len(ncol(out))){
+    if(!is.na(csmall[i]) && is.numeric(out[,i])){
+      out[,i] <- prettier(out[,i],small=csmall[i])
+    }
+  }
+  out
+}
+dt_caption <- function(title,label){
+  cat('<table class="caption-only">', paste0("<caption>",
+                      paste0("(#tab:",label,")"),
+                      title,
+                      "</caption>"),
+                      "</table>", sep ="\n")
+}
+```
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\\setcounter{page}{1}\n')
+```
+
+```{r load_common_data}
+project_info <- readLines('info/project.info')
+genome_info <- read.delim('info/info.log',sep='\t',header=TRUE,check.names = FALSE)[1:6,]
+genome_info[4,2] <- prettier(as.numeric(genome_info[4,2]),2)
+project_info <- project_info[project_info!=""]
+project_info <- unlist(strsplit(project_info[1],"\t"))
+project_info[4] <- genome_info[1,2]
+project_info[5] <- genome_info[2,2]
+project_info[5] <- gsub("_"," ",project_info[5])
+if (length(project_info) < 7) {
+    platform <- "Illumina NovaSeq X Plus"
+    prepkit <- "Truseq Nano DNA HT Sample Prep Kit (Illumina USA)"
+} else if (project_info[7] == "DNBSEQ-T7") {
+    platform <- "DNBSeq T7"
+    prepkit <- "MGIEasy Cell-free DNA Library Prep Kit"
+} else {
+    platform <- "Illumina NovaSeq X Plus"
+    prepkit <- "Truseq Nano DNA HT Sample Prep Kit (Illumina USA)"
+}
+platform0 <- unlist(strsplit(platform, " "))[1]
+```
+
+```{r workflow-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/1.workflow.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+
+```{r fastq-qc-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/2.Fastq_qc.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r mapping-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/3.Mapping.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r tdna-module, results='asis'}
+cat(
+  knitr::knit_child( 'rmd/10.tdna.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n')
+```
+
+```{r appendix-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/99.appendix.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\n\\newpage\n')
+```
+
+

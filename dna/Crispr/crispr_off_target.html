@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Markmap</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+#mindmap {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
+<link rel="stylesheet" href="https://unpkg.com/markmap-toolbar@0.15.3/dist/style.css">
+</head>
+<body>
+<svg id="mindmap"></svg>
+<script src="https://unpkg.com/d3@7.8.5/dist/d3.min.js"></script><script src="https://unpkg.com/markmap-view@0.15.3/dist/browser/index.js"></script><script src="https://unpkg.com/markmap-toolbar@0.15.3/dist/index.js"></script><script>(r => {
+                setTimeout(r);
+              })(() => {
+  const {
+    markmap,
+    mm
+  } = window;
+  const {
+    el
+  } = markmap.Toolbar.create(mm);
+  el.setAttribute('style', 'position:absolute;bottom:20px;right:20px');
+  document.body.append(el);
+})</script><script>((getMarkmap, getOptions, root, jsonOptions) => {
+          const markmap = getMarkmap();
+          window.mm = markmap.Markmap.create('svg#mindmap', (getOptions || markmap.deriveOptions)(jsonOptions), root);
+        })(() => window.markmap,null,{"type":"heading","depth":0,"payload":{"lines":[0,1]},"content":"crispr脱靶率","children":[{"type":"heading","depth":1,"payload":{"lines":[2,3]},"content":"ref处理:每个染色体拆成一个文件","children":[]},{"type":"heading","depth":1,"payload":{"lines":[4,5]},"content":"vcf文件处理:提取case和control的样本","children":[]},{"type":"heading","depth":1,"payload":{"lines":[6,7]},"content":"运行CRISPRitz寻找同源","children":[{"type":"list_item","depth":2,"payload":{"lines":[8,9]},"content":"index-genome","children":[]},{"type":"list_item","depth":2,"payload":{"lines":[9,10]},"content":"search","children":[]}]},{"type":"heading","depth":1,"payload":{"lines":[11,12]},"content":"同源区域变异位点过滤","children":[{"type":"list_item","depth":2,"payload":{"lines":[13,14]},"content":"取CRISPRitz结果左右扩展 n bp（默认100）的区域内的变异","children":[]},{"type":"list_item","depth":2,"payload":{"lines":[14,15]},"content":"过滤样品检出率小于阈值（默认0.5）的位点","children":[]},{"type":"list_item","depth":2,"payload":{"lines":[15,16]},"content":"过滤编辑样本中深度小于阈值（默认10）的位点","children":[]},{"type":"list_item","depth":2,"payload":{"lines":[16,17]},"content":"过滤野生型样本中超过深度阈值（默认10）的位点检出率小于阈值（默认0.5）的位点","children":[]},{"type":"list_item","depth":2,"payload":{"lines":[17,18]},"content":"过滤野生型样本中突变等位基因深度小于阈值（默认4）的位点；","children":[]}]},{"type":"heading","depth":1,"payload":{"lines":[19,20]},"content":"R包ggseqlogo绘图","children":[]}]},{})</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+### Index方法
+
+Index值指在突变池和野生池中突变基因型占所有基因型中的深度比例，由于突变位点与周围标记具有连锁效应，在突变位点附近，突变型混池中的Index值更接近于1，而野生型混池中的Index值更接近于0；而那些连锁效应较弱或不连锁的位点，呈现出随机分布，应符合孟德尔分离比例，正常位点Index值为0.5；两混池间的Index差值关联的区域即是目标性状关联的候选区域。
+
+```{r index-methods, results='asis'}
+if(mutmap){
+    cat(
+        "计算方法简述如下：",
+        "$$Index_{Mut}=Dep_M/(Dep_M+Dep_W)$$",
+        "其中， $Dep_M$ 和 $Dep_W$ 分别为突变型和野生型的等位基因在混池中的 Reads 数目。\n\n",
+        sep="\n\n"
+    )
+}else{
+    cat(
+        "以突变型和野生型混池为例，计算方法简述如下：",
+        "$$Index_{Mut}=Dep_M/(Dep_M+Dep_W)$$",
+        "$$Index_{Wild}=Dep_M/(Dep_M+Dep_W)$$",
+        "$$\\Delta Index=Index_{Mut}-Index_{Wild}$$",
+        "其中， $Dep_M$ 和 $Dep_W$ 分别为突变型和野生型的等位基因在突变池与野生池中的 Reads 数目。\n\n",
+        sep="\n\n"
+    )
+}
+```
+
+
+
+
+```{r snpindex-plot,fig.cap = "QTL-seq中SNP-index计算方法"}
+include_graphics("static/src/snpindex.png")
+if(as.numeric(index_bootstrap)>0){
+    index_content <- paste0(
+        "我们对滑窗结果使用bootstrap法针对不同位点深度和混池大小进行随机抽样",
+        index_bootstrap,
+        "次，之后取阈值p $\\leq$ ",
+        index_p,
+        " 获得候选区间。")
+}else{
+    index_content <- paste0("我们对滑窗结果使用",loess_q,"分位数作为阈值获得候选区间。")
+}
+```
+
+对经过亲本标记过滤的子代变异位点，首先分别计算野生型混池和突变型混池中每个位点的Index值及混池间的$\Delta SNP-index$值。为了降低单一变异位点带来的随机波动，我们采用滑窗和loess拟合两种方法对$\Delta SNP-index$值进行进行降噪处理。为了提高分析准确性，`r index_content`对于loess拟合则采用 `r loess_q` 分位数做为阈值获得候选区间, 同时为了避免标记不均匀带来的误差，我们要求候选区域内至少包含`r index_minmarker`个阈值线之上的变异位点。滑窗和loess拟合降噪后的变异位点Index在全基因组范围内的分布分别如图\@ref(fig:index-slid-plot)和图\@ref(fig:index-loess-plot)所示。
+
+> *index-slid方法的单条染色体的曼哈顿结果图详见结题文件夹目录下[data_release/02.index](./data_release/02.index)文件夹下的index.\*.png/pdf文件（\*代表染色体ID）文件*
+
+> *index-loess方法的单条染色体的曼哈顿结果图详见结题文件夹目录下[data_release/03.loess](./data_release/03.loess)文件夹下的loess.\*.png/pdf（\*代表染色体ID）文件*
+
+```{r index-slid-plot, fig.cap="index-slid方法拟合曼哈顿结果图", out.width = "100%"}
+include_graphics("../file/index.png")
+```
+
+```{r index-loess-plot, fig.cap="index-loess方法拟合曼哈顿结果图", out.width = "100%"}
+include_graphics("../file/loess.png")
+```
+
+> **注**：图中的一个点代表一个SNP/InDel标记，横轴为标记的染色体位置信息，纵轴为是SNP/InDel-index值；图中的黑线表示拟合的曲线，红色线表示阈值线。
+

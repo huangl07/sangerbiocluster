@@ -1,0 +1,42 @@
+## circRNA表达量分析
+
+***
+
+&emsp;&emsp;表达量一般是通过检测其表达到的Reads多少来衡量，但是由于circRNA的特殊性，很难准确获取所有比对上circRNA的Reads信息（线性RNA的干扰），因此通常的表达量估计方法是使用Back-spliced Reads的数目来估计circRNA的表达量。
+
+&emsp;&emsp;SRPBM（Spliced Reads per Billion Mapping）的缩写，利用反式剪切Reads来估计表达量。SRPBM方法能在不必知道所有比对上circRNA的Reads的情况下来估计表达量。
+
+&emsp;&emsp;计算公式如下：SRPBM=Spliced reads/(Total mapped reads)×109。
+
+&emsp;&emsp;结果目录：**06ExpAnalysis**
+
+&emsp;&emsp;结果目录中包含如下结果文件：
+
+- **CIRI2_express_count.xls：**所有样本中每个circRNA的支持junction reads数
+
+- **CIRI2_express_RPM.xls：**所有样本中每个circRNA的RPM表达量值（表3.8.1）
+
+- **CIRI2_express_RPM.xls.density.xls.pdf：**所有样本circRNA 的RPM分布图（图3.8.1）
+
+<p class="mark">表3.8.1 circRNA表达量（RPM）结果表示例</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/CIRI2_express_RPM.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/CIRI2_express_RPM.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+<img class="normal1" src='file/CIRI2_express_RPM.xls.density.png'>
+
+<p class="mark">图3.8.1 circRNA 的RPM分布图</p>
+
+&emsp;&emsp;注：图为所有circRNA的表达量概率密度分布图，图中横坐标为log2RPM，该数值越高，表示circRNA表达量越高；纵坐标为circRNA的密度，即为对应横轴表达量的circRNA数 / 检测已表达circRNA的总数；图中每种颜色表示一个样本，所有概率的总和为1，即每个区域的面积均为1；密度曲线的峰值表示整个样本circRNA表达量最集中的区域。
+
+

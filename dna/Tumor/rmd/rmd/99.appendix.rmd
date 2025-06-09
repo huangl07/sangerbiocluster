@@ -1,0 +1,62 @@
+\newpage
+
+# 参考文献
+
+1. [Chen X. *et al.* Manta: rapid detection of structural variants and indels for germline and cancer sequencing applications. *Bioinformatics*, 2016, 32, 1220-1222.](https://academic.oup.com/bioinformatics/article/32/8/1220/1743909?login=false)
+
+2. [Cingolani P. *et al.* A program for annotating and predicting the effects of single nucleotide polymorphisms, SnpEff: SNPs in the genome of Drosophila melanogaster strain w1118; iso-2; iso-3. Fly, 2012, 6, 2.](https://pubmed.ncbi.nlm.nih.gov/22728672/)
+
+3. [Jung Y and Han D. BWA-MEME: BWA-MEM emulated with a machine learning approach. bioinformatics, 2022, 38, 9.](https://academic.oup.com/bioinformatics/article/38/9/2404/6543607)
+
+4. [Krzywinski M. *et al.* Circos: an information aesthetic for comparative genomics. Genome research, 2009, 19, 9.](https://genome.cshlp.org/content/19/9/1639.long)
+
+5. [Shifu C. *et al.* fastp: an ultra-fast all-in-one FASTQ preprocessor, Bioinformatics, 2018, 34, i884–i890.](https://doi.org/10.1093/bioinformatics/bty560)
+
+6. [Talevich E. *et al.* CNVkit: genome-wide copy number detection and visualization from targeted DNA sequencing. PLoS computational biology, 2016, 12, 4.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4839673/)
+
+7. [Vander A.  *et al.* From FastQ Data to High-Confidence Variant Calls: The Genome Analysis Toolkit Best Practices Pipeline. Curr Protoc Bioinformatics, 2013, 43, 11.10.1-11.10.33.](https://pubmed.ncbi.nlm.nih.gov/25431634/)
+
+
+\newpage
+
+# 附录
+
+## 变异检测分析使用软件版本与下载链接
+
+- fastp：https://github.com/OpenGene/fastp
+
+- BWA-meme：https://github.com/bwa-meme/
+
+- GATK：https://software.broadinstitute.org/gatk/
+
+- SAMtools：http://www.htslib.org/
+
+- Sentieon：https://www.sentieon.com/products/
+
+- Manta：https://github.com/Illumina/manta
+
+- CNVkit：https://cnvkit.readthedocs.io/en/
+
+- SnpEff：http://snpeff.sourceforge.net/
+
+- Circos：http://www.circos.ca/software/
+
+
+## 附件说明
+
+### 文件解压缩方法
+
+所有提供的文件均为Linux系统下的文件，压缩包使用`tar -zcvf`命令压缩，以下为不同系统用户解压缩的方法：
+
+Unix/Linux/Mac用户：使用`tar -zcvf *.tar.gz`命令；
+
+Windows 用户：使用WinRAR软件解压缩。
+
+### 文件打开或浏览方法
+
+如果在本附录中无特殊说明，所有提供的文件均为Linux系统下文本文件，Unix/Linux用户可以使用`more`或`less`命令查看文本文件内容。对于Windows用户，一般文本文件可以使用写字板或者Excel打开。推荐使用NotePad软件打开超过10M以上的文本文件，或选择Unix/Linux/MacOS系统在终端中打开相关文件。
+
+数据中可能包含部分图像文件，一般图像文件后缀名为png、pdf、gif、tiff等，对于图像文件，Windows用户可以使用图片浏览器打开，Linux/Unix用户使用`display`命令打开。
+
+后缀名为svg的文件为文本格式描述的图像文件，Windows用户需要安装 Adobe Illustrator 软件打开。Linux/Unix用户可以使用`rsvg-view`命令查看。公司默认提供pdf格式的矢量图，可利用Adobe Illustrator软件对该格式图片进行编辑。Linux下的表格均为制表符（Tab）分割的文本，为了便于阅读，建议使用Excel或OpenOffice等办公软件用表格形式打开，打开时请用“Tab 分割”方式。
+

@@ -1,0 +1,5 @@
+source ~/app/bioinfo/dna/new.rc
+source ~/app/bioinfo/dna/miniconda3/etc/profile.d/conda.sh
+conda activate pyclone
+cd ~/app/bioinfo/dna/biosoft/pyclone/examples/mixing/tsv/
+PyClone run_analysis_pipeline --in_files SRR385938.tsv SRR385939.tsv SRR385940.tsv SRR385941.tsv --working_dir pyclone_analysis

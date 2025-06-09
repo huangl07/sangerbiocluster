@@ -1,0 +1,21 @@
+arrange:
+  vcf2table:
+    - mkdir: "01.vcf2table"
+      check: "01.vcf2table"
+      desc: vcf2table文件
+    - check: "01.vcf2table"
+      to: "01.vcf2table"
+      file: 
+        pop_index: "pop.index" 
+        pop_table: "pop.table"
+      new_file: 
+        outfile: "pop.table"
+        outdir: "."
+      function: $arrange_pop_table
+      desc: pop.table文件整理
+    - check: "01.vcf2table"
+      to: "01.vcf2table"
+      file: snp_indel_gene.stat
+      new_file: snp_indel_gene.stat.xls
+      desc: 统计结果整理文件整理
+

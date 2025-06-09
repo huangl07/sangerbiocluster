@@ -1,0 +1,136 @@
+snp/indel变异检测统计结果汇总
+
+结果文件说明：
+1.	结果说明文档.txt：文件详细介绍说明
+2.	final/pop.snpindel.final.vcf.gz：总的变异文件，包含snp和indel
+3.	final/variation.table.xls：总的变异位点table文件，包含snp和indel
+4.	snp(indel)/*.stat.xls：变异基因型(snp/indel)文件单样品snp/indel统计表
+5.	snp(indel)/*_type_distribution.txt：变异基因型(snp/indel)文件snp/indel类型分布统计表
+6.	snp(indel)/indel_anno.stat.xls：变异基因型(snp/indel)注释文件单样品snp/indel统计表
+7.	snp(indel)/*_type_distribution.txt：变异基因型(snp/indel)文件snp/indel类型分布统计图
+8.	snp(indel)/snp_type_distribution.png/pdf：变异基因型(snp/indel)文件snp/indel类型分布统计图
+9.	snp(indel)/pop.*.function.cake.png/pdf：变异基因型(snp/indel)功能统计图
+10.	snp(indel)/pop.*.impact.cake.png/pdf：变异基因型(snp/indel)功能影响统计图
+11.	indel.len.xls：indel长度分布表
+
+表头具体说明：
+variation.table.xls：变异位点表
+CHROM：染色体编号;
+POS：染色体上位置;
+REF：参考基因组的碱基;
+ALT：样品突变后的碱基;
+*：GT：样品基因型;
+*：AD：样品深度;
+alt-genotype：alt的基因型;
+functional_region：变异所处区域;
+Putative_impact：功效影响;
+gene_name：基因名;
+gene_id：基因编号;
+Feature_type：序列特征,如genes、exons、UTRs、transcripts等;
+Feature_id：序列特征id用于gff中查询;
+Transcript_biotype：TypeTranscript生物类型;
+Exon_rank：外显子序数：外显子序号(如：'1'表示第一个外显子，'2'表示第二个外显子，以此类推。);
+HGVS_c：面向cds的HGVS规则变异名;
+HGVS_p：面向蛋白的HGVS规则变异名;
+cDNA_position：在cDNA上的位置;
+CDS_position：在CDS上的位置;
+Protein_position：在蛋白上位置；
+Distance_to_feature：距离基因的位置。
+
+
+indel_anno.stat.xls：indel注释统计表
+sampleID：样本或个体的标识符；
+3_prime_UTR_truncation：3'非翻译区（UTR）截短，指位于基因的3'端非翻译区发生截短变异；
+3_prime_UTR_variant：3'UTR变异，指位于基因的3'端非翻译区发生其他类型的变异；
+5_prime_UTR_truncation：5'UTR截短，指位于基因的5'端非翻译区发生截短变异；
+5_prime_UTR_variant：5'UTR变异，指位于基因的5'端非翻译区发生其他类型的变异；
+HIGH：高影响变异，表示基因的功能可能受到显著影响；
+LOW：低影响变异，表示基因的功能可能受到较小影响；
+MODERATE：中等影响变异，表示基因的功能可能受到适度影响；
+MODIFIER：修饰性变异，表示基因的功能可能受到轻微影响；
+bidirectional_gene_fusion：双向基因融合，指两个基因在基因组中发生融合；
+conservative_inframe_deletion：保守性帧内缺失，指在基因的编码区发生保守性的氨基酸缺失；
+conservative_inframe_insertion：保守性帧内插入，指在基因的编码区发生保守性的氨基酸插入；
+disruptive_inframe_deletion：破坏性帧内缺失，指在基因的编码区发生破坏性的氨基酸缺失；
+disruptive_inframe_insertion：破坏性帧内插入，指在基因的编码区发生破坏性的氨基酸插入；
+downstream_gene_variant：下游基因变异，指位于目标基因下游区域的变异；
+exon_loss_variant：外显子丧失变异，指某个外显子在基因组中发生丧失；
+frameshift_variant：移码变异，指由于插入或删除碱基导致基因组中的阅读框架发生移位；
+gene_fusion：基因融合，指两个或多个基因在基因组中发生融合;
+intergenic_region：基因间区域，指位于基因之间的区域，没有与已知基因相关的注释；
+intragenic_variant：基因内变异，指发生在单个基因内的变异，可以影响基因的功能或表达；
+intron_variant：内含子变异，指位于基因内含子（非编码区域）的变异；
+non_coding_transcript_exon_variant：非编码转录本外显子变异，指位于非编码转录本的外显子区域的变异；
+non_coding_transcript_variant：非编码转录本变异，指与非编码转录本相关的其他类型的变异；
+splice_acceptor_variant：剪切受体位点变异，指位于剪切位点的变异，可能影响基因的剪切过程；
+splice_donor_variant：剪切供体位点变异，指位于剪切供体位点的变异，可能影响基因的剪切过程；
+splice_region_variant：剪切区域变异，指位于剪切区域的变异，可能影响基因的剪切过程；
+start_lost：起始密码子丢失，指基因的起始密码子发生缺失，可能导致蛋白质翻译的异常；
+start_retained_variant：起始密码子保留变异，指基因的起始密码子在变异中得以保留；
+stop_gained：终止密码子获得，指基因序列中出现新的终止密码子，可能导致蛋白质翻译过早终止；
+stop_lost：终止密码子丧失，指基因序列中的终止密码子发生缺失，可能导致蛋白质翻译过程延长；
+stop_retained_variant：终止密码子保留变异，指基因序列中的终止密码子在变异中得以保留；
+upstream_gene_variant：上游基因变异，指位于目标基因上游区域的变异。
+
+
+snp_anno.stat.xls：snp注释统计表
+3_prime_UTR_variant：样本在3’UTR区域的SNP个数；
+5_prime_UTR_premature_start_codon_gain_variant：样本在5‘UTR区域,增加了一个启动子的SNP个数；
+5_prime_UTR_variant：样本在5’URT区域的SNP个数；
+HIGH：样本变异位点有害程度的简单评估；
+LOW：样本变异位点有害程度的简单评估；
+MODERATE：样本变异位点有害程度的简单评估；
+MODIFIER：样本变异位点有害程度的简单评估；
+Downstream_gene_variant：样本在基因下游区域的SNP个数；
+Intergenic_region：样本在基因间区的SNP的个数；
+Intragenic_variant：样本在基因内非功能区的SNP个数；
+Intron_variant：样本在内含子区域的SNP位点个数；
+Missense_variant：样本产生错义突变的SNP位点个数；
+non_coding_transcript_variant：样本非编码转录本突变的SNP个数；
+Splice_acceptor_variant：样本在内含子左侧的连接点区域的SNP个数；
+Splice_donor_variant：样本在内含子右侧的连接点区域的SNP个数；
+Splice_region_variant：距离外显子或内含子2 bp的剪切位点的SNP个数；
+Start_lost：由于SNP的突变导致启动子缺失的SNP位点个数；
+Stop_gained：由于SNP的突变导致终止子获得的SNP位点个数；
+Stop_lost：由于SNP的突变导致终止子突变的SNP位点个数；
+Stop_retained_variant：由于SNP突变导致终止子的编码的发生了改变的SNP位点个数；
+Synonymous_variant：同义突变的SNP位点个数；
+Upstream_gene_variant：样本在基因上游的SNP位点个数及所占比例。
+
+indel.stat.xls：indel数量统计结果表
+Sample ID：样本名称;
+Insert Number：插入变异位点的数目;
+Delete Number：删除变异位点的数目;
+Heterozygosity Number：杂合等位基因的数目;
+Homozygosity Number：纯合等位基因的数目;
+Average Length：平均变异位点长度;
+Average Depth：平均测序深度;
+Miss Number：缺失位点的数目;
+Ref Number：参考等位基因的数目。
+
+
+snp.stat.xls：snp数量统计结果表
+num_gt：表示每个样本中具有非缺失基因型的位点数;
+num_nonref_gt：表示每个样本中具有非参考等位基因的位点数;
+num_homo_ref：表示每个样本中具有纯合参考等位基因的位点数;
+num_homo_alt：表示每个样本中具有纯合非参考等位基因的位点数;
+num_het：表示每个样本中具有杂合等位基因的位点数;
+num_snv：表示SNV位点的数目，num_indel表示INDEL位点的数目;
+num_singleton：表示只在一个样本中出现的位点数;
+num_miss：表示每个样本中缺失的位点数;
+num_ts：表示转换位点的数目;
+num_tv：表示颠换位点的数目;
+ts/tv：表示转换位点和颠换位点的比率。
+
+pop.snpindel.final.vcf.gz：总的变异文件，包含snp和indel
+CHROM：SNP位点所在染色体
+POS：SNP位点坐标
+ID：SNP的ID,如在dbSNP中有该SNP的id，则会在此行给出；若没有，则用’.'表示其为一个novel variant
+REF：参考序列在该位点的基因型
+ALT：该位点的其它基因型
+QUAL：Phred格式(Phred_scaled)的质量值，表示在该位点存在SNP的可能性；该值越高，则SNP的可能性越大；计算方法：Phred值 = -10 * log (1-p) p为SNP存在的概率; 通过计算公式可以看出值为10的表示错误概率为0.1，该位点为SNP的概率为90%,qual值与p成正比例
+FILTER：使用上一个QUAL值来进行过滤的话，是不够的。GATK能使用其它的方法来进行过滤，过滤结果中通过则该值为"PASS";若SNP不可靠，则该项不为"PASS"或"."
+INFO：这一行是SNP的详细信息
+FORMAT：SNP的格式
+other coloums：每个个体该位点的基因型(数字代表支持该位点的reads个数)具体每个代表查看：https：//samtools.github.io/hts-specs/VCFv4.2.pdf
+

@@ -1,0 +1,51 @@
+## BSA关联分析
+
+***
+ 
+### 亲本标记开发
+
+***
+
+<style>
+img.inline-img {
+    display:inline;
+    width:auto;
+}
+
+img.independent-img {
+    display:block;
+    width:auto;
+}
+</style>
+&emsp;&emsp;Ridit是一种用于非参数多组数据比较的方法，可用于处理来自不同样本或群体的连续数据。 Ridit分析通过将每个样本得分转换为其在总体中所占的百分位数的对数，从而将原始测量值转换为比较容易的形式。这些转换后的数据在各种情况下都具有零均值和单位方差，并且可以进行直接比较，无需先进行正态化处理。Ridit分数还可用于计算检验统计量，从而评估两组之间及多组之间的差异是否显著。
+
+&emsp;&emsp; 我们完成变异位点的过滤后，针对混池间差异使用Ridit方法完成分析，实际过滤条件如下：
+(1).过滤去除非二态性（有多种基因型）的变异位点；
+(2).筛选两个亲本间纯合差异的遗传标记（除F1群体）。
+
+过滤后的SNP及InDel标记信息见下表3-13。
+
+<p class='mark'>表 3-13 关联分析标记信息统计表</p>
+
+```{r echo=FALSE}
+library(DT)
+data <- read.delim('../file/snp_indel_gene.stat.xls',sep='\t',header=T,check.names = F)
+show_data <- data[c("CHROM", "SNP_Number", "Effective_SNP", "INDEL_Number", "Effective_INDEL")]
+datatable(show_data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+<p class='mark1'>**注**：</p>
+
+- <p class='mark1'>CHROM：染色体编号；</p>
+
+- <p class='mark1'>SNP_Number：过滤后对应染色体上 SNP 数目；</p>
+
+- <p class='mark1'>Effective_SNP：过滤后对应染色体上有效突变（变异功效为HIGH或MODERATE）SNP 的数量；</p>
+
+- <p class='mark1'>INDEL_Number：过滤后对应染色体上 InDel 数目。</p>
+
+- <p class='mark1'>Effective_INDEL：过滤后对应染色体上有效突变（变异功效为HIGH或MODERATE）INDEL 的数量。</p>
+
+&emsp;&emsp;基于标记过滤所得到的SNP和INDEL位点，通过index（Takagietal.2013）方法进行关联分析。
+
+

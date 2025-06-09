@@ -1,0 +1,301 @@
+---
+title: |
+  | **动植物基因组重测序**
+  | **Crispr脱靶率检测结题报告**
+date: "`r ifelse(params$docfmt == 'html','',format(Sys.time(), '%Y年%m月%d日'))`"
+params:
+  docfmt: html
+documentclass: article
+classoption:
+  - a4paper
+  - titlepage
+output:
+  bookdown::html_document2:
+    css:
+      - static/css/bootstrap.min.css
+      - static/css/styles.css
+    df_print: paged
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    math_method: r-katex
+    self_contained: true
+    keep_md: true
+    pandoc_args:
+      - --standalone
+      - --metadata=title:Crispr脱靶率结题报告
+    fig_caption: true
+    includes:
+      in_header: static/html/header.html
+      after_body: static/html/tailer.html
+  bookdown::pdf_document2:
+    toc: true
+    toc_depth: 3
+    includes:
+      in_header: tex/header.tex
+    keep_tex: true
+    latex_engine: xelatex
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+here::i_am("report.rmd")
+options(scipen=20)
+library(dplyr)
+library(latex2exp)
+library(kableExtra)
+library(knitr)
+library(DT)
+library(slickR)
+library(stringr)
+htmlfmt <- (params$docfmt == "html")
+pdffmt <- (params$docfmt != "html")
+root_dir <- here::here()
+knitr::opts_knit$set(
+  root.dir = root_dir
+)
+knitr::opts_chunk$set(
+  fig.align = 'center',
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  out.width = if(htmlfmt) "100%" else "50%",
+  fig.pos = "H",
+  fig.ext = ".png"
+)
+dt_foot <- function(foot_vector){
+  cat('<blockquote>\n<p>注：<p>\n<ul class="dt-footnotes">',
+  paste0('<li class="dt-footnotes">',foot_vector,'</li>\n'),
+  '</ul>','</blockquote>',sep="\n"
+  )
+}
+kbl_foot <- function(input,label){
+  footnote(
+    kable_input=input,
+    general = label,
+    threeparttable = FALSE,
+    general_title = "注："
+  )
+}
+table_bline <- function(input){
+  sub("\\\\endhead\n\n\\\\endfoot","\\\\endhead\n\\\\hline\n\\\\endfoot",input)
+}
+prettier <- function(number,small=0){
+  prettyNum(big.mark = ",",nsmall=small,scientific=FALSE,round(number,digits = small))
+}
+tbl_prettier <- function(table,small=NA){
+  out <- table
+  csmall <- rep_len(small,ncol(out))
+  for(i in seq_len(ncol(out))){
+    if(!is.na(csmall[i]) && is.numeric(out[,i])){
+      out[,i] <- prettier(out[,i],small=csmall[i])
+    }
+  }
+  out
+}
+dt_caption <- function(title,label){
+  cat('<table class="caption-only">', paste0("<caption>",
+                      paste0("(#tab:",label,")"),
+                      title,
+                      "</caption>"),
+                      "</table>", sep ="\n")
+}
+get_file <- function(dir, glob,recurse=TRUE){
+  fs::dir_ls(dir,glob=glob,recurse=recurse)
+}
+```
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\\setcounter{page}{1}\n')
+```
+
+```{r get-project-info-table}
+project_info <- readLines('../file/project.info')
+genome_info <- read.delim('../file/info.log', sep='\t', header=TRUE, check.names = FALSE, stringsAsFactors = FALSE)
+project_info <- project_info[project_info!=""]
+project_info <- unlist(strsplit(project_info[1],"\t"))
+contract_number <- project_info[1]
+project_number <- project_info[2]
+client_name <- project_info[3]
+genome_chinese <- genome_info[1,2]
+genome_latin <- genome_info[2,2]
+genome_name <- paste0(genome_chinese, "(", genome_latin, ")")
+genome_size <- paste0(round(as.numeric(genome_info[4,2]), 2), "MB")
+genome_scale <- genome_info[5,2]
+genome_link <- genome_info[6,2]
+if (length(project_info) < 7) {
+    platform <- "Illumina NovaSeq X Plus"
+    prepkit <- "Truseq Nano DNA HT Sample Prep Kit (Illumina USA)"
+} else if (project_info[7] == "DNBSEQ-T7") {
+    platform <- "DNBSeq T7"
+    prepkit <- "MGIEasy Cell-free DNA Library Prep Kit"
+} else {
+    platform <- "Illumina NovaSeq X Plus"
+    prepkit <- "Truseq Nano DNA HT Sample Prep Kit (Illumina USA)"
+}
+platform0 <- unlist(strsplit(platform, " "))[1]
+project_info_table<- data.frame(
+  info = c("合同编号","项目编号","物种信息","客户姓名","报告时间"),
+  content=c(
+    contract_number,
+    project_number,
+    genome_name,
+    client_name,
+    format(Sys.time(), "%F")
+  )
+)
+names(project_info_table) <- c("项目信息","项目内容")
+```
+
+```{r echo=FALSE}
+group_list_file <- read.delim('../file/group_list.txt',sep='\t',header=F,check.names=F)
+sample_number <- dim(group_list_file)[1]
+case_id <- group_list_file[group_list_file[,2]=="case",1]
+control_id <- group_list_file[group_list_file[,2]=="control",1]
+```
+
+```{r echo=FALSE}
+raw_data_stat <- read.delim("../file/rawdata.xls", sep="\t", header=T,check.names=F)
+arrange_raw_data_stat <- rbind(raw_data_stat[raw_data_stat$`Sample ID` == case_id,],raw_data_stat[raw_data_stat$`Sample ID` == control_id,])
+```
+
+```{r echo=FALSE}
+clean_data_stat <- read.delim("../file/cleandata.xls", sep="\t", header=T,check.names=F)
+arrange_clean_data_stat <- rbind(clean_data_stat[clean_data_stat$`Sample ID` == case_id,],clean_data_stat[clean_data_stat$`Sample ID` == control_id,])
+p1_total_base <- paste0(round(clean_data_stat[clean_data_stat$`Sample ID` == case_id,]$`Clean Bases（bp）`/1000000000,2), "G")
+p2_total_base <- paste0(round(clean_data_stat[clean_data_stat$`Sample ID` == control_id,]$`Clean Bases（bp）`/1000000000,2), "G")
+p1_average_q30 <- paste0(clean_data_stat[clean_data_stat$`Sample ID` == case_id,]$`Clean Q30（%）`, "%")
+p2_average_q30 <- paste0(clean_data_stat[clean_data_stat$`Sample ID` == control_id,]$`Clean Q30（%）`, "%")
+```
+
+```{r echo=FALSE}
+align_stat <- read.delim("../file/align_stat.xls", sep="\t", header=T,check.names=F)
+arrange_align_stat <- rbind(align_stat[align_stat$`Sample ID` == case_id,],align_stat[align_stat$`Sample ID` == control_id,])
+p1_average_depth <- paste0(align_stat[align_stat$`Sample ID` == case_id,]$`Real Depth`, "X")
+p2_average_depth <- paste0(align_stat[align_stat$`Sample ID` == control_id,]$`Real Depth`, "X")
+p1_mapped_ratio <- paste0(align_stat[align_stat$`Sample ID` == case_id,]$`Mapped Ratio(%)`, "%")
+p2_mapped_ratio <- paste0(align_stat[align_stat$`Sample ID` == control_id,]$`Mapped Ratio(%)`, "%")
+p1_coverage <- paste0(align_stat[align_stat$`Sample ID` == case_id,]$`Coverage(%) (>=1x)`, "%")
+p2_coverage <- paste0(align_stat[align_stat$`Sample ID` == control_id,]$`Coverage(%) (>=1x)`, "%")
+```
+
+```{r echo=FALSE}
+snp_stat <- read.delim("../file/snp_stat.xls", sep="\t", header=T, check.names=F)
+arrange_snp_stat <- rbind(snp_stat[snp_stat$`Sample ID` == case_id,],snp_stat[snp_stat$`Sample ID` == control_id,])
+p1_snp_number <- snp_stat[snp_stat$`Sample ID` == case_id,]$`SNP Number`
+p2_snp_number <- snp_stat[snp_stat$`Sample ID` == control_id,]$`SNP Number`
+```
+
+```{r echo=FALSE}
+snp_anno <- read.delim("../file/snp_anno.xls", sep="\t", header=T, check.names=F)
+arrange_snp_anno <- rbind(snp_anno[snp_anno$sampleID == case_id,],snp_anno[snp_anno$sampleID == control_id,])
+arrange_snp_anno <- arrange_snp_anno %>%
+          select(sampleID, start_lost, stop_lost, stop_gained, missense_variant, synonymous_variant, intergenic_region)
+colnames(arrange_snp_anno) <- c("Sample ID", "Start Lost", "Stop Lost", "Stop Gained", "Missense Variant",
+                                  "Synonymous Variant", "Intragenic Region")
+```
+
+```{r echo=FALSE}
+snp_impact <- read.delim('../file/snp_impact.xls',sep='\t',header=T,check.names = F)
+arrange_snp_impact <- rbind(snp_impact[snp_impact$sampleID == case_id,],snp_impact[snp_impact$sampleID == control_id,])
+arrange_snp_impact <- arrange_snp_impact %>%
+    select(sampleID, HIGH, MODERATE, LOW, MODIFIER)
+colnames(arrange_snp_impact)[1] <- 'Sample ID'
+p1_snp_high_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == case_id,]$`HIGH`
+p1_snp_moderate_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == case_id,]$`MODERATE`
+p2_snp_high_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == control_id,]$`HIGH`
+p2_snp_moderate_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == control_id,]$`MODERATE`
+p_snp_high_number <- p1_snp_high_number + p2_snp_high_number
+p_snp_moderate_number <- p1_snp_moderate_number + p2_snp_moderate_number
+```
+
+```{r echo=FALSE}
+indel_stat <- read.delim("../file/indel_stat.xls", sep="\t", header=T, check.names=F)
+arrange_indel_stat <- rbind(indel_stat[indel_stat$`Sample ID` == case_id,],indel_stat[indel_stat$`Sample ID` == control_id,])
+p1_indel_number <- indel_stat[indel_stat$`Sample ID` == case_id,]$`Insert Number` + indel_stat[indel_stat$`Sample ID` == case_id,]$`Delete Number`
+p2_indel_number <- indel_stat[indel_stat$`Sample ID` == control_id,]$`Insert Number` + indel_stat[indel_stat$`Sample ID` == control_id,]$`Delete Number`
+```
+
+```{r echo=FALSE}
+indel_anno <- read.delim("../file/indel_anno.xls", sep="\t", header=T, check.names=F)
+arrange_indel_anno <- rbind(indel_anno[indel_anno$sampleID == case_id,],indel_anno[indel_anno$sampleID == control_id,])
+arrange_indel_anno <- arrange_indel_anno %>%
+          select(sampleID, frameshift_variant, intergenic_region, intragenic_variant, start_lost, stop_gained, stop_lost)
+colnames(arrange_indel_anno) <- c("Sample ID","Frameshift Variant", "Intergenic Region", "Intragenic Variant",
+                                  "Start Lost", "Stop Gained", "Stop Lost")
+```
+
+```{r echo=FALSE}
+indel_impact <- read.delim('../file/indel_impact.xls',sep='\t',header=T,check.names = F)
+arrange_indel_impact <- rbind(indel_impact[indel_impact$sampleID == case_id,],indel_impact[indel_impact$sampleID == control_id,])
+arrange_indel_impact <- arrange_indel_impact %>%
+    select(sampleID, HIGH, MODERATE, LOW, MODIFIER)
+colnames(arrange_indel_impact)[1] <- 'Sample ID'
+p1_indel_high_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == case_id,]$`HIGH`
+p1_indel_moderate_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == case_id,]$`MODERATE`
+p2_indel_high_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == control_id,]$`HIGH`
+p2_indel_moderate_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == control_id,]$`MODERATE`
+p_indel_high_number <- p1_indel_high_number + p2_indel_high_number
+p_indel_moderate_number <- p1_indel_moderate_number + p2_indel_moderate_number
+```
+
+```{r project-info-table, eval=htmlfmt}
+kable(project_info_table, "html") %>%
+        kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+```{r first-page, eval=pdffmt}
+knitr::asis_output(sprintf(paste(readLines("tex/first_page.tex"),collapse="\n"),contract_number,genome_chinese,sample_number))
+```
+
+```{r workflow-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/01.workflow.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r fastq-qc-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/02.Fastq_qc.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r mapping-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/03.Mapping.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+
+```{r snp-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/04.SNP.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r indel-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/05.Indel.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r crispr_off_target-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/06.crispr_off_target.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n')
+```
+
+```{r appendix-module, results='asis'}
+cat(
+  knitr::knit_child('rmd/99.appendix.rmd', envir = globalenv(), quiet = TRUE)
+  )
+```
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\n\\newpage\n')
+```

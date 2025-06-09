@@ -1,0 +1,29 @@
+├── clean_data
+│	 ├── clean.md5.txt
+│	 ├── XD90.clean.1.fastq.gz
+│	 └── XD90.clean.2.fastq.gz
+├── raw_data
+│	 ├── raw.md5.txt
+│	 ├── XD90.raw.1.fastq.gz
+│	 └── XD90.raw.2.fastq.gz
+└── Report
+    ├── 01.QC_Fig
+    │	 ├── fig
+    │	 │	 ├── XD90.clean.base.pdf
+    │	 │	 ├── XD90.clean.base.png
+    │	 │	 ├── XD90.clean.qual.pdf
+    │	 │	 ├── XD90.clean.qual.png
+    │	 │	 ├── XD90.raw.base.pdf
+    │	 │	 ├── XD90.raw.base.png
+    │	 │	 ├── XD90.raw.qual.pdf
+    │	 │	 └── XD90.raw.qual.png
+    │	 └── qc
+    │	     ├── XD90.clean.atgcn
+    │	     ├── XD90.clean.qual
+    │	     ├── XD90.html
+    │	     ├── XD90.json
+    │	     ├── XD90.raw.atgcn
+    │	     └── XD90.raw.qual
+    ├── 结果说明文档.txt
+    ├── qc-report.xls
+    └── WGS测序report.html

@@ -1,0 +1,33 @@
+
+### 肿瘤药物靶点
+
+药物靶点（drug target）是指药物在体内发挥治疗作用时所作用的分子靶点，也就是药物的作用目标。肿瘤的药物靶点是指用于治疗肿瘤的药物所靶向的分子或细胞结构。这些靶点通常是参与癌症发生、发展和转移的关键因子，如细胞增殖、凋亡、转移、血管生成等过程中的关键蛋白质或信号通路。药物靶点注释的意义在于深入了解肿瘤发生、发展和转移的分子机制，以及肿瘤药物与靶点之间的相互作用，为肿瘤治疗的研发和实践提供依据和指导。CIViC（Clinical Interpretation of Variants in Cancer）是一个肿瘤药物靶点注释数据库，包含了4082个靶点突变、染色体异常和基因表达变化等信息，以及与这些变异相关的肿瘤药物治疗方案。数据库中的注释信息包括靶点突变的功能影响、药物治疗的疗效和副作用、相关的临床试验和治疗指南等。
+
+
+本项目基于体细胞突变信息，对变异位点相关基因信息进行提取，进行数据库注释。统计结果见表\@ref(tab:drug-target-table)，详细结果见结果文件中。
+
+
+```{r get-drug-target-table}
+drug_stat <- read.delim('info/drug.stat',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- drug_stat
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Sample_Control:肿瘤样本编号_对照样本编号;",
+"Gene_numbers:统计到的药物靶点相关基因总数;",
+"Drug_numbers:统计到的药物靶点相关药物总数;"
+)
+```
+
+```{r drug-target-table-html,eval=htmlfmt,results="asis"}
+dt_caption("肿瘤药物靶点注释结果统计表","drug-target-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r drug-target-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="肿瘤药物靶点注释结果表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

@@ -1,0 +1,42 @@
+## 候选区域定位分析
+
+### 候选区域的基因筛选
+
+理论上候选区域内的基因都有可能与性状直接相关，在候选区域内的基因上、亲本之间或者混池之间发生了非同义突变的位点，影响了基因的功能和蛋白的结构编码。因此筛选候选区域中发生变异的位点，有助于我们更快速的找到与性状相关的功能基因。以下是通过2种统计方法分别定位到的候选区域内的相关统计结果，见表\@ref(tab:all-region-stat-table)：
+
+> *本项目更详细的区域定位结果可查看(如果该方法有定位结果)：*
+>
+> *[data_release/02.index](./data_release/03.index)文件夹下的index.all.table.xls（SNP-index+滑窗）文件*
+>
+> *[data_release/03.loess](./data_release/05.loess)文件夹下的loess.all.table.xls（SNP-index+loess拟合）文件*
+
+```{r get-all-region-stat-table}
+data <- read.delim('../file/all.region_stat.xls',sep='\t',header=T,check.names = F)
+show_data <- data[c("Method", "Region", "SNP_Number", "Effective_SNP", "INDEL_Number", "Effective_INDEL", "Gene_Number")]
+colnames(show_data) <- c("Method", "Region", "SNP Number", "Effective SNP", "INDEL Number", "Effective INDEL", "Gene Number")
+show_data <- show_data %>%
+  tbl_prettier(c(NA, NA, 0, 0, 0, 0, 0))
+tempfn <- c(
+"Method：BSA的具体方法；",
+"Region：方法定位到的区域；",
+"SNP Number：关联区域 SNP 的数量；",
+"Effective SNP：关联区域有效突变 SNP 的数量；",
+"INDEL Number：关联区域 INDEL 的数量；",
+"Effective INDEL：关联区域有效突变 INDEL 的数量；",
+"Gene Number：关联区域 GENE 的数量。"
+)
+```
+```{r all-region-stat-table-html, results="asis", eval=htmlfmt}
+dt_caption("候选区域内的相关信息统计表","all-region-stat-table")
+datatable(show_data, rownames=FALSE,options = list(scrollX=T, columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r all-region-stat-table, eval=pdffmt}
+show_data[,1]=gsub("_","\\_",show_data[,1])
+kbl(row.names=FALSE, show_data, "latex", caption="候选区域内的相关信息统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(show_data)),align="c"), escape=FALSE) %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+

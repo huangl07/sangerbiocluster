@@ -1,0 +1,34 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    ./Miniconda3-py39_23.1.0-1-Linux-x86_64.sh /opt/src/
+    /mnt/lustre/users/sanger-dev/sg-users/yexiaoya/human_exon/vep_env.tar.gz /opt/vep_env.tar.gz
+    /mnt/lustre/users/sanger-dev/app/bioinfo/dna/miniconda3/envs/ensembl-vep/share/ensembl-vep-109.3-1 /opt/src/
+
+%post
+    # 安装 miniconda
+    mkdir -p /opt/bioinfo/bin
+    bash /opt/src/Miniconda3-py39_23.1.0-1-Linux-x86_64.sh -b -p /opt/bioinfo/bin/miniconda3
+
+    # 配置环境变量
+    export PATH="/opt/bioinfo/bin/miniconda3/bin:$PATH"
+    . /opt/bioinfo/bin/miniconda3/etc/profile.d/conda.sh
+
+    # 创建目标目录并解压 VEP 环境
+    mkdir -p /opt/bioinfo/bin/miniconda3/envs/ensembl-vep
+    tar -xzf /opt/vep_env.tar.gz -C /opt/bioinfo/bin/miniconda3/envs/ensembl-vep
+    conda activate ensembl-vep
+    conda-unpack
+    curl -L https://cpanmin.us | perl - -l ~/perl5 App::cpanminus
+    export PATH=/root/perl5/bin:$PATH
+    export PERL5LIB=/root/perl5/lib/perl5:$PERL5LIB
+
+    # 测试是否能找到 cpanm（可选）
+    which cpanm
+    cpanm Compress::Raw::Zlib@2.204
+
+%environment
+    export PATH=/opt/bioinfo/bin/miniconda3/envs/ensembl-vep/bin:$PATH
+    export CONDA_PREFIX=/opt/bioinfo/bin/miniconda3/envs/ensembl-vep
+    export PERL5LIB=/opt/bioinfo/bin/miniconda3/envs/ensembl-vep/lib/perl5/site_perl

@@ -1,0 +1,12 @@
+纯度与倍性文件结果汇总
+
+结果文件说明：
+1.	readme.txt：文件详细介绍说明
+2.	purity_ploidy.stat：样本纯度与倍性统计表
+3.	*_CP_contours.png/pdf：样本纯度与倍性模拟预测图
+
+表头具体说明：
+sequenza.stat
+1.	Tumor_control：肿瘤样本编号_对照样本编号；
+2.	Cellularity：细胞纯度；
+3.	Ploidy.estimate：估计样本倍性；

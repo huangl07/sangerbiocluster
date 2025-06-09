@@ -1,0 +1,92 @@
+## circRNA表达差异分析
+
+***
+
+&emsp;&emsp;针对多样本（≥2）我们会对样本间的circRNA表达情况进行差异表达分析，鉴定出样品间差异表达circRNA。在这里，根据老师实验设计的不同，分为两种策略：
+
+-（1）对于有生物学重复的实验设计，我们直接使用基于负二项分布的edgeR软件进行统计分析。
+
+-（2）对于没有生物学重复的实验设计，我们首先对不同样品间的count数进行基于total count的标准化，然后利用DEGseq软件进行差异表达分析。
+
+&emsp;&emsp;本次项目中，显著差异表达circRNA的筛选标准为：Pvaluet < 0.05 && |log2FC| >= 1
+
+&emsp;&emsp;结果目录：**07DiffExpAnalysis**
+
+&emsp;&emsp;结果目录中包含如下结果文件：
+
+1. **deseq2.annot.xls：**各分组样本所有circRNA差异表达详情，部分结果见下表：
+
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/DEGseq.annot.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/DEGseq.annot.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+上表中各表头含义如下：
+
+- Seq_id	circRNA名称
+- FoldChange	差异倍数
+- log2FC(SampleB/SampleA)	该基因在两样本间差异倍数以2为底的对数值，SampleA为对照
+- Pvalue	该基因/转录本在两样本中差异显著性检验结果
+- Padjust	对pvalue的校验结果
+- Significant	该基因在两样本间的差异是否显著，yes为显著
+- Regulate	上下调情况，SampleA为对照，up为上调，down为下调
+
+3. **diffexp.pdf：**各分组样本差异表达circRNA可视化图，见下图:
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*scatter.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*scatter.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*volcano.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*volcano.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark"> 图3.9.1 差异基因可视化图（散点图和火山图）</p>
+
+&emsp;&emsp;注：横坐标为利用差异对比组的表达量值进行计算，纵坐标为差异表达分析获得的差异对比组之间基因表达变化，横纵坐标的数值均进行了对数化处理。图中每个点代表一个特定的基因/转录本，默认红色点表示显著上调的基因/转录本，绿色点表示显著下调的基因/转录本，灰色点为非显著差异基因/转录本。将所有基因/转录本映射上去之后，可以获知，在上边的点为表达差异上调的基因/转录本，下边的点为表达差异上调的基因/转录本，越靠上边和下边的点表达差异越显著。右图为火山图（Volcano-plots），横坐标为circRNA在两个样本间表达差异的倍数变化值，即处理样的表达量除以对照样的表达量得到的数值，纵坐标为circRNA表达量变化差异的统计学检验值，即q值，q值越高则表达差异越显著，横纵坐标的数值都做了对数化处理。图中每个点代表一个特定的circRNA，红色点表示显著上调的circRNA，蓝色点表示显著下调的circRNA，黑色点为非显著差异circRNA；将所有circRNA映射上去之后，可以获知，在左边的点为表达差异下调的circRNA，右边的点为表达差异上调的circRNA，越靠左边和上边的点表达差异越显著。
+
+## 差异circRNA venn图(差异组别>2时进行此项分析)
+
+***
+
+&emsp;&emsp;差异circRNA Venn 图是用于显示差异circRNA的重叠区域的图示，通过求每组差异circRNA的交集来实现，表示各组差异circRNA之间的关系。
+
+&emsp;&emsp;Type I (2≤差异基因分组数≤5）：采用VennDiagram软件（http://en.wikipedia.org/wiki/Venn_diagram）绘制而成，通过差异circRNA Venn图可观察出差异circRNA在各组样品间的数量分布状况。
+
+&emsp;&emsp;Type III (差异circRNA分组数>6）：采用perl包svg绘制而成，通过差异circRNA Venn图可观察各分组共有和特有的差异circRNA在各组样品间的数量分布状况。
+
+**参考文献：**
+
+- Chen H, Boutros PC. VennDiagram: a package for the generation of highly-customizable Venn and Euler diagrams in R. BMC Bioinformatics 2011;12:35.
+
+- Bardou P, Mariette. J jvenn: an interactive Venn diagram viewer. BMC Bioinformatics. 2014 Aug 29;15:293.
+
+
+
+
+

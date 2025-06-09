@@ -1,0 +1,163 @@
+# 生物信息学分析方法和结果
+
+***
+
+## 原始数据质控和过滤
+
+***
+
+### 原始测序数据说明
+
+***
+
+&emsp;&emsp;为方便测序数据的分析、发布和共享，Illumina NovaSeq 平台测序得到的原始图像数据经过 Base Calling 转化为序列数据，得到最原始的测序数据文件。一般原始数据利用 FASTQ 格式进行储存。FASTQ 格式文件可记录所测读段（Read）的碱基及其质量分数。如图 3-1 所示，FASTQ 格式以测序读段为单位进行存储，每条 Reads 在 FASTQ 格式文件中占四行，其中第一行和第三行由文件识别标志（Sequence Identifiers）和读段名（ID）组成（第一行以 “@” 开头而第三行以 “+” 开头；第三行中 ID 可以省略，但 “+” 不能省略），第二行为碱基序列，第四行为对应位置碱基的测序质量分数。
+
+<img class="normal6" src="src/fastq.png">
+
+<p class='mark'>图 3-1 读段FASTQ数据格式示例</p>
+
+&emsp;&emsp;Illumina NovaSeq 测序仪一个 Run 有 2 个 Flowcell，一个 Flowcell 中包含 8 个 Lane，其中一个 Lane 包含 2 列，每一列又包含 60 个 Tile ，每一个 Tile 又会种下不同的 Cluster ，其产生的测序文件识别标志（Sequence Identifiers）中的详细信息如表 3-1 所示：
+
+<p class='mark'>表 3-1 测序文件识别标志详细信息</p>
+```{r echo=FALSE}
+library(knitr)
+data <- read.delim('src/fastq.xls',sep='\t',header=T,check.names = F)
+kable(data,table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+&emsp;&emsp;Reads 的质量分数以不同的字符来表示，其中每个字符对应的 ASCII 值减去 33 ，即为对应的测序质量值。一般地，碱基质量从 0-40，即对应的 ASCII 码为从 “！”（0+33）到 “I”（40+33），碱基质量越大，可信度越高。用 E 表示测序错误率，用 Q 表示 Illumina NovaSeq 的碱基质量值，则有下列关系：
+
+
+<img class="normal3" src='src/err.png'>
+
+<p class='mark'>表 3-2 测序错误率与测序质量值简明对应关系</p>
+
+```{r echo=FALSE}///html
+library(knitr)
+data <- read.delim('src/err.xls',sep='\t',header=T,check.names = F)
+kable(data,table.attr = "html",align='c') %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+&emsp;&emsp; Illumina 测序属于第二代测序技术，单次运行能产生数百万级的 Reads ，如此海量的数据无法逐个展示每条 Read 的质量情况；运用统计学的方法，对所有测序 Reads 的每个 Cycle 进行碱基分布和质量波动的统计，可以从宏观上直观地反映出样本的测序质量和文库构建质量。我们针对每一个样本的原始测序数据进行测序相关质量评估，包括 A/T/G/C 碱基含量分布统计和碱基错误率分布统计。
+
+<p class="mark">表 3-3 产出数据统计结果</p>
+
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/rawdata.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/rawdata.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>Sample ID：样本编号；</p>
+
+- <p class='mark1'>Raw Reads：高质量的 Reads 数；</p>
+
+- <p class='mark1'>Raw Bases(bp)：原始数据过滤后剩余的高质量测序数据总碱基数；</p>
+
+- <p class='mark1'>Raw GC(%)：Clean Data 中的 GC 碱基占所有碱基的比例。</p>
+
+- <p class='mark1'>Raw Q30(%)：Clean Data 中质量值大于或等于 30 的碱基所占百分比。</p>
+
+### 测序碱基含量分布统计
+
+***
+
+&emsp;&emsp;碱基含量分布检查一般用于检测有无 A 与 T、G 与 C 分离现象。鉴于序列的随机性和碱基互补配对的原则，理论上每个测序循环上的 GC 含量相等、AT 含量相等，且在整个测序过程基本稳定不变，呈水平线。N 为测序仪无法判断的碱基类型。本项目中样品的碱基含量分布图如图 3-2 所示：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*base.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*base.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图 3-2 样本碱基组成分布例图</p>
+
+<p class="mark1">注：横坐标是 Reads 碱基坐标，表示 Reads 上从 5’ 到 3’ 端依次碱基的排列；纵坐标是所有 Reads 在该测序位置 A、C、G、T、N 碱基分别占的百分比，不同碱基用不同颜色表示。序列的起始位置与测序的引物接头相连，因此 A、C、G、T 在起始端会有所波动，后面会趋于稳定。模糊碱基 N 所占比例越低，说明未知碱基越少，测序样本受系统 AT 偏好影响越小。虚线之前为 Read1 的统计，虚线之后为 Read2 的统计结果。</p>
+
+### 测序碱基错误率分布统计
+
+***
+
+&emsp;&emsp;测序错误率会随着测序序列长度的增加而升高，这是由测序过程中化学试剂的消耗导致的，另外，由于 Illumina NovaSeq测序技术特点，测序片段前端几个 Cycles 和末端的错误率会偏高。本项目中样品的测序错误率分布图如图 3-3 所示：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*qual.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*qual.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图 3-3 样本碱基错误率分布例图</p>
+
+<p class="mark1">注：横坐标是 Reads 碱基坐位置，表示 Reads 上从 5’ 到 3’ 端依次碱基的排列；纵坐标是所有 Reads 在该位点处碱基的平均错误率。前 150 bp 为双端测序序列的第一端测序 Reads 的错误率分布情况，后 150 bp 为另一端测序 Reads 的错误率分布情况。</p>
+
+### 原始测序数据过滤
+
+***
+
+&emsp;&emsp;利用 Illumina 的建库测序平台，构建插入片段大小为 350 bp 左右的测序文库，按照项目合同要求进行测序，对原始数据进行质量评估，具体步骤如下：
+
+&emsp;&emsp;Step1：去除 reads 中的 adapter 序列；
+
+&emsp;&emsp;Step2：剪切前去除 5` 端含有非 AGCT 的碱基；
+
+&emsp;&emsp;Step3：修剪测序质量较低的 reads 末端（测序质量值小于 Q20 ）；
+
+&emsp;&emsp;Step4：去除含N的比例达到 10% 的 reads ；
+
+&emsp;&emsp;Step5：舍弃去 adapter 及质量修剪后长度小于 25 bp 的小片段。
+
+&emsp;&emsp;对质量剪切后的数据分别进行测序 Reads 数、总碱基数、GC 含量和 Q30 比例的统计，详细结果见表 3-4：
+
+<p class="mark">表 3-4 测序质量统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/qc.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/qc.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>sample ID：样本编号；</p>
+
+- <p class='mark1'>Clean Reads：高质量的 Reads 数；</p>
+
+- <p class='mark1'>Clean Bases(bp)：原始数据过滤后剩余的高质量测序数据总碱基数；</p>
+
+- <p class='mark1'>Clean GC(%)：Clean Data 中的 GC 碱基占所有碱基的比例。</p>
+
+- <p class='mark1'>Clean Q30(%)：Clean Data 中质量值大于或等于 30 的碱基所占百分比。</p>
+
+

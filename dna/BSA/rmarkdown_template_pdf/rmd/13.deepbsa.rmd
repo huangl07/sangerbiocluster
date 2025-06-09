@@ -1,0 +1,25 @@
+### DeepBSA方法
+
+DeepBSA是一种基于深度测序的生物信息学分析方法，用于筛选某些特定性状（例如胁迫反应、抗病性等）与单倍型之间的关联。该方法可以通过比较控制组和处理组（如受到胁迫或暴露于特定环境下）的基因组序列来确定具有显着单倍型差异的位点，从而确定与特定性状相关的基因。在这个过程中，固定性状的变异位点被认为是有利的，因为它们可能提供了生物适应性的优势。DeepBSA通常被应用于作物育种、畜牧业和医学研究等领域。
+
+```{r DeepBSA-plot,fig.cap = "DeepBSA的基本原理"}
+include_graphics("static/src/DeepBSA.jpg")
+```
+
+我们基于文献[DeepBSA: A deep-learning algorithm improves bulked segregant analysis for dissecting complex traits](https://pubmed.ncbi.nlm.nih.gov/35996754/)中所提到的两种新算法，深度学习（DL）和K进行区域定位。图\@ref(fig:DeepBSA-DL-plot)是DeepBSA_DL方法的曼哈顿结果图。图\@ref(fig:DeepBSA-K-plot)是DeepBSA_K方法的曼哈顿结果图。
+
+> *Deep_DL方法的单条染色体的曼哈顿结果图详见结题文件夹目录下[data_release/06.DeepBSA_DL](./data_release/06.DeepBSA_DL)文件夹下的DeepBSA_DL.\*.png/pdf文件（\*代表染色体ID）文件*
+
+> *index-loess方法的单条染色体的曼哈顿结果图详见结题文件夹目录下[data_release/07.DeepBSA_K](./data_release/07.DeepBSA_K)文件夹下的DeepBSA_K.\*.png/pdf（\*代表染色体ID）文件*
+
+```{r DeepBSA-DL-plot, fig.cap="DeepBSA-DL方法拟合曼哈顿结果图", out.width = "100%"}
+include_graphics("../file/DeepBSA_DL.png")
+```
+
+```{r DeepBSA-K-plot, fig.cap="DeepBSA-K方法拟合曼哈顿结果图", out.width = "100%"}
+include_graphics("../file/DeepBSA_K.png")
+```
+
+> **注**：图中的一个点代表一个SNP/InDel标记，横轴为标记的染色体位置信息，纵轴为是DL/K值；图中的黑线表示拟合的曲线，红色线表示阈值线。
+
+

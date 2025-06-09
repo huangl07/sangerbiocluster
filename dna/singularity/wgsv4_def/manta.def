@@ -1,0 +1,84 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/htslib.sif
+
+%files
+    boost_1_65_0.tar.bz2 /opt/bioinfo/src/
+    manta-1.6.0.release_src.tar.bz2 /opt/bioinfo/src/
+
+%post
+    set -eux
+
+    # 安装依赖
+    apt-get update && apt-get install -y --no-install-recommends \
+        gcc-9 g++-9 \
+        cmake \
+        make \
+        zlib1g-dev \
+        bzip2 \
+        libncurses5-dev \
+        python2.7 python2.7-dev \
+        locales \
+        curl \
+        ca-certificates
+
+    # 设置locale
+    locale-gen en_US.UTF-8
+    update-locale LANG=en_US.UTF-8
+    export LANG=en_US.UTF-8
+
+    # 设置 gcc-9 为默认
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
+
+    # 解压 Boost 1.65.0 并安装
+    cd /opt/bioinfo/src
+    tar -xjf boost_1_65_0.tar.bz2
+    cd boost_1_65_0
+    ./bootstrap.sh --prefix=/opt/boost_1_65
+    ./b2 install
+
+    # 设置 Boost 环境变量
+    export BOOST_ROOT=/opt/boost_1_65
+    export CPLUS_INCLUDE_PATH=$BOOST_ROOT/include
+    export LIBRARY_PATH=$BOOST_ROOT/lib
+    export LD_LIBRARY_PATH=$BOOST_ROOT/lib:$LD_LIBRARY_PATH
+    export CXXFLAGS="-I$BOOST_ROOT/include"
+    export LDFLAGS="-L$BOOST_ROOT/lib"
+
+    ########## ✅【关键改动 1】准备编译 Manta ##########
+    # 解压 Manta 源码
+    cd /opt/bioinfo/src
+    tar -xjf manta-1.6.0.release_src.tar.bz2
+
+    rm manta-1.6.0.release_src/redist/htslib-1.9.tar.bz2
+
+    cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/bioinfo/manta \
+        -DHTSLIB_INCLUDE_DIR=/opt/bioinfo/include \
+        -DHTSLIB_LIBRARY=/opt/bioinfo/lib/libhts.so \
+        -DCMAKE_CXX_FLAGS="-I/opt/boost_1_65/include -I/opt/bioinfo/include" \
+        -DCMAKE_EXE_LINKER_FLAGS="-L/opt/boost_1_65/lib -L/opt/bioinfo/lib" \
+        manta-1.6.0.release_src
+
+    make -j$(nproc)
+    make install
+
+%environment
+    export PATH=/usr/local/bin:/opt/bioinfo/bin:/usr/bin:$PATH
+    export PATH=/opt/bioinfo/manta/bin:$PATH
+    export BOOST_ROOT=/opt/boost_1_65
+    export LD_LIBRARY_PATH=/opt/boost_1_65/lib:/opt/bioinfo/lib:$LD_LIBRARY_PATH
+    export LANG=en_US.UTF-8
+    export HTSLIB_INCLUDE_DIR=/opt/bioinfo/include
+    export HTSLIB_LIBRARY=/opt/bioinfo/lib/libhts.so
+    export CXXFLAGS="-I/opt/bioinfo/include"
+    export LDFLAGS="-L/opt/bioinfo/lib"
+
+
+%labels
+    Author yexiaoya
+    Version Manta1.6.0_gcc9_Boost1.65_Ubuntu22.04
+
+%help
+    This container installs Manta 1.6.0 using GCC 9 and Boost 1.65 on Ubuntu 22.04 (offline, local build). 系统 HTSlib 已连接，内置 HTSlib 已禁用。

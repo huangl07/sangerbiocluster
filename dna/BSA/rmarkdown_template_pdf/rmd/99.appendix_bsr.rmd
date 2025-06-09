@@ -1,0 +1,144 @@
+# 参考文献
+
+1. [Cingolani P, Platts A, Wang le L, Coon M, Nguyen T, Wang L, Land SJ, Lu X, Ruden DM. A program for annotating and predicting the effects of single nucleotide polymorphisms, SnpEff: SNPs in the genome of Drosophila melanogaster strain w1118; iso-2; iso-3. Fly (Austin). 2012 Apr-Jun;6(2):80-92. doi: 10.4161/fly.19695. PMID: 22728672; PMCID: PMC3679285.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3679285/)
+
+2. [Hill JT, Demarest BL, Bisgrove BW, Gorsi B, Su YC, Yost HJ. MMAPPR: mutation mapping analysis pipeline for pooled RNA-seq. Genome Res. 2013 Apr;23(4):687-97. doi: 10.1101/gr.146936.112. Epub 2013 Jan 8. PMID: 23299975; PMCID: PMC3613585.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3613585/)
+
+3. [Kim, D., Paggi, J.M., Park, C. et al. Graph-based genome alignment and genotyping with HISAT2 and HISAT-genotype. Nat Biotechnol 37, 907–915 (2019)](https://www.nature.com/articles/s41587-019-0201-4)
+
+4. [Magwene PM, Willis JH, Kelly JK. The statistics of bulk segregant analysis using next generation sequencing. PLoS Comput Biol. 2011 Nov;7(11):e1002255. doi: 10.1371/journal.pcbi.1002255. Epub 2011 Nov 3. PMID: 22072954; PMCID: PMC3207950.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3207950/)
+
+5. [McKenna A, Hanna M, Banks E, Sivachenko A, Cibulskis K, Kernytsky A, Garimella K, Altshuler D, Gabriel S, Daly M, DePristo MA. The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome Res. 2010 Sep;20(9):1297-303. doi: 10.1101/gr.107524.110. Epub 2010 Jul 19. PMID: 20644199; PMCID: PMC2928508.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2928508/)
+
+6. [Liu S, Yeh CT, Tang HM, Nettleton D, Schnable PS (2012) Gene Mapping via Bulked Segregant RNA-Seq (BSR-Seq). PLOS ONE 7(5): e36406. doi: 10.1371/journal.pone.0036406](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0036406)
+
+7. [Takagi H, Abe A, Yoshida K, Kosugi S, Natsume S, Mitsuoka C, Uemura A, Utsushi H, Tamiru M, Takuno S, Innan H, Cano LM, Kamoun S, Terauchi R. QTL-seq: rapid mapping of quantitative trait loci in rice by whole genome resequencing of DNA from two bulked populations. Plant J. 2013 Apr;74(1):174-83. doi: 10.1111/tpj.12105. Epub 2013 Feb 18. PMID: 23289725.](https://onlinelibrary.wiley.com/doi/10.1111/tpj.12105)
+
+8. [Li Z, Chen X, Shi S, Zhang H, Wang X, Chen H, Li W, Li L. DeepBSA: A deep-learning algorithm improves bulked segregant analysis for dissecting complex traits. Mol Plant. 2022 Sep 5;15(9):1418-1427. doi: 10.1016/j.molp.2022.08.004. Epub 2022 Aug 22. PMID: 35996754.](https://pubmed.ncbi.nlm.nih.gov/35996754/)
+
+9. [Yu G, Wang LG, Han Y, He QY. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS. 2012 May;16(5):284-7. doi: 10.1089/omi.2011.0118. Epub 2012 Mar 28. PMID: 22455463; PMCID: PMC3339379.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3339379/)
+
+10. [Untergasser A, Cutcutache I, Koressaar T, Ye J, Faircloth BC, Remm M, Rozen SG. Primer3--new capabilities and interfaces. Nucleic Acids Res. 2012 Aug;40(15):e115. doi: 10.1093/nar/gks596. Epub 2012 Jun 22. PMID: 22730293; PMCID: PMC3424584.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3424584/)
+
+\clearpage
+
+
+# 附录
+
+## 写作方法
+
+**RNA extraction**
+
+Total RNA was extracted from the tissue using TRIzol® Reagent according the manufacturer’s instructions. Then RNA quality was determined by 5300 Bioanalyser (Agilent) and quantified using the ND-2000 (NanoDrop Technologies). Only high-quality RNA sample(OD260/280=1.8~2.2, OD260/230≥2.0, RIN≥6.5, 28S:18S≥1.0, >1μg) was used to construct sequencing library.
+
+**Library preparation and Sequencing**
+
+RNA purification, reverse transcription, library construction and sequencing were performed at Shanghai Majorbio Bio-pharm Biotechnology Co., Ltd. (Shanghai, China) according to the manufacturer's instructions (`r platform0`, San Diego, CA). The XX RNA-seq transcriptome library was prepared following `r platform0`® Stranded mRNA Prep, Ligation from `r platform0` (San Diego, CA) using 1μg of total RNA. Shortly, messenger RNA was isolated according to polyA selection method by oligo(dT) beads and then fragmented by fragmentation buffer firstly. Secondly double-stranded cDNA was synthesized using a SuperScript double-stranded cDNA synthesis kit (Invitrogen, CA) with random hexamer primers (`r platform0`). Then the synthesized cDNA was subjected to end-repair, phosphorylation and 'A' base addition according to `r platform0`'s library construction protocol. Libraries were size selected for cDNA target fragments of 300 bp on 2% Low Range Ultra Agarose followed by PCR amplified using Phusion DNA polymerase (NEB) for 15 PCR cycles. After quantified by Qubit 4.0, paired-end RNA-seq sequencing library was sequenced with the NovaSeq 6000 sequencer (2 x 150bp read length).
+
+**Variant discovery**
+
+Raw reads of low quality (mean phred score < 20), including reads containing adapter contamination and unrecognizable nucleotide (N base > 10) were trimmed or discarded by the software Fastp (Chen et al. 2018).Reads after trimming were mapping to the reference using HISAT2 software (Kim et al. 2019) under default mapping parameters.
+
+As the modified GATK Best Bractise (McKenna et al. 2010), the alignment bam files were sorted by samtools (Li et al. 2009) and PCR duplicates marked by MarkDuplicated. After doing the base quality recalibration, the germline variants calling which contained SNPs and InDels across all samples was using the Haplotyper and Gvcftyper programs in Sentieon genomics tools (Freed et al. 2017). Variants were filtered using standard hard filtering parameters according to GATK Best Practices pipeline.
+
+All of the variants were annotated using SnpEff (Cingolani et al. 2012). SNPs and InDels were categorized based on their positions on the chromosome (including intergenic regions, exons, introns, splicing sites, untranslated regions, and 1-kb upstream and downstream regions) and on their effects (including missense, start codon gain or loss, stop codon gain or loss and splicing mutations).
+
+**Bulk segregation analysis**
+
+We used several methods to perform BSA analysis, contains the index-slid method (Takagi et al. 2013), the index-loess method, the Euclidean distance (ED) algorithm (Hill et al. 2013), the G′value method (Magwene, Willis, and Kelly 2011) and two other BSA methods DL and K, which were driven by deep learning and least square method (Zhao et al. 2022), respectively.
+
+index-slid and index-loess
+
+After variant discovery, SNP-index was calculated for all the SNP positions. The sliding window strategy was applied with `r index_winsize_handle` Mb window size and `r index_stepsize_handle` kb step size to reduce the noise. We calculated the average SNP-index of the SNPs located in the window for further analysis, and windows with <10 SNPs were skipped. Only the window with averaged SNP-index above the threshold of Bootstrap P-value < 0.05 was considered as the candidate region.
+
+Except for sliding windows, we can also reduce the noise in the plot using locally weighted smoothing, or loess (Locally Weighted Scatterplot Smoothing) as called. Only the candidate region with the loess-fitted values of the markers above the threshold of the 99.9% confidence interval was considered.
+
+ED
+
+We chose to measure allele segregation using Euclidean distance (ED), as a metric that does not require parental strain information and is resistant to noise. The sliding window strategy was applied with `r index_winsize_handle` Mb window size and `r index_stepsize_handle` kb step size to reduce the noise. We calculated the average ED of the SNPs located in the window for further analysis, and windows with <10 SNPs were skipped. Only the window with averaged ED above the threshold of the 99.9% confidence interval was considered as the candidate region.
+
+G′value
+
+We calculated G′value for each SNP: the data is four allele counts that can be summarized in a 2*2 table to perform G-test. The non-overlapped sliding window strategy was applied with `r index_winsize_handle` Mb window size and `r index_stepsize_handle` kb step size to reduce the noise. We calculated the average G′value of the SNPs located in the window for further analysis, and windows with < 10 SNPs were skipped. Only the window with P-value < 0.05 was considered as the candidate region.
+
+## 软件列表
+
+```{r software-info-table, echo=FALSE}
+software_info_df <- data.frame(
+    V1=c(
+        "原始数据质控",
+        "参考基因组比对",
+        "比对结果处理",
+        "SNP/InDel检测",
+        "变异功能注释",
+        "关联分析统计",
+        "富集分析",
+        "引物设计"
+    ),
+    V2=c(
+        "Fastp",
+        "HISAT2",
+        "Samtools",
+        "Sentieon",
+        "SnpEff",
+        "R",
+        "R/clusterProfile",
+        "Primer3"
+    ),
+    V3=c(
+        "0.23.2",
+        "2.2.1",
+		"1.15.1",
+        "202112.07",
+        "5.1d",
+        "4.2.2",
+        "3.16",
+        "2.6.0"
+    )
+)
+colnames(software_info_df)<-c("步骤","应用软件","版本")
+if(htmlfmt){
+kable(software_info_df, "html", caption="BSA分析软件介绍") %>%
+	kable_styling(bootstrap_options=c("striped","hover","condensed"))
+}else{
+kbl(row.names=FALSE, software_info_df, "latex",  format.args = list(big.mark = ",",scientific = FALSE), caption="BSA分析软件介绍", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+	kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>% table_bline()
+}
+```
+
+
+## 相关软件下载链接如下：
+
+- fastp 0.23.2：https://github.com/OpenGene/fastp
+
+- HISAT2 2.2.1：https://github.com/DaehwanKimLab/hisat2
+
+- SAMtools 1.15.1：http://www.htslib.org/
+
+- Sentieon 202112.06：https://www.sentieon.com/products/
+
+- SnpEff 5.1d：http://snpeff.sourceforge.net/
+
+- R 4.2.2：https://cloud.r-project.org/
+
+- R/clusterProfiler:：http://master.bioconductor.org/packages/release/bioc/html/clusterProfiler.html
+
+- Primer3 2.6.0：https://primer3.org/releases.html
+
+## 附件说明及数据下载
+
+### 文件解压缩方法
+
+所有提供的文件均为 Linux 系统下的文件，压缩包使用 “tar -zcvf” 命令压缩， 以下为不同系统用户解压缩的方法：Unix/Linux/Mac 用户:  使用 tar -zcvf *.tar.gz 命令；Windows 用户：使用 WinRAR 软件解压缩
+
+### 文件打开或浏览方法
+
+如果在本附录中无特殊说明，所有提供的文件均为 Linux 系统下文本文件，Unix/Linux 用户可以使用 `more` 或 `less` 命令查看文本文件内容。 对于 Windows 用户，一般文本文件可以使用写字板或者 Excel 打开。推荐使用 [LTFviewer](https://pan.baidu.com/s/1SN_YLyVSOhIJGsLgA27-Wg?pwd=0ek1) 软件打开超过 10M 以上的文本文件，或选择 Unix/Linux/MacOS 系统在终端中打开相关文件。
+
+数据中可能包含部分图像文件，一般图像文件后缀名为 png、pdf、gif、tiff 等，对于图像文件， Windows 用户可以使用图片浏览器打开， Linux/Unix 用户使用 `display` 命令打开。
+
+后缀名为 svg 的文件为文本格式描述的图像文件， Windows 用户需要安装 Adobe Illustrator 软件打开。 Linux/Unix 用户可以使用 `rsvg-view` 命令查看。公司默认提供 pdf 格式的矢量图，可利用 Adobe Illustrator 软件对该格式图片进行编辑。 Linux 下的表格均为制表符（ Tab ）分割的文本，为了便于阅读，建议使用 Excel 或 OpenOffice 等办公软件用表格形式打开，打开时请用 “Tab 分割” 方式。
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\n\\newpage\n')
+```

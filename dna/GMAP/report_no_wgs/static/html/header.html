@@ -1,0 +1,48 @@
+<html>
+  <body leftmargin="auto" topmargin="auto">
+    <table
+      width="100%"
+      height="70px"
+      border="0"
+      cellpadding="5"
+      cellspacing="0"
+      style="
+        background: #e0ffff;
+        border-bottom: 1px solid #eee;
+        background-image: -moz-linear-gradient(top, #e0ffff, #ffffff);
+        background-image: -webkit-gradient(
+          linear,
+          left top,
+          left bottom,
+          color-stop(0, #e0ffff),
+          color-stop(1, #ffffff)
+        );
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E0FFFF', endColorstr='#FFFFFF', GradientType='0');
+      "
+    >
+      <tr height="90%">
+        <td width="5%"></td>
+        <td>
+          <img class="logo" align="left" src="static/images/logo.png" />
+          <input
+            style="background: #6495ed; color: #fff !important; float: right"
+            type="button"
+            style="text-align: right"
+            value="打印此页面"
+            onClick="printpage()"
+          />
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+
+<script>
+  const printpage = () => {
+    let oldStr = window.document.body.innerHTML; // 获取body的内容
+    let newStr = window.document.querySelector("div.toc-content").innerHTML; //需要打印的内容
+    window.document.body.innerHTML = newStr; // 把需要打印的指定内容赋给body
+    window.print(); // 调用浏览器的打印功能打印指定区域
+    window.document.body.innerHTML = oldStr; // body替换为原来的内容
+  };
+</script>

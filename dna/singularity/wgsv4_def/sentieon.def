@@ -1,0 +1,38 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/app/bioinfo/dna/env/sentieon-genomics-202308.03/ /opt/bioinfo/
+    /mnt/ilustre/users/sanger-dev1/app/bioinfo/WGS/sentieon-genomics-201808/MajorBio_cluster_0.37.lic /opt/licenses/
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/bcftools-1.17.tar.bz2 /opt/src/
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/samtools-1.17.tar.bz2 /opt/src/
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/htslib-1.16.tar.bz2       /opt/src/
+
+%post
+    mkdir -p /opt/bioinfo/bin \
+         /opt/src/build 
+    
+    # 4. 编译安装 HTSlib 1.16（Samtools/Bcftools 依赖）
+    tar -xjf /opt/src/htslib-1.16.tar.bz2 -C /opt/src/build && \
+    cd /opt/src/build/htslib-1.16 && \
+    ./configure --prefix=/opt/bioinfo && \
+    make && make install
+
+    # 5. 编译安装 Samtools 1.17
+    tar -xjf /opt/src/samtools-1.17.tar.bz2 -C /opt/src/build && \
+    cd /opt/src/build/samtools-1.17 && \
+    ./configure --prefix=/opt/bioinfo --with-system-htslib && \
+    make && make install
+
+    # 6. 编译安装 Bcftools 1.17
+    tar -xjf /opt/src/bcftools-1.17.tar.bz2 -C /opt/src/build && \
+    cd /opt/src/build/bcftools-1.17 && \
+    ./configure --prefix=/opt/bioinfo --with-system-htslib && \
+    make && make install
+
+    apt-get clean -y
+
+
+%environment
+    export PATH=$PATH:/opt/bioinfo/sentieon-genomics-202308.03/bin
+    export SENTIEON_LICENSE=/opt/licenses/MajorBio_cluster_0.37.lic

@@ -1,0 +1,41 @@
+### G′value方法
+
+***
+
+<style>
+img.inline-img {
+    display:inline;
+    width:auto;
+}
+
+img.independent-img {
+    display:block;
+    width:auto;
+}
+</style>
+&emsp;&emsp;G统计方法是基于高通量、短读测序进行QTL定位的统计框架。该方法是基于标准统计
+量G的重新统计计算出的G的平滑版本，并考虑到由于分离子取样形成个体以及个体测序过
+程中引入的变异而导致的等位基因频率估计值的变化。通过模拟实验研究发现，该方法可以用
+于检测到甚至是弱效应的QTL。
+
+&emsp;&emsp;每个位点的标准G统计量计算公式如下：
+
+$$G=2\sum_{i=1}^{4}n_iln(\frac{n_i}{\widehat n_i})$$
+
+&emsp;&emsp;其中$\widehat n_i$是数的期望值（表示从分离体序列中产生的等位基因$A_0$和$A_1$的计数）。无效假设是没有显著的SNP或InDel定位到QTL。这意味着可按照列联表的标准预期计数，例如，$\widehat n_i = (n_1 + n_2)(n_1+n_3)/(n_1 + n_2 + n_3 + n_4)$，如果无效假设正确，则$\epsilon[n_1] = \epsilon[n_2] = qC$且$\epsilon[n_3] = \epsilon[n_4] = (1-q)C$。如果假设失效，则$\epsilon[n_1] = \epsilon[n_2] =\epsilon[n_3] = \epsilon[n_4] = C/2$（C是覆盖度）。G′又称Gprime，是平滑版的G统计量，是基于每个窗口的G值使用局部回归模型来进行拟合得到的值。
+
+&emsp;&emsp;对经过亲本过滤的子代变异位点，首先计算混池间每个位点的G统计值。为了降低背景噪音、提高准确性，采用1Mb窗口长度计算平滑后的G′值，取p≤0.001对应的G′值作为筛选阈值，并挑选至少包含10个阈值线之上变异位点的候选区域。图3.8是G′ value统计方法的曼哈顿结果图。
+
+单条染色体的曼哈顿结果图详见结题文件夹目录下的：<br>
+Result/data_release/04.Gprime/Gprime.\*.index.png/pdf（\*代表染色体ID）
+
+```{r echo=FALSE}
+library(slickR)
+state_plots <- list.files("../file","4.Gprime.png",full.names=TRUE)
+slickR(obj=state_plots,height=400,width='95%',)
+```
+<p class='mark'>图 3.9 G′ value法的曼哈顿结果图</p>
+
+<p class='mark1'>**注：**</p>
+图中的一个点代表一个SNP/InDel标记，横轴为标记的染色体位置信息，纵轴是G′ value统计值；图中的黑线表示拟合的曲线，红线表示阈值线。
+

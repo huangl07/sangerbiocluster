@@ -1,0 +1,13 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/seqkit_linux_amd64.tar.gz /opt/src/
+%post
+    mkdir -p /opt/bioinfo/bin 
+    
+    gunzip  -c /opt/src/seqkit_linux_amd64.tar.gz > /opt/bioinfo/bin/seqkit
+    chmod +x /opt/bioinfo/bin/seqkit
+
+    apt-get clean -y
+%environment

@@ -1,0 +1,14 @@
+### 插入片段分布统计
+
+通过检测双端序列在参考基因组上的起止位置，可以得到样品DNA打断后得到的测序片段的实际大小，即插入片段大小（Insert Size），是生物信息分析时的一个重要参数。插入片段大小的分布一般符合正态分布，且只有一个单峰。样品的插入片段长度分布如图\@ref(fig:insertsize-plot)所示，插入片段长度分布符合正态分布，中心值在350 bp左右，说明测序数据文库构建无异常。
+
+```{r insertsize-plot, echo=FALSE, fig.cap="样品的插入片段长度分布图"}
+state_plots <- list.files("../file","*insert.png",full.names=TRUE)
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注**：横坐标为Reads对应的插入片段大小，纵坐标为相应插入片段大小所对应的Reads数。

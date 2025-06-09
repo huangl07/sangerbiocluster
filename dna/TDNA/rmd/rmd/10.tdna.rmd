@@ -1,0 +1,129 @@
+## 转基因插入位点检测
+
+随着基因工程技术的发展，跨物种转基因从而使某个动植物或者微生物具有某种特定的功能，已经成为突破现有传统育种手段和基因工程的有力工具。转基因插入的位点在基因组上的位置未知，其次插入片段有可能断裂，另外还有可能插入基因组的多个位置，无法使用传统的设计插入片段随机引物来检测。
+本项目首先通过检测下机数据中插入位点覆盖深度，再利用AIM-HII软件(Esher *et al.* 2015)和TDNAscan软件(Sun *et al.* 2019)来快速识别 T-DNA 插入并且识别基因组中 T-DNA 插入位置，从而帮助判断转基因后的样品是否转基因成功，转入的外来基因或者片段插入到了基因组的什么位置。
+具体插入位点详细信息见结果文件[data/03.tdna/](./data/03.tdna)
+
+
+### 样品插入位点覆盖统计
+通过将下机数据的Reads比对到参考基因组及插入片段，来可视化样品插入片段序列覆盖率\@ref(fig:tdnacoverage-plot)所示。但该匹配结果可能为参考基因组中插入片段的同源序列，需要通过插入位点检测软件结果来进一步确认插入片段插入的位置，可能存在插入位点检测软件检测结果为空的情况。
+```{r tdnacoverage-plot, echo=FALSE, fig.cap="样品插入位点覆盖深度分布图",out.width='100%'}
+state_plots <- list.files("info","*.tdna_coverage.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='100%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注：**横坐标表示匹配到的插入片段位置，纵坐标表示插入片段检测到的深度。图中黑色虚线为基因组平均深度。
+
+
+### AIM-HII检测结果
+AIM-HII
+运行原理： AIM-HII提取插入位点之前，首先需要对NGS下机数据进行处理分析：
+
+1) 使用 fastq-mcf 移除测序接头并修剪低质量碱基，连接基因组和插入序列
+
+2) 运行 BWA-MEM将处理过的读数映射到这个连接的参考序列
+
+3) 使用 samtools 将 BWA-MEM 输出的 SAM 文件转换为排序的 BAM 文件
+
+然后 AIM-HII 提取识别在整个基因组上的插入的读数。通过处理这些读数，可以确定假定的插入发生在基因组中的位置，然后根据它们的基因组位置组装成簇。
+
+默认在5kb距离之间的且似乎位于插入片段的簇配对成“簇对”，即下表中的“pair”；若未发现可以配对的簇，这些不成对的簇称为“单个簇”，即下表中的“singleton”。若未找到匹配簇，则结果为空，即下表为空。
+
+AIM-HII结果见表\@ref(tab:aimhii-table)。
+
+
+```{r get-aimhii-table}
+gene_stat <- read.delim('info/aimhii.stat.xls',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- gene_stat %>% tbl_prettier(c(NA,NA,NA,NA,NA))
+tempdf <- tempdf[order(tempdf[,1]),]
+colnames(tempdf) <- c("Sample","Type","Ref_chrom","Start","End")
+tempfn <- c(
+"Sample：样品；",
+"Type：singleton/pair（单个簇/簇对）；",
+"Ref_chrom：匹配到的基因组染色体；",
+"Start：匹配到的基因组染色体上的起始位点；",
+"End：匹配到的基因组染色体上的终止位点。"
+)
+```
+
+
+```{r aimhii-table-html,eval=htmlfmt,results="asis"}
+dt_caption("AIM-HII结果统计表","aimhii-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r aimhii-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    tempdf[,3]=gsub("_","\\\\_",tempdf[,3])
+    kbl(row.names=FALSE, tempdf, "latex",caption="AIM-HII结果统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```
+
+### TDNAscan检测结果
+TDNAscan
+运行原理：首先，首先将 NGS 读数映射到 T-DNA 序列。其次，将读数分为三个子组：
+
+1) 仅映射到参考基因组的读数;
+
+2) 仅映射到载体序列的读数;
+
+3) 映射到参考基因组和载体序列的读数。然后将上述步骤中的所有信息读数映射到参考基因组中。
+
+通过提取读数的Compact Idiosyncratic Gapped Alignment Report (CIGAR)即“雪茄”字符串，对序列匹配数和碱基核苷酸数进行对齐过滤，判断插入片段是否截断。所有映射成功的读数还需要满足标准：检测到映射到 T-DNA 序列的核苷酸总数与参考基因组中匹配的核苷酸的差异应相同或小于 5 bp。因此TDNAscan可以提供插入片段序列两侧的截断位置和插入方向，即下表中的“Position”和“SuppRead”。若未匹配到完整或截断的插入片段，则结果为空，即下表为空。
+
+TDNAscan结果见表\@ref(tab:tdnascan-table)。
+
+
+```{r get-tdnascan-table}
+gene_stat <- read.delim('info/tdna.stat.xls',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- gene_stat %>% tbl_prettier(c(NA,NA,NA,NA,NA,NA,NA))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn_html <- c(
+"Sample： 样品名；",
+"Chr：匹配到的参考基因组染色体",
+"Position： T-DNA插入的位置（'~'代表附近的插入位置,但是无法判别准确位置）；",
+"SuppRead： CLR代表clipped reads（双端序列中的一端分别能对上参考基因组和T-DNA）个数;DIR 表示discordant reads（双端序列中的一端能对上参考基因组，另一端能对上T-DNA）的读数；",
+"TDNA_info： tdna 和 tdna_end 表示插入参考基因组的 T-DNA 序列的开始和结束位置，'-'表示没有检测到TDNA起始/终止位置；",
+"Orientation： 插入参考基因组的正向或反向T-DNA；",
+"Freq： 插入频率，表示为在接受T-DNA的细胞中转化事件中成功插入T-DNA的百分比（对于非组织类样品无意义）。"
+)
+tempfn <- c(
+"Sample： 样品名；",
+"Chr：匹配到的参考基因组染色体",
+"Position： T-DNA插入的位置（'~'代表附近的插入位置,但是无法判别准确位置）；",
+"SuppRead： CLR代表clipped reads（双端序列中的一端分别能对上参考基因组和T-DNA）个数；",
+"DIR 表示discordant reads（双端序列中的一端能对上参考基因组，另一端能对上T-DNA）的读数；",
+"TDNA_info： tdna 和 tdna_end 表示插入参考基因组的 T-DNA 序列的开始和结束位置，'-'表示没有",
+"检测到TDNA起始/终止位置；",
+"Orientation： 插入参考基因组的正向或反向T-DNA；",
+"Freq： 插入频率，表示为在接受T-DNA的细胞中转化事件中成功插入T-DNA的百分比,（对于非组织",
+"类样品无意义）。"
+)
+```
+
+
+```{r tdnascan-table-html,eval=htmlfmt,results="asis"}
+dt_caption("TDNAscan结果统计表","tdnascan-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn_html)
+```
+
+```{r tdnascan-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    tempdf[,2]=gsub("_","\\\\_",tempdf[,2])
+    tempdf[,3]=gsub("~","\\\\~~",tempdf[,3])
+    tempdf[,6]=gsub("_","\\\\_",tempdf[,6])
+    tempdf[,5]=gsub("_","\\\\_",tempdf[,5])
+    kbl(row.names=FALSE, tempdf, "latex",caption="TDNAscan结果统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

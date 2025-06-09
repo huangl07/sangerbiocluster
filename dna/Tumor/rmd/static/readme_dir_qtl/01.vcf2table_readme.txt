@@ -1,0 +1,73 @@
+此文件夹为变异检测分析结果，共包含2个文件，如下所述（如有缺少请第一时间联系本公司售后技术人员）：
+1. 01.vcf2table_readme.txt：	文件详细介绍说明
+2. pop.table：		变异检测结果统计列表
+3. snp_indel_gene.stat.xls
+4. pop.final.anno.xls
+
+以下为文本文件详细说明：
+文件：pop.table
+以下是表头详细说明：
+表头说明：
+CHROM：变异位点所在染色体
+POS：变异位点坐标
+REF：该位点在参考基因组上的碱基
+ALT：该位点的变异碱基
+Vtype：变异类型, 分SNP和indel
+index1：混池1的index值
+index2：混池2的index值
+delta：	index1与index2的差值
+*GT: 样品的基因型
+*AD: Allele Depth为sample中每一种allele（等位碱基）的reads覆盖度，在diploid（二倍体，或可指代多倍型）中则是用逗号分隔的两个值，前者对应REF基因，后者对应ALT基因型
+*DP: Depth为sample中该位点的覆盖度，是该位点等位基因覆盖度的总和（AD列，逗号左右数值加和）。
+Ann: 该位点经过snpeff注释后的具体注释信息
+
+文件: snp_indel_gene.stat.xls
+以下是表头详细说明：
+表头说明：
+CHROM：  染色体编号
+SNP_Number： 过滤后对应染色体上SNP数目
+Effective_SNP： 关联区域有效突变（变异功效为HIGH或MODERATE）SNP的数量
+INDEL_Number：过滤后对应染色体上InDel数目
+Effective_INDEL：关联区域有效突变（变异功效为HIGH或MODERATE）InDel的数量
+Gene_Number：过滤后对应染色体上gene数目
+Effective_Gene：关联区域有效突变（变异功效为HIGH或MODERATE）gene的数量
+
+文件: pop.final.anno.xls
+以下是表头详细说明：
+表头说明：
+CHROM: 变异位点染色体编号
+POS: 变异位点位置
+Ref: 变异位点参考基因组上的碱基
+Alt: 变异位点变异的碱基
+Vtype: 变异类型
+*.GT: 样品在变异位点的基因型
+*.AD: 样品在变异位点的各基因型深度
+*.DP: 样品在变异位点的总深度
+Allele: 突变碱基的类型
+Annotation: 突变类型
+PutativeImpact: snpeff软件对变异位点产生的影响程度进行简单评估，有四个程度（HIGH, MODERATE, LOW, MODIFIER）
+GeneName:   该变异位点所在基因的基因名，如果变异位点的突变类型是intergenic_region，则显示的是离该变异位点最近的一个基因
+GeneID: 基因ID
+FeatureType:    变异位点所在的区域类型
+FeatureID:  Feature_Type所对应的ID
+TranscriptBioType: 转录本类型
+Rank: 只有当变异位点位于基因区域时才有值，当变异位点位于基因区域以外（intergenic_region）时，该字段的值为空。该值给出的是变异位点所处的exton/intron和该基因的exon/intron的总数
+HGVS.c: 在DNA水平上，采用HGVS标准命名的变异位点的情况
+HVGS.p: 在蛋白质水平上，采用HGVS标准命名的变异位点的情况
+cDNA_position_len: 变异位点在cDNA上的位置/cDNA的长度
+CDS_position_len: 变异位点在CDS的位置/CDS的长度
+Protein_position_len: 变异位点在氨基酸上的位置/氨基酸的长度
+Distance: 不同的情况，距离的含义是不同的，因此可能会是空值。Up/Downstream：到第一个/最后一个密码子的距离。Intergenic：到最近基因的距离。到外显子中最近的内含子边界的距离（+/-代表上游/下游）。如果相同，使用正数。在内含子中离最近外显子边界的距离（+/-上/下）。到基序中第一碱基的距离。到miRNA中第一碱基的距离。在剪接位点或剪接区域中，离外显子-内含子边界的距离ChipSeq peak：到顶点（或峰中心）的距离。Histone/Histone state：到顶点（或峰中心）的距离。
+ERRORS: 添加可能影响批注准确性的错误、警告或信息性消息
+NRID: 基因在NR数据库中的ID
+NRANNO: 基因在NR数据库中的注释
+UniID: 基因在Uniprot数据库中的ID
+UniANNO: 基因在Uniprot数据库中的注释
+KoID: 基因在KEGG Orthology数据库中的ID
+Koanno: 基因在KEGG Orthology数据库中的注释
+GOTERM: 基因在GO数据库数据库中的ID
+GOANNO: 基因在GO数据库中的注释
+EGGNOG: 基因在EGGNOG数据库数据库中的ID
+EGGNOG_ANNO: 基因在EGGNOG数据库数据库中的注释
+PfamID: 基因在Pfam数据库数据库中的ID
+PfamAnno: 基因在Pfam数据库数据库中的注释

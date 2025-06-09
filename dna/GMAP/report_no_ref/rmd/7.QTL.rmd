@@ -1,0 +1,64 @@
+## QTL定位
+
+### QTL定位分析
+
+基于遗传学原理，将遗传图谱上的分子标记与性状进行连锁分析，确认与性状相关的分子标记，即数量性状基因座（QTL）。寻找QTL在染色体上位置并估计其遗传效应的过程，成为QTL作图（QTL mapping）。基于遗传图谱和性状数据，使用Rqtl进行定位分析，具体方法如下：
+
+1. 利用区间作图方法（Interval Mapping）进行QTL定位；
+2. 使用有放回的随机抽样方法（Permutation test），随机抽样1000次，确认置信水平大于95%的LOD值作为QTL阈值，筛选获得QTL区域；
+3. 基于定位区域提取功能基因，并进行富集分析。
+
+性状定位结果如表\@ref(tab:qtl-table)所示，QTL定位如\@ref(fig:qtl-plot)所示。
+```{r get-qtl-table}
+qtl_result_dir <-  file.path(data_release_dir, "04.qtl")
+files <- list.files(qtl_result_dir,pattern="*/*.qtl-result.result",recursive=T,full.names=T)
+new_files <- vector()
+for (i in files){
+if (file.size(i) != 0){
+new_files <- append(new_files, i)
+}
+}
+lf <- map_dfr(new_files,read.delim,sep=" ", header = TRUE, check.names = FALSE) %>%
+  select(qname, lod.chr, lod.pos, lod.lod, var, pos1, pos2)
+colnames(lf) <- c("Trait ID","LG ID","LOD Peak","LOD","Variance","Pos1","Pos2")
+lf_unique <- lf %>% distinct()
+tempdf <- lf_unique %>% tbl_prettier(c(NA,0,2,2,2,NA,NA))
+
+tempfn <- c(
+"Trait ID：性状名",
+"LG ID：QTL定位检索到的连锁群编号；",
+"LOD Peak：定位区域内最大的LOD值所在的遗传图谱位置；",
+"LOD：定位区域内最大的LOD值；",
+"Variant：定位区域内的表型贡献率；",
+"Pos1：定位区域中边缘的分子标记；",
+"Pos2：定位区域中边缘的分子标记；"
+)
+```
+```{r qtl-table-html,eval=htmlfmt,results="asis"}
+dt_caption("qtl定位结果统计表","qtl-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r qtl-table,eval=pdffmt}
+tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+tempdf[,6]=gsub("_","\\\\_",tempdf[,6])
+tempdf[,7]=gsub("_","\\\\_",tempdf[,7])
+kbl(row.names=FALSE, tempdf, "latex",caption="qtl定位结果统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',escape=FALSE,align="c") %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+kbl_foot(tempfn) %>% table_bline()
+```
+
+```{r qtl-plot, echo=FALSE, fig.cap="QTL定位结果图"}
+state_plots <- list.files(qtl_result_dir, pattern="*/*.scan.png",recursive=T, full.names=T)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n')
+```

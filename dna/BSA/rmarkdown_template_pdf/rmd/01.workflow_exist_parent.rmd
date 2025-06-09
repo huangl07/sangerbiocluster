@@ -1,0 +1,85 @@
+## 材料基本信息
+
+```{r get-material-info-table}
+material_info_table<- data.frame(
+  info = c("物种信息", "群体", "亲本", "混池信息", "参考基因组大小", "参考基因组组装水平", "参考基因组链接"),
+  content=c(
+    genome_name,
+    poptype,
+    paste0(p1_id,",",p2_id),
+    paste0(mix1_id,",",mix2_id),
+    genome_size,
+    genome_scale,
+    genome_link
+  )
+)
+names(material_info_table) <- c("条目","基本信息")
+```
+```{r material-info-table-html, eval=htmlfmt}
+kable(material_info_table, "html") %>%
+  kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+```{r material-info-table, eval=pdffmt}
+kbl(row.names=FALSE, material_info_table, "latex", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+  kable_styling(latex_options=c("striped","scale_down","repeat_header")) %>%
+  table_bline() %>%
+        column_spec(2,"30em")
+```
+
+本项目混池样本对应关系如下：
+
+```{r get-mix-info-table}
+mix_info_table<- data.frame(
+  info = c("亲本1", "亲本2", "混池1", "混池2"),
+  content=c(
+    p1_id,
+    p2_id,
+    mix1_id,
+    mix2_id
+  )
+)
+names(mix_info_table) <- c("混池信息","样本编号")
+```
+```{r mix-info-table-html, eval=htmlfmt}
+kable(mix_info_table, "html") %>%
+  kable_styling(bootstrap_options=c("striped","hover","condensed")) %>%
+        column_spec(2,"30em")
+```
+```{r mix-info-table, eval=pdffmt}
+kbl(row.names=FALSE, mix_info_table, "latex", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+  kable_styling(latex_options=c("striped","scale_down","repeat_header")) %>%
+  table_bline()
+```
+
+## 项目服务内容
+
+按照合同约定，对`r sample_number`个检测合格的样本进行以下实验及分析：
+
+- 1、全基因组重测序，每个混池测序量达到合同标准，Q30 $\geq$ 80%。
+
+- 2、比对参考基因组进行变异检测分析，具体内容包括：SNP检测和注释、InDel检测和注释。
+
+- 3、关联分析：根据混池中SNP和Indel基因型频率的差异，全基因组上筛选与目标性状相关联的位点，并对其进行注释。
+
+## 分析结果概述
+
+**1.测序数据概述：**
+
+- (1). 亲本1获得 `r p1_total_base` 的 clean data，Q30 达到 `r p1_average_q30` ，测序深度为 `r p1_average_depth` ，与参考基因组平均比对效率为 `r p1_mapped_ratio` , 基因组覆盖度为 `r p1_coverage` (至少一个碱基覆盖);
+
+- (2). 亲本2获得 `r p2_total_base` 的 clean data，Q30 达到 `r p2_average_q30` ，测序深度为 `r p2_average_depth` ，与参考基因组平均比对效率为 `r p2_mapped_ratio` , 基因组覆盖度为 `r p2_coverage` (至少一个碱基覆盖);
+
+- (3). 混池1获得 `r mix1_total_base` 的 clean data，Q30 达到 `r mix1_average_q30` ，测序深度为 `r mix1_average_depth` ，与参考基因组平均比对效率为 `r mix1_mapped_ratio` , 基因组覆盖度为 `r mix1_coverage` (至少一个碱基覆盖);
+
+- (4). 混池2获得 `r mix2_total_base` 的 clean data，Q30 达到 `r mix2_average_q30` ，测序深度为 `r mix2_average_depth` ，与参考基因组平均比对效率为 `r mix2_mapped_ratio` , 基因组覆盖度为 `r mix2_coverage` (至少一个碱基覆盖)。
+
+**2.变异检测：**
+
+- (1). 亲本1共检测到 `r prettier(p1_snp_number, 0)` 个 SNP, 其中HIGH的个数为 `r prettier(p1_snp_high_number, 0)` 个, MODERATE的个数为 `r prettier(p1_snp_moderate_number, 0)` 个; `r prettier(p1_indel_number, 0)` 个 InDel, 其中HIGH的个数为 `r prettier(p1_indel_high_number, 0)` 个, MODERATE的个数为 `r prettier(p1_indel_moderate_number, 0)` 个；
+
+- (2). 亲本2共检测到 `r prettier(p2_snp_number, 0)` 个 SNP, 其中HIGH的个数为 `r prettier(p2_snp_high_number, 0)` 个, MODERATE的个数为 `r prettier(p2_snp_moderate_number, 0)` 个; `r prettier(p2_indel_number, 0)` 个 InDel, 其中HIGH的个数为 `r prettier(p2_indel_high_number, 0)` 个, MODERATE的个数为 `r prettier(p2_indel_moderate_number, 0)` 个；
+
+- (3). 混池1共检测到 `r prettier(mix1_snp_number, 0)` 个 SNP, 其中HIGH的个数为 `r prettier(mix1_snp_high_number, 0)` 个, MODERATE的个数为 `r prettier(mix1_snp_moderate_number, 0)` 个; `r prettier(mix1_indel_number, 0)` 个 InDel, 其中HIGH的个数为 `r prettier(mix1_indel_high_number, 0)` 个, MODERATE的个数为 `r prettier(mix1_indel_moderate_number, 0)` 个；
+
+- (4). 混池2共检测到 `r prettier(mix2_snp_number, 0)` 个 SNP, 其中HIGH的个数为 `r prettier(mix2_snp_high_number, 0)` 个, MODERATE的个数为 `r prettier(mix2_snp_moderate_number, 0)` 个; `r prettier(mix2_indel_number, 0)` 个 InDel, 其中HIGH的个数为 `r prettier(mix2_indel_high_number, 0)` 个, MODERATE的个数为 `r prettier(mix2_indel_moderate_number, 0)` 个。
+

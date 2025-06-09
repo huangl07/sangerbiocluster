@@ -1,0 +1,198 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yiwei.tang/offline_work/singularity/v0.0.1/00.basic.sif
+
+%files
+    ../Python-2.7.18.tgz /opt
+    ../get-pip3.py /opt
+    ../get-pip2.py /opt
+        # Java环境
+    /mnt/ilustre/users/sanger-dev1/app/bioinfo/dna/env/jdk-11.0.11/ /opt/bioinfo/
+
+%post
+    # 更新仓库列表
+    apt-get update
+
+        # 基础系统配置
+    apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        gnupg2 \
+        software-properties-common \
+        wget \
+        curl \
+        locales \
+        tzdata
+ 
+    # 安装依赖（包括 libicu66）
+    apt-get install -y wget
+    wget http://security.ubuntu.com/ubuntu/pool/main/i/icu/libicu66_66.1-2ubuntu2_amd64.deb
+    dpkg -i libicu66_*.deb
+    apt-get install -f
+
+    # 安装系统依赖
+    apt-get install -y \
+        perl
+    
+    # 安装Python3.8
+    apt-get install -y software-properties-common
+    add-apt-repository ppa:deadsnakes/ppa
+    apt-get update
+    apt-get install -y python3.8 python3.8-dev python3.8-venv
+    ln -sf /usr/bin/python3 /usr/local/bin/python3
+
+    # 安装Python2.7（修正符号链接问题）
+    echo "=== 开始安装Python 2.7.18 ==="
+    
+    # 使用官方正确MD5值
+    PYTHON2_MD5="38c84292658ed4456157195f1c9bcbe1"
+    
+    if [ -f /opt/Python-2.7.18.tgz ]; then
+        echo "检测到本地预置安装包，进行校验..."
+        if echo "$PYTHON2_MD5  /opt/Python-2.7.18.tgz" | md5sum -c -; then
+            echo "本地包校验通过"
+            cp /opt/Python-2.7.18.tgz .
+        else
+            echo "本地包校验失败，已删除损坏文件"
+            rm -f /opt/Python-2.7.18.tgz
+        fi
+    fi
+
+    # 安装流程（修复符号链接）
+    echo "=== 开始解压安装 ==="
+    tar xzf Python-2.7.18.tgz
+    cd Python-2.7.18
+    ./configure --enable-optimizations --enable-unicode=ucs4
+    make -j$(nproc)
+    make altinstall
+    cd ..
+    # 设置正确的符号链接
+    ln -sf /usr/local/bin/python2.7 /usr/local/bin/python2
+    ln -sf /usr/local/bin/python2.7 /usr/local/bin/python
+    echo "Python 2.7.18 安装完成"
+
+    # 安装pip并配置镜像源（使用绝对路径）
+    # Python3的pip
+    python3 /opt/get-pip3.py --no-cache-dir --index-url https://mirrors.bfsu.edu.cn/pypi/web/simple pip setuptools wheel
+    python3 -m pip config set global.index-url https://mirrors.bfsu.edu.cn/pypi/web/simple
+    echo "PIP3 安装完成"
+
+    # Python2的pip
+    python /opt/get-pip2.py --no-cache-dir --index-url https://mirrors.bfsu.edu.cn/pypi/web/simple pip setuptools wheel
+    python -m pip config set global.index-url https://mirrors.bfsu.edu.cn/pypi/web/simple
+    
+    echo "PIP都已安装完成"
+    
+    pip3 install --no-cache-dir \
+        numpy==1.26.4 \
+        pandas==2.2.3 \
+        scipy==1.14.1 \
+        matplotlib==3.10.0 \
+        seaborn==0.12.2 \
+        biopython==1.79 
+
+    # 设置清华大学CRAN镜像源
+    apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        wget \
+        gnupg2 \
+        software-properties-common
+
+    # 添加R 4.2专用APT源
+    wget -qO- https://mirrors.bfsu.edu.cn/CRAN/bin/linux/ubuntu/marutter_pubkey.asc | gpg --dearmor > /usr/share/keyrings/r-project.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/r-project.gpg] https://mirrors.bfsu.edu.cn/CRAN/bin/linux/ubuntu jammy-cran40/" > /etc/apt/sources.list.d/r-project.list
+
+    # 安装指定版本R
+    apt-get update && apt-get install -y --no-install-recommends \
+        r-base-core=4.2.2-1.2204.0 \
+        r-base-dev=4.2.2-1.2204.0 \
+        r-base=4.2.2-1.2204.0 \
+        r-recommended=4.2.2-1.2204.0 \
+        libopenblas-dev \
+        libcurl4-openssl-dev \
+        libssl-dev \
+        libxml2-dev \
+        libfontconfig1-dev \
+        libharfbuzz-dev \
+        libfribidi-dev
+
+    apt-get install -y \
+        libtiff5-dev \
+        libfreetype6-dev \
+        libpng-dev \
+        libjpeg-dev \
+        libharfbuzz-dev \
+        libfribidi-dev \
+        libxml2-dev \
+        libicu-dev
+
+    # 配置R环境变量
+    echo 'options(
+        repos = c(CRAN = "https://mirrors.bfsu.edu.cn/CRAN/"),
+        download.file.method = "wget",
+        Ncpus = parallel::detectCores()
+    )' >> /usr/lib/R/etc/Rprofile.site
+
+    # 阶段1：基础安装
+    echo "正在配置镜像源..."
+    Rscript -e "options(repos = c(CRAN='https://mirrors.ustc.edu.cn/CRAN/'), BioC_mirror='https://mirrors.ustc.edu.cn/bioc')"
+    
+    # 精确安装BiocManager 1.30.23 (官方源码)
+    echo "正在安装BiocManager 1.30.23..."
+    wget https://cran.r-project.org/src/contrib/Archive/BiocManager/BiocManager_1.30.23.tar.gz
+    R CMD INSTALL -l /usr/local/lib/R/site-library BiocManager_1.30.23.tar.gz
+    echo '.libPaths(c("/usr/local/lib/R/site-library", .libPaths()))' \
+        >> /usr/lib/R/etc/Rprofile.site
+
+    # 永久锁定配置
+    echo "写入版本锁定配置..."
+    echo 'options(
+        BiocManager.check_repositories = FALSE,
+        BiocManager.snapshot = TRUE,
+        BIOCONDUCTOR_USE_CONTAINER_REPOSITORY = FALSE,
+        renv.config.auto.snapshot = FALSE
+    )' >> /usr/lib/R/etc/Rprofile.site
+    
+    # 阶段4：核心包安装
+    echo "安装核心生物信息学包..."
+    Rscript -e ' 
+      options(repos=c(CRAN="https://mirrors.ustc.edu.cn/CRAN/"), BioC_mirror="https://mirrors.ustc.edu.cn/bioc"); 
+      BiocManager::install(c( 
+          "BiocGenerics", 
+          "Biobase", 
+          "S4Vectors", 
+          "IRanges", 
+          "AnnotationDbi" 
+      ), lib="/usr/local/lib/R/site-library", ask=FALSE, version="3.16")'
+        # 阶段 2: 安装图形系统依赖
+    Rscript -e 'install.packages(c("ragg","systemfonts","textshaping"), lib="/usr/local/lib/R/site-library", repos="https://mirrors.ustc.edu.cn/CRAN/")'
+
+    # 清理APT缓存和临时文件
+    apt-get clean -y
+
+
+%environment
+    export LC_ALL=C
+    export R_LIBS_USER=/usr/local/lib/R/site-library
+    export LC_CTYPE=zh_CN.UTF-8
+    export LC_ALL=zh_CN.UTF-8
+    export LANG=zh_CN.UTF-8
+    export DEBIAN_FRONTEND=noninteractive
+    # 基础环境配置
+    umask 022
+    
+    # 核心路径配置
+    export PATH=/usr/local/bin:/opt/bioinfo/bin:/usr/bin:$PATH
+    export PATH=$PATH:/opt/bioinfo/sentieon-genomics-202308.03/bin
+    export PATH=$PATH:/opt/bioinfo/gatk-4.3.0.0
+    # Java环境
+    export JAVA_HOME=/opt/bioinfo/jdk-11.0.11
+    export PATH=$JAVA_HOME/bin:$PATH
+    
+    # 性能配置
+    export OPENBLAS_NUM_THREADS=16
+    
+    # 库路径配置
+    export LD_LIBRARY_PATH=/opt/bioinfo/lib:/opt/bioinfo/lib64:/opt/bioinfo/lib/x86_64-linux-gnu:/usr/lib:/usr/lib64:/usr/local/lib:$LD_LIBRARY_PATH
+    export PKG_CONFIG_PATH=/opt/bioinfo/lib/pkgconfig:/usr/lib/pkgconfig:/usr/local/lib/pkgconfig
+    
+    # 许可证配置
+    export SENTIEON_LICENSE=/opt/licenses/MajorBio_cluster_0.37.lic

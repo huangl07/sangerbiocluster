@@ -1,0 +1,33 @@
+
+### 肿瘤新抗原预测
+
+新抗原是癌症治疗中有前景的靶点，主要指由于肿瘤发生而产生的、人体免疫系统尚未认知的抗原。新抗原主要分为两种，肿瘤特异性抗原（tumor-specific antigens, TSAs）和肿瘤相关抗原（tumor-associated antigens, TAAs），是能够被肿瘤细胞表面展示的肽段。它们与人类白细胞抗原(Major Histocompatibility Complex, MHC)分子结合，形成抗原肽复合物，从而被T细胞识别并引发免疫应答。MHC分子通常分为MHC-I和MHC-II两类。MHC-I分子主要在所有细胞表面表达，它们能够展示内源性抗原肽段，如由病毒感染或肿瘤变异产生的异常蛋白等。MHC-II分子则主要在特定类型的免疫细胞表面表达，如B细胞、巨噬细胞和树突状细胞等，它们主要展示外源性抗原肽段，如由病原菌、细胞外蛋白等产生的抗原。人类有24,000多个不同的HLA-I（HLA-A、-B和-C）和HLA-II（HLA-DR、HLA-DQ和HLA-DP）等位基因，它们的混合导致多态多样性。患者的HLA等位基因决定了他们的肿瘤特异性新抗原库，这些新抗原库将提供给T细胞识别。
+
+本项目同时利用NetMHCpan 软件，通过结合结合亲和力数据和MS多肽组数据的信息来提高肿瘤新抗原的预测性能，以给出针对MHC-I的“泛特异性”机器学习策略。利用NetMHCIIpan软件，通过人工神经网络预测MHC-II结合表位，来计算MHC-II的多肽结合亲和力。基于以上两个部分完成对新抗原的预测。其中示例样本统计结果见表\@ref(tab:MHC-table)。
+
+```{r get-MHC-table}
+drug_path <- list.files('info/',"*_mhc_I_final_stat.txt",full.names = TRUE)[1]
+drug_stat <- read.delim(drug_path,sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- drug_stat %>% tbl_prettier(c(0,NA,0,0,0))
+tempfn <- c(
+"Pep-len:肽段长度;",
+"Allele:基因型;",
+"Total:总结合位点;",
+"Strong-Binding:强结合位点;",
+"Weak-Binding:弱结合位点;"
+)
+```
+
+```{r MHC-table-html,eval=htmlfmt,results="asis"}
+dt_caption("肿瘤新抗原预测结果表","MHC-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r MHC-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="肿瘤新抗原预测结果表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

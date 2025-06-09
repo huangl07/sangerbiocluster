@@ -1,0 +1,297 @@
+---
+title: |
+  | **全基因组重测序混池关联分析**
+  | **BSA结题报告**
+date: "`r ifelse(params$docfmt == 'html','',format(Sys.time(), '%Y年%m月%d日'))`"
+params:
+  docfmt: html
+  devmode: TRUE
+documentclass: article
+classoption:
+  - a4paper
+  - titlepage
+output:
+  bookdown::html_document2:
+    css:
+      - css/styles.css
+      - css/bootstrap.min.css
+    df_print: paged
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    math_method: r-katex
+    self_contained: true
+    keep_md: true
+    pandoc_args:
+      - --standalone
+      - --metadata=title:BSA结题报告
+    fig_caption: true
+    includes:
+      in_header: css/header.html
+      after_body: css/tailer.html
+  bookdown::pdf_document2:
+    toc: true
+    toc_depth: 3
+    includes:
+      in_header: tex/header.tex
+    keep_tex: true
+    latex_engine: xelatex
+    number_sections: true
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(tidyverse)
+library(DT)
+library(slickR)
+library(kableExtra)
+htmlfmt <- (params$docfmt == "html")
+pdffmt <- (params$docfmt != "html")
+opts_chunk$set(
+        echo=FALSE,
+        message=FALSE,
+        warning=FALSE,
+        fig.align = 'center',
+        out.width = if(htmlfmt) "100%" else "50%",
+        fig.pos = "H",
+        fig.ext = ".png"
+)
+dt_foot <- function(foot_vector){
+  cat('<blockquote>\n<p>**注：**<p>\n<ul class="dt-footnotes">',
+  paste0('<li class="dt-footnotes">',foot_vector,'</li>\n'),
+  '</ul>','</blockquote>',sep="\n"
+  )
+}
+kbl_foot <- function(input,label){
+  footnote(
+    kable_input=input,
+    general = label,
+    threeparttable = FALSE,
+    general_title = "注："
+  )
+}
+table_bline <- function(input){
+  sub("\\\\endhead\n\n\\\\endfoot","\\\\endhead\n\\\\hline\n\\\\endfoot",input)
+}
+prettier <- function(number,small=0){
+  prettyNum(big.mark = ",",nsmall=small,scientific=FALSE,round(number,digits = small))
+}
+tbl_prettier <- function(table,small=NA){
+  out <- table
+  csmall <- rep_len(small,ncol(out))
+  for(i in seq_len(ncol(out))){
+    if(!is.na(csmall[i]) && is.numeric(out[,i])){
+      out[,i] <- prettier(out[,i],small=csmall[i])
+    }
+  }
+  out
+}
+dt_caption <- function(title,label){
+  cat('<table class="caption-only">', paste0("<caption>",
+                      paste0("(#tab:",label,")"),
+                      title,
+                      "</caption>"),
+                      "</table>", sep ="\n")
+}
+```
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\\setcounter{page}{1}\n')
+```
+
+```{r get-project-info-table}
+project_info <- read.delim('../file/project_info.xls',sep='\t',header=T,check.names = F)
+contract_number <- project_info[1, 2]
+project_number <- project_info[2, 2]
+genome_chinese <- project_info[3, 2]
+client_name <- project_info[4, 2]
+report_time <- project_info[5, 2]
+```
+```{r echo=FALSE}
+group_list_file <- read.delim('../file/group.list',sep='\t',header=F,check.names=F)
+sample_number <- dim(group_list_file)[1]
+p1_id <- group_list_file[1,1]
+p2_id <- group_list_file[2,1]
+mix1_id <- group_list_file[3,1]
+mix2_id <- group_list_file[4,1]
+```
+
+```{r echo=FALSE}
+raw_data_stat <- read.delim("../file/rawdata.xls", sep="\t", header=T,check.names=F)
+arrange_raw_data_stat <- rbind(raw_data_stat[raw_data_stat$`Sample ID` == p1_id,],raw_data_stat[raw_data_stat$`Sample ID` == p2_id,],
+                               raw_data_stat[raw_data_stat$`Sample ID` == mix1_id,],raw_data_stat[raw_data_stat$`Sample ID` == mix2_id,])
+```
+
+```{r echo=FALSE}
+clean_data_stat <- read.delim("../file/cleandata.xls", sep="\t", header=T,check.names=F)
+arrange_clean_data_stat <- rbind(clean_data_stat[clean_data_stat$`Sample ID` == p1_id,],clean_data_stat[clean_data_stat$`Sample ID` == p2_id,],
+                               clean_data_stat[clean_data_stat$`Sample ID` == mix1_id,],clean_data_stat[clean_data_stat$`Sample ID` == mix2_id,])
+p1_total_base <- paste0(round(clean_data_stat[clean_data_stat$`Sample ID` == p1_id,]$`Clean Bases（bp）`/1000000000,2), "G")
+p2_total_base <- paste0(round(clean_data_stat[clean_data_stat$`Sample ID` == p2_id,]$`Clean Bases（bp）`/1000000000,2), "G")
+mix1_total_base <- paste0(round(clean_data_stat[clean_data_stat$`Sample ID` == mix1_id,]$`Clean Bases（bp）`/1000000000,2), "G")
+mix2_total_base <- paste0(round(clean_data_stat[clean_data_stat$`Sample ID` == mix2_id,]$`Clean Bases（bp）`/1000000000,2), "G")
+p1_average_q30 <- paste0(clean_data_stat[clean_data_stat$`Sample ID` == p1_id,]$`Clean Q30（%）`, "%")
+p2_average_q30 <- paste0(clean_data_stat[clean_data_stat$`Sample ID` == p2_id,]$`Clean Q30（%）`, "%")
+mix1_average_q30 <- paste0(clean_data_stat[clean_data_stat$`Sample ID` == mix1_id,]$`Clean Q30（%）`, "%")
+mix2_average_q30 <- paste0(clean_data_stat[clean_data_stat$`Sample ID` == mix2_id,]$`Clean Q30（%）`, "%")
+```
+```{r echo=FALSE}
+align_stat <- read.delim("../file/align_stat.xls", sep="\t", header=T,check.names=F)
+arrange_align_stat <- rbind(align_stat[align_stat$`Sample ID` == p1_id,],align_stat[align_stat$`Sample ID` == p2_id,],
+                            align_stat[align_stat$`Sample ID` == mix1_id,],align_stat[align_stat$`Sample ID` == mix2_id,])
+p1_average_depth <- paste0(align_stat[align_stat$`Sample ID` == p1_id,]$`Real Depth`, "X")
+p2_average_depth <- paste0(align_stat[align_stat$`Sample ID` == p2_id,]$`Real Depth`, "X")
+mix1_average_depth <- paste0(align_stat[align_stat$`Sample ID` == mix1_id,]$`Real Depth`, "X")
+mix2_average_depth <- paste0(align_stat[align_stat$`Sample ID` == mix2_id,]$`Real Depth`, "X")
+p1_mapped_ratio <- align_stat[align_stat$`Sample ID` == p1_id,]$`Mapped Ratio`
+p2_mapped_ratio <- align_stat[align_stat$`Sample ID` == p2_id,]$`Mapped Ratio`
+mix1_mapped_ratio <- align_stat[align_stat$`Sample ID` == mix1_id,]$`Mapped Ratio`
+mix2_mapped_ratio <- align_stat[align_stat$`Sample ID` == mix2_id,]$`Mapped Ratio`
+p1_coverage <- align_stat[align_stat$`Sample ID` == p1_id,]$`Coverage (>=1x)`
+p2_coverage <- align_stat[align_stat$`Sample ID` == p2_id,]$`Coverage (>=1x)`
+mix1_coverage <- align_stat[align_stat$`Sample ID` == mix1_id,]$`Coverage (>=1x)`
+mix2_coverage <- align_stat[align_stat$`Sample ID` == mix2_id,]$`Coverage (>=1x)`
+```
+
+```{r echo=FALSE}
+snp_stat <- read.delim("../file/snp_stat.xls", sep="\t", header=T, check.names=F)
+arrange_snp_stat <- rbind(snp_stat[snp_stat$`Sample ID` == p1_id,],snp_stat[snp_stat$`Sample ID` == p2_id,],
+                          snp_stat[snp_stat$`Sample ID` == mix1_id,],snp_stat[snp_stat$`Sample ID` == mix2_id,])
+p1_snp_number <- snp_stat[snp_stat$`Sample ID` == p1_id,]$`SNP Number`
+p2_snp_number <- snp_stat[snp_stat$`Sample ID` == p2_id,]$`SNP Number`
+mix1_snp_number <- snp_stat[snp_stat$`Sample ID` == mix1_id,]$`SNP Number`
+mix2_snp_number <- snp_stat[snp_stat$`Sample ID` == mix2_id,]$`SNP Number`
+```
+```{r echo=FALSE}
+snp_anno <- read.delim("../file/snp_anno.xls", sep="\t", header=T, check.names=F)
+arrange_snp_anno <- rbind(snp_anno[snp_anno$sampleID == p1_id,],snp_anno[snp_anno$sampleID == p2_id,],
+                          snp_anno[snp_anno$sampleID == mix1_id,],snp_anno[snp_anno$sampleID == mix2_id,])
+arrange_snp_anno <- arrange_snp_anno %>%
+        select(sampleID, intergenic_region, missense_variant, start_lost, stop_gained, stop_lost, synonymous_variant)
+colnames(arrange_snp_anno) <- c("Sample ID", "Intragenic Variant", "Missense Variant", "Start Lost", "Stop Gained",
+                                "Stop Lost", "Synonymous Variant")
+```
+```{r echo=FALSE}
+snp_impact <- read.delim('../file/snp_impact.xls',sep='\t',header=T,check.names = F)
+arrange_snp_impact <- rbind(snp_impact[snp_impact$sampleID == p1_id,],snp_impact[snp_impact$sampleID == p2_id,],
+                            snp_impact[snp_impact$sampleID == mix1_id,],snp_impact[snp_impact$sampleID == mix2_id,])
+arrange_snp_impact <- arrange_snp_impact %>%
+  select(sampleID, HIGH, MODERATE, LOW, MODIFIER)
+colnames(arrange_snp_impact)[1] <- 'Sample ID'
+p1_snp_high_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == p1_id,]$`HIGH`
+p1_snp_moderate_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == p1_id,]$`MODERATE`
+p2_snp_high_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == p2_id,]$`HIGH`
+p2_snp_moderate_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == p2_id,]$`MODERATE`
+mix1_snp_high_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == mix1_id,]$`HIGH`
+mix1_snp_moderate_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == mix1_id,]$`MODERATE`
+mix2_snp_high_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == mix2_id,]$`HIGH`
+mix2_snp_moderate_number <- arrange_snp_impact[arrange_snp_impact$`Sample ID` == mix2_id,]$`MODERATE`
+p_snp_high_number <- p1_snp_high_number + p2_snp_high_number
+p_snp_moderate_number <- p1_snp_moderate_number + p2_snp_moderate_number
+mix_snp_high_number <- mix1_snp_high_number + mix2_snp_high_number
+mix_snp_moderate_number <- mix1_snp_moderate_number + mix2_snp_moderate_number
+```
+```{r echo=FALSE}
+indel_stat <- read.delim("../file/indel_stat.xls", sep="\t", header=T, check.names=F)
+arrange_indel_stat <- rbind(indel_stat[indel_stat$`Sample ID` == p1_id,],indel_stat[indel_stat$`Sample ID` == p2_id,],
+                            indel_stat[indel_stat$`Sample ID` == mix1_id,],indel_stat[indel_stat$`Sample ID` == mix2_id,])
+p1_indel_number <- indel_stat[indel_stat$`Sample ID` == p1_id,]$`Insert Number` + indel_stat[indel_stat$`Sample ID` == p1_id,]$`Delete Number`
+p2_indel_number <- indel_stat[indel_stat$`Sample ID` == p2_id,]$`Insert Number` + indel_stat[indel_stat$`Sample ID` == p2_id,]$`Delete Number`
+mix1_indel_number <- indel_stat[indel_stat$`Sample ID` == mix1_id,]$`Insert Number` + indel_stat[indel_stat$`Sample ID` == mix1_id,]$`Delete Number`
+mix2_indel_number <- indel_stat[indel_stat$`Sample ID` == mix2_id,]$`Insert Number` + indel_stat[indel_stat$`Sample ID` == mix2_id,]$`Delete Number`
+```
+```{r echo=FALSE}
+indel_anno <- read.delim("../file/indel_anno.xls", sep="\t", header=T, check.names=F)
+arrange_indel_anno <- rbind(indel_anno[indel_anno$sampleID == p1_id,],indel_anno[indel_anno$sampleID == p2_id,],
+                            indel_anno[indel_anno$sampleID == mix1_id,],indel_anno[indel_anno$sampleID == mix2_id,])
+arrange_indel_anno <- arrange_indel_anno %>%
+        select(sampleID, exon_loss_variant, frameshift_variant, intergenic_region, start_lost, stop_gained, stop_lost)
+colnames(arrange_indel_anno) <- c("Sample ID", "Exon Loss Variant", "Frameshift Variant", "Intergenic Region",
+                                "Stop Lost", "Stop Gained", "Stop Lost")
+```
+```{r echo=FALSE}
+indel_impact <- read.delim('../file/indel_impact.xls',sep='\t',header=T,check.names = F)
+arrange_indel_impact <- rbind(indel_impact[indel_impact$sampleID == p1_id,],indel_impact[indel_impact$sampleID == p2_id,],
+                              indel_impact[indel_impact$sampleID == mix1_id,],indel_impact[indel_impact$sampleID == mix2_id,])
+arrange_indel_impact <- arrange_indel_impact %>%
+  select(sampleID, HIGH, MODERATE, LOW, MODIFIER)
+colnames(arrange_indel_impact)[1] <- 'Sample ID'
+p1_indel_high_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == p1_id,]$`HIGH`
+p1_indel_moderate_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == p1_id,]$`MODERATE`
+p2_indel_high_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == p2_id,]$`HIGH`
+p2_indel_moderate_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == p2_id,]$`MODERATE`
+mix1_indel_high_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == mix1_id,]$`HIGH`
+mix1_indel_moderate_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == mix1_id,]$`MODERATE`
+mix2_indel_high_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == mix2_id,]$`HIGH`
+mix2_indel_moderate_number <- arrange_indel_impact[arrange_indel_impact$`Sample ID` == mix2_id,]$`MODERATE`
+p_indel_high_number <- p1_indel_high_number + p2_indel_high_number
+p_indel_moderate_number <- p1_indel_moderate_number + p2_indel_moderate_number
+mix_indel_high_number <- mix1_indel_high_number + mix2_indel_high_number
+mix_indel_moderate_number <- mix1_indel_moderate_number + mix2_indel_moderate_number
+```
+```{r echo=FALSE}
+all_region_stat <- read.delim("../file/all.region_stat.xls", sep="\t", header=T, check.names=F)
+separate_result <- all_region_stat %>%
+        separate(Region, into=c("Chrom", "Start_pos", "End_pos"), sep=":")
+index_df <- separate_result[separate_result$Method == "index-slid",]
+loess_df <- separate_result[separate_result$Method == "index-loess",]
+gprime_df <- separate_result[separate_result$Method == "Gprime",]
+ed_df <- separate_result[separate_result$Method == "Euclidean",]
+index_num <- dim(index_df)[1]
+loess_num <- dim(loess_df)[1]
+gprime_num <- dim(gprime_df)[1]
+ed_num <- dim(ed_df)[1]
+index_length <- paste0(round(sum(as.numeric(index_df$End_pos) - as.numeric(index_df$Start_pos))/1000000,2), "MB")
+loess_length <- paste0(round(sum(as.numeric(loess_df$End_pos) - as.numeric(loess_df$Start_pos))/1000000,2), "MB")
+gprime_length <- paste0(round(sum(as.numeric(gprime_df$End_pos) - as.numeric(gprime_df$Start_pos))/1000000,2), "MB")
+ed_length <- paste0(round(sum(as.numeric(ed_df$End_pos) - as.numeric(ed_df$Start_pos))/1000000,2), "MB")
+if(index_num!=0){
+  index_gene <- read.delim("../file/index.degfile", sep="\t", header=F, check.names=F)
+  index_gene_new <- index_gene %>%
+          separate(V1, into=c("gene", "index"), sep="\\.")
+  index_transcript <- dim(index_gene)[1]
+  index_gene <- dim(unique(index_gene_new[1]))[1]
+}else{
+  index_transcript <- 0
+  index_gene <- 0
+}
+if(loess_num!=0){
+  loess_gene <- read.delim("../file/loess.degfile", sep="\t", header=F, check.names=F)
+  loess_gene_new <- loess_gene %>%
+          separate(V1, into=c("gene", "index"), sep="\\.")
+  loess_transcript <- dim(loess_gene)[1]
+  loess_gene <- dim(unique(loess_gene_new[1]))[1]
+}else{
+  loess_transcript <- 0
+  loess_gene <- 0
+}
+if(gprime_num!=0){
+  gprime_gene <- read.delim("../file/Gprime.degfile", sep="\t", header=F, check.names=F)
+  gprime_gene_new <- gprime_gene %>%
+          separate(V1, into=c("gene", "index"), sep="\\.")
+  gprime_transcript <- dim(gprime_gene)[1]
+  gprime_gene <- dim(unique(gprime_gene_new[1]))[1]
+}else{
+  gprime_transcript <- 0
+  gprime_gene <- 0
+}
+if(ed_num!=0){
+  ed_gene <- read.delim("../file/ED.degfile", sep="\t", header=F, check.names=F)
+  ed_gene_new <- ed_gene %>%
+          separate(V1, into=c("gene", "index"), sep="\\.")
+  ed_transcript <- dim(ed_gene)[1]
+  ed_gene <- dim(unique(ed_gene_new[1]))[1]
+}else{
+  ed_transcript <- 0
+  ed_gene <- 0
+}
+```
+```{r project-info-table, eval=htmlfmt}
+kable(project_info, "html") %>%
+        kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+```{r first-page, eval=pdffmt}
+knitr::asis_output(sprintf(paste(readLines("tex/first_page.tex"),collapse="\n"),contract_number,genome_chinese,sample_number))
+```
+

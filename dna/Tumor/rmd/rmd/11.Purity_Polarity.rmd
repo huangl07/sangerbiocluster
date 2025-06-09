@@ -1,0 +1,33 @@
+
+### 肿瘤纯度与倍性
+
+肿瘤样本中癌细胞总是混合一定未知比例的正常细胞，我们称肿瘤样本中癌细胞所占的比例为肿瘤纯度(Tumor Purity),称有染色体结构和数目异常导致的肿瘤样本中癌细胞的真正含量为倍性(Tumor ploidy)。纯度越高的肿瘤通常具有更高的恶性程度，更容易侵袭周围组织和扩散到其他部位。倍性越高的肿瘤通常具有更高的恶性程度，更容易发生突变和耐药性。通过估计肿瘤的纯度和倍性有利于评估肿瘤的恶性程度和肿瘤内异质性研究。
+
+本项目利用Sequenza 来有效地估计肿瘤细胞的纯度和倍性，统计结果见表\@ref(tab:sequenza-table)。
+
+
+```{r get-sequenza-table}
+sequenza_stat <- read.delim('info/sequenza.stat',sep='\t',header=TRUE,check.names = FALSE)
+sequenza_temp <- sequenza_stat[,c(1,2,3)]
+tempdf <- sequenza_temp %>% tbl_prettier(c(NA,2,1))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Tumor_control：肿瘤样本编号_对照样本编号；",
+"Cellularity：细胞纯度；",
+"Ploidy.estimate：估计样本倍性；"
+)
+```
+
+```{r sequenza-table-html,eval=htmlfmt,results="asis"}
+dt_caption("肿瘤纯度与倍性统计表","sequenza-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r sequenza-table,eval=pdffmt}
+    colnames(tempdf) <- gsub("_","\\\\_",colnames(tempdf))
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="肿瘤纯度与倍性统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```

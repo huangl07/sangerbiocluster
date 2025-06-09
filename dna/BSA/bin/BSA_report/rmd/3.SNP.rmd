@@ -1,0 +1,116 @@
+## SNP检测和注释
+
+***
+
+&emsp;&emsp;单核苷酸多态性(Single Nucleotide Polymorphism，SNP)，主要是指在基因组水平上由单个核苷酸的变异所引起的DNA序列多态性，是基因组上多态性最高的遗传变异之一。
+
+&emsp;&emsp;SNP变异类型分为转换和颠换两种，同种类型碱基（嘌呤与嘌呤、嘧啶与嘧啶）之间的突变称为转换（Transition）；不同类型碱基（嘌呤与嘧啶）之间的突变称为颠换（Transversion）。一般转换比颠换更容易发生，所以转换/颠换（Ti/Tv）的比例一般大于1，具体比值和所测物种有关。
+
+### SNP检测
+
+***
+
+&emsp;&emsp;利用GATK的Best Practices流程处理比对结果（BAM文件），利用GATK的Haplotyper方法进行SNP检测，过滤条件按照GATK推荐的参数进行，具体可见：（https://software.broadinstitute.org/gatk/documentation/article.php?id=3225）。
+
+&emsp;&emsp;与参考基因组进行比对，样品SNP统计结果见表3-6：
+
+<p class='mark'>表3-6 SNP数据统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/snp_stat.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/snp_stat.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+**注：**
+
+- Sample ID：样本编号；
+
+- SNP Number：检测到的单核苷酸多态性位点的数量，表示材料与参考基因组之间的核苷酸变异；
+
+- Transition：转换的SNP数量；
+
+- Transversion：颠换的SNP数量；
+
+- Ti/Tv：转换型SNP（Transition）和颠换型SNP（Transversion）的比值；
+
+- Heterozygosity Number：杂合分型的SNP位点总数；
+
+- Homozygosity Number：纯合分型的SNP位点总数；
+
+
+### SNP功能注释
+
+***
+
+&emsp;&emsp;对于在全基因组的SNP对蛋白质翻译的情况进行评估，可以了解每个SNP所具有的功能，所有SNP位点对基因的转录本产生的功能影响如表3-7所示。
+
+<p class="mark">表3-7 全基因组区域SNP功能信息统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/snp_anno.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/snp_anno.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+**注：**
+
+- 3_prime_UTR_variant：样本在3’UTR区域的SNP个数；
+
+- 5_prime_UTR_premature_start_codon_gain_variant：样本在5‘UTR区域,增加了一个启动子的SNP个数；
+
+- 5_prime_UTR_variant：样本在5’URT区域的SNP个数；
+
+- HIGH：样本变异位点有害程度的简单评估；
+
+- LOW：样本变异位点有害程度的简单评估；
+
+- MODERATE：样本变异位点有害程度的简单评估；
+
+- MODIFIER：样本变异位点有害程度的简单评估；
+
+- Downstream_gene_variant：样本在基因下游区域的SNP个数；
+
+- Intergenic_region：样本在基因间区的SNP的个数；
+
+- Intragenic_variant：样本在基因内非功能区的SNP个数；
+
+- Intron_variant：样本在内含子区域的SNP位点个数；
+
+- Missense_variant：样本在外显子区域的错义突变的SNP位点个数；
+
+- non_coding_transcript_variant：样本非编码转录本突变的SNP个数；
+
+- Splice_acceptor_variant：样本在内含子左侧的连接点区域的SNP个数；
+
+- Splice_donor_variant：样本在内含子右侧的连接点区域的SNP个数；
+
+- Splice_region_variant：距离外显子或内含子2 bp的剪切位点的SNP个数；
+
+- Start_lost：由于SNP的突变导致启动子缺失的SNP位点个数；
+
+- Stop_gained：由于SNP的突变导致终止子获得的SNP位点个数；
+
+- Stop_lost：由于SNP的突变导致终止子突变的SNP位点个数；
+
+- Stop_retained_variant：由于SNP突变导致终止子的编码的发生了改变的SNP位点个数；
+
+- Synonymous_variant：同义突变的SNP位点个数；
+
+- Upstream_gene_variant：样本在基因上游的SNP位点个数及所占比例。
+
+

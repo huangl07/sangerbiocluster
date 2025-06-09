@@ -1,0 +1,11 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/app/bioinfo/dna/env/gatk-4.3.0.0/ /opt/bioinfo/bin/
+
+%post
+    apt-get clean -y
+    
+%environment
+    export PATH=$PATH:/opt/bioinfo/bin/gatk-4.3.0.0

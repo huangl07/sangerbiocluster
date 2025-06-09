@@ -1,0 +1,26 @@
+#!/usr/bin/env Rscript
+
+suppressMessages({
+library(dplyr)
+library(rmarkdown)
+library(kableExtra)
+library(rmdformats)
+library(argparser)})
+argv <- arg_parser('')
+argv <- add_argument(argv,"--rmd", help="the rmd file")
+argv <- add_argument(argv,"--format", help="the output format")
+argv <- add_argument(argv,"--outfile", help="the output file")
+argv <- parse_args(argv)
+rmd <- argv$rmd
+format <- argv$format
+outfile <- argv$outfile
+
+options(bitmapType='cairo-png')
+
+if (format=='html') {
+    render(input=rmd,output_format='html_document',output_file=outfile)}
+if (format=='pdf') {
+    render(input=rmd,output_format='pdf_document',output_file=outfile)}
+if (format=='both') {
+    render(input=rmd,output_format=c('html_document','pdf_document'),output_file=outfile)}
+    

@@ -1,0 +1,68 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+
+%post
+    Rscript -e 'BiocManager::install(c(
+        "maftools",
+        "clusterProfiler",
+        "DOSE",
+        "enrichplot",
+        "ggtree",
+        "dnds",
+        "tidyverse",
+        "clusterProfiler",
+        "maftools",
+        "org.Hs.eg.db",
+        "getopt",
+        "data.table",
+        "stringr",
+        "dplyr",
+        "LaF",
+        "readr",
+        "plotrix",
+        "ggplot2",
+        "methods",
+        "ggsci",
+        "AnnotationForge",
+        "rmarkdown",
+        "kableExtra",
+        "rmdformats",
+        "bookdown",
+        "latex2exp",
+        "argparser"
+    ), version = "3.16", ask = FALSE,force = TRUE,Ncpus = parallel::detectCores(),lib = "/usr/local/lib/R/site-library")' > /tmp/install_r_packages.R 2>&1
+
+    # 清理APT缓存和临时文件
+    apt-get clean -y
+
+
+
+%environment
+    export LC_ALL=C
+    export R_LIBS_USER=/usr/local/lib/R/site-library
+    export LC_CTYPE=zh_CN.UTF-8
+    export LC_ALL=zh_CN.UTF-8
+    export LANG=zh_CN.UTF-8
+    export DEBIAN_FRONTEND=noninteractive
+    # 基础环境配置
+    umask 022
+    
+    # 核心路径配置
+    export PATH=/usr/local/bin:/opt/bioinfo/bin:/usr/bin:$PATH
+    export PATH=$PATH:/opt/bioinfo/sentieon-genomics-202308.03/bin
+    export PATH=$PATH:/opt/bioinfo/gatk-4.3.0.0
+    # Java环境
+    export JAVA_HOME=/opt/bioinfo/jdk-11.0.11
+    export PATH=$JAVA_HOME/bin:$PATH
+    
+    # 性能配置
+    export OPENBLAS_NUM_THREADS=16
+    
+    # 库路径配置
+    export LD_LIBRARY_PATH=/opt/bioinfo/lib:/opt/bioinfo/lib64:/opt/bioinfo/lib/x86_64-linux-gnu:/usr/lib:/usr/lib64:/usr/local/lib:$LD_LIBRARY_PATH
+    export PKG_CONFIG_PATH=/opt/bioinfo/lib/pkgconfig:/usr/lib/pkgconfig:/usr/local/lib/pkgconfig
+    
+    # 许可证配置
+    export SENTIEON_LICENSE=/opt/licenses/MajorBio_cluster_0.37.lic

@@ -1,0 +1,26 @@
+### 候选区域内基因的 KEGG 富集分析
+
+在生物体内，不同基因相互协调来行使生物学功能，不同的基因间相同的作用通路为一个Pathway，基于Pathway分析有助于进一步解读基因的功能。KEGG（Kyoto Encyclopedia of Genes and Genomes）是关于Pathway的主要公共数据库。
+
+候选区域内基因的KEGG富集分析结果见下图（若某项方法未定位到区间则无KEGG富集分析结果）：
+
+> *本项目更详细的候选基因KEGG富集结果可查看结题文件夹目录下的：*
+>
+> *[data_release/06.enrich/index/KEGG_result](./data_release/06.enrich/index/KEGG_result)文件夹下的index_KEGGenrichment.xls（SNP-index + 滑窗）文件*
+>
+> *[data_release/06.enrich/loess/KEGG_result](./data_release/06.enrich/loess/KEGG_result)文件夹下的loess_KEGGenrichment.xls（SNP-index + loess拟合）*
+
+```{r kegg-plot, fig.cap="候选区域内基因 KEGG 注释聚类图", out.width = "100%"}
+state_plots <- list.files("../file","*_kegg_enrich.png",full.names=TRUE)
+if(params$docfmt == "html"){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注：**固定绘制按p.adjust排序后的前20个KEGG通路，不代表全部显著。
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n')
+```

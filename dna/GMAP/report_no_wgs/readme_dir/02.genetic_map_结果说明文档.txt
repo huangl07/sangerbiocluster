@@ -1,0 +1,16 @@
+此文件夹为结果，共包含4个文件，如下所述（如有缺少请第一时间联系本公司售后技术人员）：
+1. 02.genetic_map_结果说明文档.txt： 文件详细介绍说明
+2. total.mapstat.xls： SNP功效信息统计表
+3. total.map.pdf： 遗传图谱示意图(pdf版本)
+4. total.map.png： 遗传图谱示意图(png版本)
+
+以下为文本文件详细说明：
+文件：total.mapstat.xls
+以下是表头详细说明：
+表头说明：
+LGID：连锁群编号；
+Marker Number：该连锁群的标记数；
+Distance：该连锁群的遗传图距；
+Average Distance：该连锁群的平均图距；
+Gap > 5 cM(%)：分子标记在遗传图谱上大于5cM的个数；
+Max Gap：该连锁群最大的gap大小。

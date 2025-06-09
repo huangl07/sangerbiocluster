@@ -1,0 +1,38 @@
+药物靶点文件结果汇总
+
+结果文件说明：
+1.	readme.txt：文件详细介绍说明
+2.	drug_target.stat：药物靶点统计表
+3.	${tumor_sample}_${control}_drug_target.txt/xls：样品药物靶点注释文件
+
+表头具体说明：
+drug_target.stat：药物靶点统计表
+1.	Sample_Control：肿瘤样品_对照样品；
+2.	Gene_numbers：统计到的药物靶点相关基因总数；
+3.	Drug_numbers：统计到的药物靶点相关药物总数；
+
+${tumor_sample}_${control}.merge_anno.txt/xls：样品药物靶点注释文件
+Sample_Control：肿瘤样本编号_对照样本编号；
+Chrom：染色体；
+Pos：突变位置；
+Ref：参考基因组的碱基；
+Alt：样品突变后的碱基；
+Matching_Accuracy：匹配准确性；
+Gene：匹配基因；
+Protein_change：蛋白变异；
+Disease：导致的癌症；
+Drug：指导用药；
+Drug_Type：药物类型；
+Drug_Directions：药物对肿瘤的影响；
+Evidence_Level：可信度；
+Significance：药物效用；
+Dt_Chrom：数据库中药物靶点对应染色体；
+Dt_Start：数据库中药物靶点对应起始位置；
+Dt_Stop：数据库中药物靶点对应终止位置；
+Dt_Ref：数据库中药物靶点对应参考基因组的碱基；
+Dt_Alt：数据库中药物靶点对应样品突变后的碱基；
+Evidence_Statement：；
+Citation：引用文献；
+Variant_origin：变异位点类型；
+Representative_Transcript：相关转录本编号；
+Functional_Region：功能区域；"

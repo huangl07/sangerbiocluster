@@ -1,0 +1,30 @@
+---
+title: <center>**circRNA转录组分析报告**</centiiier>
+
+output: 
+  html_document:
+    css: css/bootstrap.min.css
+    df_print: paged
+    toc: true
+    toc_float: true
+    number_sections: true
+    includes:
+      in_header: css/header.html
+      after_body: css/tailer.html
+---
+
+&nbsp;
+&nbsp;
+&nbsp;
+```{r echo=FALSE}
+library(knitr)
+data <- read.delim('file/project_info.xls',sep='\t',header=T)
+kable(data,table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;
+
+

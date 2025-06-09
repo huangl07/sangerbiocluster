@@ -1,0 +1,84 @@
+
+### InDel 检测
+
+***
+
+&emsp;&emsp;利用 GATK 的 Best Practices 流程处理比对结果（BAM 文件），利用 GATK 的 Haplotyper 方法进行 InDel 检测及过滤，过滤条件按照 GATK 推荐的参数进行，具体可见：（https://software.broadinstitute.org/gatk/documentation/article.php?id=3225）。
+
+&emsp;&emsp;对项目样品进行 InDel 标记开发，这里的 InDel 指能够明确获得序列组成的 InDel 标记。最终样本获得 Insertion 和 Deletion 详情如下。本次分析统计结果如表 3-10 所示：
+
+<p class="mark">表 3-10 InDel数据统计表</p>
+
+```{r echo=FALSE}
+library(DT)
+data <- read.delim('../file/indel_stat.xls',sep='\t',header=T,check.names = F)
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+<p class="mark1">**注**：</p>
+
+- <p class="mark1">Sample ID：样品编号；</p>
+
+- <p class="mark1">Insert Number：检测到的插入变异的位点个数；</p>
+
+- <p class="mark1">Delete Number：检测到的缺失变异的位点个数；</p>
+
+- <p class="mark1">Heterozygosity Number：杂合分型的 InDel 的位点个数； </p>
+
+- <p class='mark1'>Homozygosity Number：纯合分型的 位点总数；</p>
+
+### InDel 功能注释
+
+***
+
+&emsp;&emsp;采用 SnpEff 程序结合本项目`r genome_chinese`基因组注释信息，对检测到的 SNP 进行功能注释，SnpEff 会根据基因组的基因和功能区域的分布进行分析，对每个 InDel 所在的位置和功能进行统计，并对每个变异类型的功能进行统计。表 3-11 为 InDel 位置分布信息统计表，表 3-12 为 InDel 功效信息统计表：：
+
+<p class="mark">表 3-11 InDel 位置分布信息统计表</p>
+
+```{r echo=FALSE}
+library(DT)
+data <- read.delim('../file/indel_anno_T.xls',sep='\t',header=T,check.names = F)
+colnames(data)[1] <- 'Sample ID'
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+<p class="mark1">**注**：</p>
+
+- <p class="mark1">Sample ID：样品编号；</p>
+
+- <p class="mark1">exon_loss_variant：外显子缺失 InDel 个数；</p>
+
+- <p class="mark1">frameshift_variant：导致移码突变的 InDel 个数；</p>
+
+- <p class="mark1">intergenic_region：在基因间区的 InDel 的个数；</p>
+
+- <p class="mark1">start_lost：由于InDel的突变导致启动子缺失的 InDel 位点个数及所占比例；</p>
+
+- <p class="mark1">stop_gained：由于InDel的突变导致终止子获得的 InDel 位点个数及所占比例；</p>
+
+- <p class="mark1">stop_lost：由于InDel的突变导致终止子缺失的 InDel 位点个数及所占比例；</p>
+
+<p class="mark">表3-12 InDel 功效信息统计表</p>
+
+```{r echo=FALSE,message=FALSE}
+library(DT)
+library(tidyverse)
+data <- read.delim('../file/indel_impact.xls',sep='\t',header=T,check.names = F)
+data <- data %>%
+  select(sampleID, HIGH, MODERATE, LOW, MODIFIER)
+colnames(data)[1] <- 'Sample ID'
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+```
+
+<p class="mark1">**注**：</p>
+
+- <p class="mark1">Sample ID：样品编号；</p>
+
+- <p class="mark1">HIGH：引起重要基因功能变化的突变，例如提前终止、起始密码子、内含子剪切位点突变；</p>
+
+- <p class="mark1">MODERATE：引起中等基因功能变化的突变，例如错义突变；</p>
+
+- <p class="mark1">LOW：引起较低或无基因功能变化的突变，例如同义突变；</p>
+
+- <p class="mark1">MODIFIER：引起较低基因功能变化的突变，例如位于基因上游或下游的变异。</p>
+

@@ -1,0 +1,20 @@
+# Step 01:Parse polymarker input:示范文件:/mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_development/primer_design/nf_test/primer_design_result/03.Capskasp/t_polymarker_input.csv
+python3 /mnt/lustre/users/sanger-dev/app/bioinfo/dna/SNP_Primer_Pipeline2/bin/parse_polymarker_input.py /mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_development/primer_design/nf_test/primer_design_result/03.Capskasp/t_polymarker_input.csv
+
+# Step 02:blast
+/mnt/lustre/users/sanger-dev/app/bioinfo/align/ncbi-blast-2.12.0+/bin/blastn -task blastn -db /mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_development/primer_design/nf_test/work/18/d70af5cddfbc45fe7caee23034d2ef/ref.fa -query /mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_development/primer_design/caps_test/for_blast.fa -outfmt "6 std qseq sseq slen" -word_size 11 -num_threads 3 -out blast_out.txt
+
+# Step 03:parse the blast output file and output the homelog contigs and flanking ranges
+python3 /mnt/lustre/users/sanger-dev/app/bioinfo/dna/SNP_Primer_Pipeline2/bin/getflanking.py /mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_development/primer_design/nf_test/primer_design_result/03.Capskasp/t_polymarker_input.csv blast_out.txt /mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_development/primer_design/caps_test/temp_range.txt
+
+# Step 04:split file for each marker
+gawk '{ print $2,$3,$4 > "temp_marker_"$1".txt" }' temp_range.txt
+
+# Step 05:get flanking sequences for each file
+/mnt/lustre/users/sanger-dev/app/bioinfo/align/ncbi-blast-2.12.0+/bin/blastdbcmd -entry_batch /mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_development/primer_design/caps_test/temp_marker_chr6-1802899_chr6_K_501.txt -db /mnt/lustre/users/sanger-dev/sg-users/yuan.xu/majorbio_development/primer_design/nf_test/work/18/d70af5cddfbc45fe7caee23034d2ef/ref.fa > flanking_temp_marker_chr6-1802899_chr6_K_501.txt.fa
+
+# Step 06:get kasp
+python3 /mnt/lustre/users/sanger-dev/app/bioinfo/dna/SNP_Primer_Pipeline2/bin/getkasp3.py 56 25 0
+
+# Step 07:get Caps
+python3 /mnt/lustre/users/sanger-dev/app/bioinfo/dna/SNP_Primer_Pipeline2/bin/getCAPS.py 200 56 25 0

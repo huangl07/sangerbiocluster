@@ -1,0 +1,157 @@
+# 生物信息学分析方法和结果
+
+***
+
+## 原始数据质控和过滤
+
+***
+
+### 原始测序数据说明
+
+***
+
+&emsp;&emsp;为方便测序数据的分析、发布和共享，Illumina Hiseq平台测序得到的原始图像数据经过Base Calling转化为序列数据，得到最原始的测序数据文件。一般原始数据利用FASTQ格式进行储存。FASTQ格式文件可记录所测读段（Read）的碱基及其质量分数。如图3-1所示，FASTQ格式以测序读段为单位进行存储，每条Reads在FASTQ格式文件中占四行，其中第一行和第三行由文件识别标志（Sequence Identifiers）和读段名（ID）组成（第一行以“@”开头而第三行以“+”开头；第三行中ID可以省略，但“+”不能省略），第二行为碱基序列，第四行为对应位置碱基的测序质量分数。
+
+<img class="normal6" src="src/fastq.png">
+
+<p class='mark'>图3-1 读段FASTQ数据格式示例</p>
+
+&emsp;&emsp;Illumina HiSeq测序仪一个Run有2个Flowcell，一个Flowcell中包含8个Lane，其中一个Lane包含2列，每一列又包含60个Tile，每一个Tile又会种下不同的Cluster，其产生的测序文件识别标志（Sequence Identifiers）中的详细信息如表3-1所示：
+
+<p class='mark'>表3-1 测序文件识别标志详细信息</p>
+```{r echo=FALSE}
+library(knitr)
+data <- read.delim('src/fastq.xls',sep='\t',header=T,check.names = F)
+kable(data,table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+&emsp;&emsp;Reads的质量分数以不同的字符来表示，其中每个字符对应的ASCII值减去33，即为对应的测序质量值。一般地，碱基质量从0-40，即对应的ASCII码为从“！”（0+33）到“I”(40+33），碱基质量越大，可信度越高。用e表示测序错误率，用Q表示Illumina HiSeqTM的碱基质量值，则有下列关系：
+
+&emsp;&emsp; reads的质量分数以不同的字符来表示，以phred 33为例，其中每个字符对应的ASCII值减去33，即为对应的测序质量值(Erlich et al., 2008)。一般地，碱基质量从0-42，即对应的ASCII码为从“！”（0+33）到“K”(42+33）。如果测序错误率用E表示，Illunima HiSeq / Miseq的碱基质量值用Q表示，则有下列关系：
+
+<img class="normal3" src='src/err.png'>
+
+<p class='mark'>表3-2 测序错误率与测序质量值简明对应关系</p>
+
+```{r echo=FALSE}///html
+library(knitr)
+data <- read.delim('src/err.xls',sep='\t',header=T,check.names = F)
+kable(data, table.attr = "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+&emsp;&emsp;Illumina测序属于第二代测序技术，单次运行能产生数百万级的Reads，如此海量的数据无法逐个展示每条Read的质量情况；运用统计学的方法，对所有测序Reads的每个Cycle进行碱基分布和质量波动的统计，可以从宏观上直观地反映出样本的测序质量和文库构建质量。我们针对每一个样本的原始测序数据进行测序相关质量评估，包括A/T/G/C碱基含量分布统计和碱基错误率分布统计。
+
+<p class="mark">表3-3 产出数据统计结果</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/rawdata.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/rawdata.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+- Q20、Q30%：Phred 数值大于20、30的碱基占总体碱基的百分比
+
+- GC %：碱基G和C的数量总和占总的碱基数量的百分比
+
+### 测序碱基含量分布统计
+
+***
+
+&emsp;&emsp;碱基含量分布检查一般用于检测有无A与T、G与C分离现象。鉴于序列的随机性和碱基互补配对的原则，理论上每个测序循环上的GC含量相等、AT含量相等，且在整个测序过程基本稳定不变，呈水平线。N为测序仪无法判断的碱基类型。本项目中样品的碱基含量分布图如图3-2所示：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*base.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*base.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-2 样本碱基组成分布例图</p>
+
+&emsp;&emsp;注：横坐标是Reads碱基坐标，坐标表示Reads上从5’到3’端依次碱基的排列；纵坐标是所有Reads在该测序位置A、C、G、T、N碱基分别占的百分比，不同碱基用不同颜色表示。序列的起始位置与测序的引物接头相连，因此A、C、G、T在起始端会有所波动，后面会趋于稳定。模糊碱基N所占比例越低，说明未知碱基越少，测序样本受系统AT偏好影响越小。虚线之前为Read1的统计，虚线之后为Read2的统计结果。
+
+### 测序碱基错误率分布统计
+
+***
+
+&emsp;&emsp;测序错误率会随着测序序列长度的增加而升高，这是由测序过程中化学试剂的消耗导致的，另外，由于Illumina HiseqTM测序技术特点，测序片段前端几个Cycles和末端的错误率会偏高。本项目中样品的测序错误率分布图如图3-3所示：
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*qual.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*qual.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图3-3 样本碱基错误率分布例图</p>
+
+&emsp;&emsp;注：横坐标是Reads碱基坐位置，表示Reads上从5’到3’端依次碱基的排列；纵坐标是所有Reads在该位点处碱基的排列；纵坐标是所有Reads在该位点处碱基的平均错误率。前151 bp为双端测序序列的第一端测序Reads的错误率分布情况，后151 bp为另一端测序Reads的错误率分布情况。
+
+### 原始测序数据过滤
+
+***
+
+&emsp;&emsp;利用Illumina的建库测序平台，构建插入片段大小为400 bp左右的测序文库，按照项目合同要求进行测序，由于Illumina的原始测序数据（Raw Data）会存在一些质量比较低的数据，所以需要进行质量过滤，获得高质量测序数据，具体步骤如下：
+
+&emsp;&emsp;Step 1：去除Reads中的Adapter序列；
+
+&emsp;&emsp;Step 2：剪切掉5’端测序质量值低于20或识别为N的碱基；
+
+&emsp;&emsp;Step 3：剪切掉3’端测序质量值低于3或识别为N的碱基；
+
+&emsp;&emsp;Step 4：以4个碱基为Window，剪切掉平均质量值小于20的Window中的碱基；
+
+&emsp;&emsp;Step 5：去除含N的比例达到10 %的Reads；
+
+&emsp;&emsp;Step 6：剪切掉超过40%的碱基质量值低于15的Reads；
+
+&emsp;&emsp;Step 7：舍弃去除Adapter及质量修剪后长度小于30 bp的Reads。
+
+&emsp;&emsp;对质量剪切后的数据分别进行测序Reads数、总碱基数、GC含量和Q30比例的统计，详细结果见表3-3：
+
+<p class="mark">表3-3 测序质量统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/qc.xls',sep='\t',header=T,check.names = F)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/qc.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+&emsp;&emsp;注：
+
+- Sample ID：样本编号；
+
+- Clean Reads：高质量的Reads数；
+
+- Clean Base：原始数据过滤后剩余的高质量测序数据总碱基数；
+
+- Q30：Clean Data中质量值大于或等于30的碱基所占百分比；
+
+- GC：Clean Data中的GC碱基占所有碱基的比例。
+

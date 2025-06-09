@@ -1,0 +1,23 @@
+Bootstrap: localimage
+From: /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/20250520/wgs_basic.sif
+
+%files
+    /mnt/ilustre/users/sanger-dev1/sg-users/yexiaoya/singularity/fastp-0.23.2.tar.gz        /opt/src/
+
+%post
+    mkdir -p /opt/src/build
+    mkdir -p /opt/bioinfo/bin/
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        libisal-dev \
+        libdeflate-dev \
+        zlib1g-dev \
+        ca-certificates
+
+        # 13. 安装 fastp 0.23.2
+    tar --no-same-owner -xzf /opt/src/fastp-0.23.2.tar.gz -C /opt/src/build && \
+    cd /opt/src/build/fastp-0.23.2 && \
+    make  && cp fastp /opt/bioinfo/bin/
+
+%environment

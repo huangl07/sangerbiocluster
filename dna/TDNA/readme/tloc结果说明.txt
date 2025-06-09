@@ -1,0 +1,24 @@
+*_mosaic_all.txt：TLOC结果
+read_id: 测序reads编号
+FLAG:
+CIGAR:
+read_seq: reads序列信息
+start: 匹配TNDA的起始位置
+end: 匹配TNDA的终止位置
+type
+anchor： 匹配ref的长度
+seq： 能匹配ref上的序列
+matchREF_P： 完全匹配ref
+matchREF_N
+matchTDNA_P： 完全匹配TDNA
+matchTDNA_N
+matchREF_Mismatch_P： 匹配ref，允许错配
+matchREF_Mismatch_N
+matchTDNA_Mismatch_P： 匹配TDNA，允许错配
+matchTDNA_Mismatch_N
+matchREF_Insert_P： 匹配ref，允许插入
+matchREF_Insert_N
+matchTDNA_Insert_P： 匹配TDNA，允许插入
+matchTDNA_Insert_N
+ID： 插入位点ID
+REF_match:

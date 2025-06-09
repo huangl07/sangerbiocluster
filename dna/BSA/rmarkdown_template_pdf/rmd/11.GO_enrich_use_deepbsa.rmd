@@ -1,0 +1,31 @@
+### 候选区域内基因的 GO 富集分析
+
+GO（Gene Ontology）数据库是一个结构化的标准生物学注释系统，建立了基因及其产物功能的标准词汇体系，适用于各个物种。该数据库结构分为多个层级，层级越低，节点所代表的功能越具体。通过GO分析并按照Cellular component、Molecular Function、Biological process对基因进行分类。
+
+候选区域内基因 GO 分类统计结果见下图(若某项方法未定位到区间则无GO富集分析结果)：
+
+> *本项目更详细的候选基因GO富集结果可查看结题文件夹目录下的：*
+>
+> *[data_release/08.enrich/index/GO_result](./data_release/08.enrich/index/GO_result)文件夹下的index_GOenrichment.xls（SNP-index + 滑窗）文件*
+>
+> *[data_release/08.enrich/loess/GO_result](./data_release/08.enrich/loess/GO_result)文件夹下的loess_GOenrichment.xls（SNP-index + loess拟合）文件*
+>
+> *[data_release/08.enrich/ED/GO_result](./data_release/08.enrich/ED/GO_result)文件夹下的ED_GOenrichment.xls（ED + 滑窗）文件*
+>
+> *[data_release/08.enrich/Gprime/GO_result](./data_release/08.enrich/Gprime/GO_result)文件夹下的Gprime_GOenrichment.xls（G′ value + 滑窗）文件*
+>
+> *[data_release/08.enrich/DeepBSA_DL/GO_result](./data_release/08.enrich/DeepBSA_DL/GO_result)文件夹下的DeepBSA_DL_GOenrichment.xls（DeepBSA_DL）文件*
+>
+> *[data_release/08.enrich/DeepBSA_K/GO_result](./data_release/08.enrich/DeepBSA_K/GO_result)文件夹下的DeepBSA_K_GOenrichment.xls（DeepBSA_K）文件*
+
+```{r go-plot, fig.cap="候选区域内基因 GO 注释聚类图", out.width = "100%"}
+state_plots <- list.files("../file","*_go_enrich.png",full.names=TRUE)
+if(params$docfmt == "html"){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注：**固定绘制按p.adjust排序后的前20个GO通路，不代表全部显著。
+

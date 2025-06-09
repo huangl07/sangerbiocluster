@@ -1,0 +1,43 @@
+
+### 肿瘤克隆分析
+
+肿瘤异质性(Heterogeneity) 是恶性肿瘤的标志之一。其表现为肿瘤在不断增殖和分化过程中发生变化。克隆多样性使得肿瘤进化提供有利条件。
+
+本项目利用InferHeterogeneity，通过聚类变异等位基因频率（VAF）以及等位基因突变的肿瘤异质性MATH（mutant-allele tumor heterogeneity）分数与VAF离散程度等，对肿瘤样本进行克隆分析，来帮助推断肿瘤的异质性。
+
+肿瘤克隆分析结果图\@ref(fig:clone-plot)见如下所示。
+
+```{r clone-plot, echo=FALSE, fig.cap="肿瘤克隆分析结果图"}
+state_plots <- list.files("info","*_clone.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注**：
+X轴是变异等位基因频率（VAF）, Y为变异等位基因频率（VAF）占比
+
+
+### 肿瘤拷贝数中性杂合性缺失
+
+拷贝数中性杂合性缺失（Copy Number Neutral Loss of Heterozygosity，CN-LOH）是指在基因组中，​某个等位基因的拷贝数发生变化，​导致一对等位基因只剩下了一个allele，​从而丧失了成为杂合的可能性。
+CN-LOH形成机制包括自然选择、​突变、​重组和染色体不平衡等，​
+本项目利用Sequenza、aCNVviewer等软件，识别LOH，分析LOH时同时考虑到肿瘤纯度，帮助我们更好地理解基因组的演化和变异。
+
+肿瘤拷贝数中性杂合性缺失结果图\@ref(fig:CNVLOH-plot)见如下所示。
+
+```{r CNVLOH-plot, echo=FALSE, fig.cap="肿瘤拷贝数中性杂合性缺失结果图"}
+state_plots <- list.files("info","*_CNV_LOH.png",full.names=TRUE)
+if(params$devmode){state_plots <- state_plots[1]}
+if(htmlfmt){
+    slickR(obj=state_plots,width='95%',height="auto")
+} else {
+    knitr::include_graphics(path=state_plots[1])
+}
+```
+
+> **注**：
+左边的坐标轴表示样本中拷贝数扩增和缺失的频率。下面的图例表示扩增或者缺失的拷贝数，黑线表示CN-LOH频率

@@ -1,0 +1,9 @@
+步骤	应用软件	版本
+原始数据质控	Fastp	0.23.2
+参考基因组比对	BWA-meme	1.0.6
+比对结果处理	Samtools	1.15.1
+SNP、InDel变异检测	sentieon	202112.07
+变异功能注释	SNPEff	5.1d
+关联分析统计	R	4.2.2
+富集分析	R/clusterProfile	3.16
+引物设计	Primer3	2.6.0

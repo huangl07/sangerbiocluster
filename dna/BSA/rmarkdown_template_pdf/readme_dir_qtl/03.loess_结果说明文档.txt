@@ -1,0 +1,91 @@
+此文件夹为loess统计分析结果，共包含9类文件，如下所述（如有缺少请第一时间联系本公司售后技术人员）：
+1. 03.loess_结果说明文档.txt：	文件详细介绍说明
+2. loess.all.table.xls : loess统计分析详细结果表
+3. loess.region_stat.xls : loess统计分析得到的候选区间结果文件
+4. pop.loess.bootstrap.result.xls : loess计算结果表
+5. loess.pdf：	用loess的计算模型展示SNP-index在染色体上的分布图（pdf版本）
+6. loess.png：	用loess的计算模型展示SNP-index在染色体上的分布图（png版本）
+7. loess.chr*.pdf：	用loess的计算模型在不同的染色体上的分别展示SNP-index的分布，图片上方的编号代表染色体号（pdf版本）
+8. loess.chr*.png：	用loess的计算模型在不同的染色体上的分别展示SNP-index的分布，图片上方的编号代表染色体号（png版本）
+9. loess.detail.result.xls：	loess计算详细结果表
+
+以下为文本文件详细说明：
+
+文件：loess.all.table.xls
+以下是表头详细说明：
+REGION: BSA定位到的区域
+CHROM: 变异位点染色体编号
+POS: 变异位点位置
+Ref: 变异位点参考基因组上的碱基
+Alt: 变异位点变异的碱基
+Vtype: 变异类型
+*.GT: 样品在变异位点的基因型
+*.AD: 样品在变异位点的各基因型深度
+*.DP: 样品在变异位点的总深度
+Allele: 突变碱基的类型
+Annotation: 突变类型
+PutativeImpact: snpeff软件对变异位点产生的影响程度进行简单评估，有四个程度（HIGH, MODERATE, LOW, MODIFIER）
+GeneName:   该变异位点所在基因的基因名，如果变异位点的突变类型是intergenic_region，则显示的是离该变异位点最近的一个基因
+GeneID: 基因ID
+FeatureType:    变异位点所在的区域类型
+FeatureID:  Feature_Type所对应的ID
+TranscriptBioType: 转录本类型
+Rank: 只有当变异位点位于基因区域时才有值，当变异位点位于基因区域以外（intergenic_region）时，该字段的值为空。该值给出的是变异位点所处的exton/intron和该基因的exon/intron的总数
+HGVS.c: 在DNA水平上，采用HGVS标准命名的变异位点的情况
+HVGS.p: 在蛋白质水平上，采用HGVS标准命名的变异位点的情况
+cDNA_position_len: 变异位点在cDNA上的位置/cDNA的长度
+CDS_position_len: 变异位点在CDS的位置/CDS的长度
+Protein_position_len: 变异位点在氨基酸上的位置/氨基酸的长度
+Distance: 不同的情况，距离的含义是不同的，因此可能会是空值。Up/Downstream：到第一个/最后一个密码子的距离。Intergenic：到最近基因的距离。到外显子中最近的内含子边界的距离（+/-代表上游/下游）。如果相同，使用正数。在内含子中离最近外显子边界的距离（+/-上/下）。到基序中第一碱基的距离。到miRNA中第一碱基的距离。在剪接位点或剪接区域中，离外显子-内含子边界的距离ChipSeq peak：到顶点（或峰中心）的距离。Histone/Histone state：到顶点（或峰中心）的距离。
+ERRORS: 添加可能影响批注准确性的错误、警告或信息性消息
+NRID: 基因在NR数据库中的ID
+NRANNO: 基因在NR数据库中的注释
+UniID: 基因在Uniprot数据库中的ID
+UniANNO: 基因在Uniprot数据库中的注释
+KoID: 基因在KEGG Orthology数据库中的ID
+Koanno: 基因在KEGG Orthology数据库中的注释
+GOTERM: 基因在GO数据库数据库中的ID
+GOANNO: 基因在GO数据库中的注释
+EGGNOG: 基因在EGGNOG数据库数据库中的ID
+EGGNOG_ANNO: 基因在EGGNOG数据库数据库中的注释
+PfamID: 基因在Pfam数据库数据库中的ID
+PfamAnno: 基因在Pfam数据库数据库中的注释
+
+文件：loess.region_stat.xls
+以下是表头详细说明：
+REGION：		候选区域所在染色体/sca：起始位置：终止位置；
+SNP_Number：		该候选区域SNP数量；
+Effective_SNP：		该候选区域SNP影响为HIGH/MODERATE的数量；
+INDEL_Number：		该候选区域Indel数量；
+Effective_INDEL：		该候选区域Indel影响为HIGH/MODERATE的数量；
+Gene_Number：		该候选区域基因数量；
+NRID：		在NR数据库中的基因数量；
+UniID：		在Uniprot数据库中的基因数量；
+KoID：		在KEGG Orthology数据库中的基因数量；
+GOTERM：		在GO数据库中的基因数量；
+EGGNOG：		在EGGNOG数据库中的基因数量；
+PfamID：		在Pfam数据库中的基因数量；
+
+文件：pop.loess.bootstrap.result.xls
+以下是表头详细说明：
+X.chr：	变异位点所在染色体信息；
+pos：	变异位点的位置；
+slidingI1 ： index1的滑窗结果；
+slidingI2 ： index2的滑窗结果；
+slidingD ： delta_index的滑窗结果；
+
+文件：loess.detail.result.xls
+以下是表头详细说明：
+X.chr: 染⾊体编号
+pos: 变异位点所在位置
+index1: 混池2即突变型混池index值
+index2: 混池1即野⽣型混池index值
+delta: index1-index2的差值
+pos1: 对于loess即为pos
+pos2: 对于loess即为pos
+slidingI1: 对于loess即为index1
+slidingI2: 对于loess即为index2
+slidingD: 实际为delta的loess拟合值(如果染⾊体标记数<100,即为0)
+ncount: 窗⼝内的变异位点数⽬
+CI: bootstrap的阈值
+注：如果单染⾊体标记数>50000,随机取50000点进⾏loess拟合，避免过拟合

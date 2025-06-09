@@ -1,0 +1,95 @@
+## 候选区域定位分析
+
+***
+
+### 候选区域的 gene 筛选
+
+***
+
+&emsp;&emsp;理论上，候选区域内的 gene 都有可能与性状直接相关，在候选区域内的基因上，亲本之间或者混池之间发生了非同义突变的位点，影响了基因的功能和蛋白的结构编码，因此，筛选候选区域中发生变异的位点，有助于我们更快速的找到与性状相关的功能基因，以下是 SNP-Index 方法的候选区域统计结果，见表 3-14。
+
+<p class='mark'>表 3-14 候选区域统计</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/pop.region.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/pop.region.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>Chrom：染色体编号；</p>
+
+- <p class='mark1'>Pos Start：起始位点；</p>
+
+- <p class='mark1'>Pos End：终止位点；</p>
+
+- <p class='mark1'>Gene：关联区域 Gene 的数量；</p>
+
+- <p class='mark1'>GeneEff：关联区域包含有效突变的 Gene 数量；</p>
+
+- <p class='mark1'>SNP：关联区域 SNP 的数量；</p>
+
+- <p class='mark1'>InDel：关联区域 INDEL 的数量；</p>
+
+- <p class='mark1'>Effsnp：关联区域有效突变 SNP 的数量；</p>
+
+- <p class='mark1'>EffInDel：关联区域有效突变 INDEL 的数量。</p>
+
+
+
+### 候选区域内基因的 GO 富集分析
+
+***
+
+&emsp;&emsp;GO 数据库是一个结构化的标准生物学注释系统，建立了基因及其产物功能的标准词汇体系，适用于各个物种。该数据库结构分为多个层级，层级越低，节点所代表的功能越具体。通过 GO 分析并按照 Cellular component、Molecular Function、Biological process 对基因进行分类。
+
+&emsp;&emsp;候选区域内基因 GO 分类统计结果见下图：
+
+**重要提示：可通过下图">"标签切换为 ED 统计结果、G 结果以及 loess 结果**
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*_go_enrich.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*_go_enrich.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图 3-9 候选区域内基因 GO 注释聚类图</p>
+
+### 候选区域内基因的 KEGG 富集分析
+
+***
+
+&emsp;&emsp;在生物体内，不同基因相互协调来行使生物学功能，不同的基因间相同的作用通路为一个 Pathway，基于 Pathway 分析有助于进一步解读基因的功能。KEGG 是关于 Pathway 的主要公共数据库。
+
+&emsp;&emsp;候选区域内基因的 KEGG 注释结果按照通路类型进行分类，分类图如下：
+
+**重要提示：可通过下图">"标签切换为 ED 统计结果、G 结果以及 loess 结果**
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*_kegg_enrich.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=450,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*_kegg_enrich.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class="mark">图 3-9 候选区域内基因 KEGG 富集分析</p>
+

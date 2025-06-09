@@ -1,0 +1,28 @@
+### tag统计
+
+```{r get-tagstat-table}
+tag_stat_raw <- read.delim("info/sample.stat", sep = "\t", header = TRUE, check.names = FALSE)
+tag_stat <- read_report_table(
+    data = tag_stat_raw,
+    cols = c(1, 4:6),
+    col_names = c("Sample ID", "Present Tags", "Present Snps", "Mean Depth"),
+    col_prt = c(NA, 0, 0, 2),
+    footnote = c(
+        "样本编号；",
+        "样本检测到的tag数量；",
+        "样本检测到的SNP数量；",
+        "样本检测到的tag的平均深度。"
+    ),
+    rows = sample_rows
+)
+```
+
+对每个样本的reads1、reads2通过stacks软件进行聚类，统计tag数。所有样品聚类得到的总tag数为`r tag_stat_raw[1,2]`，每个样品的tag数量见表\@ref(tab:tagstat-table)。
+
+```{r tagstat-table-html,eval=htmlfmt,results="asis"}
+html_table(tag_stat, "tag统计表", "tagstat-table")
+```
+
+```{r tagstat-table,eval=pdffmt}
+pdf_table(tag_stat, "tag统计表")
+```

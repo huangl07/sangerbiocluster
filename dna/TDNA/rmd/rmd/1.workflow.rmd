@@ -1,0 +1,86 @@
+# 项目信息
+
+## 项目信息表
+
+```{r get-project-info-table}
+tempdf<- data.frame(
+  info = c("合同编号","项目编号","物种信息","客户姓名","报告时间"),
+  content=c(
+    project_info[1:2],
+    paste(project_info[4:5],collapse="/"),
+    project_info[3],
+    format(Sys.time(), "%F")
+  )
+)
+names(tempdf) <- c("项目信息","项目内容")
+```
+
+```{r project-info-table, eval=htmlfmt}
+kable(tempdf, "html") %>%
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+```
+
+```{r first-page, eval=pdffmt}
+knitr::asis_output(sprintf(paste(readLines("tex/first_page.tex"),collapse="\n"),project_info[1],paste(project_info[4:5],collapse=" / "),project_info[6]))
+```
+
+
+## 材料基本信息
+
+```{r get-info-table}
+qc_stat <- read.delim('info/qc.stat',sep='\t',header=FALSE,check.names = FALSE,comment="#")
+#snp_stat_all <- read.delim('info/snp.stat.all',sep='\t',header=TRUE,check.names = FALSE)
+#indel_stat_all <- read.delim('info/indel.stat',sep='\t',header=TRUE,check.names = FALSE)
+```
+
+```{r info-table}
+if(htmlfmt){
+kable(genome_info, "html") %>% 
+kable_styling(bootstrap_options=c("striped","hover","condensed"))
+}else{
+kbl(row.names=FALSE, genome_info, "latex",  format.args = list(big.mark = ",",scientific = FALSE), booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+kable_styling(latex_options=c("striped","scale_down","repeat_header"))%>%column_spec(2,"30em")%>% table_bline()
+}
+```
+
+## 项目服务内容
+
+按照合同约定，对`r prettier(as.numeric(project_info[6]))`个检测合格的样本进行以下实验及分析：
+
+1、全基因组测序，每个样品测序量达到合同标准，Q30大于80%。
+
+2、比对参考基因组，进行位点检测插入。
+
+## 测序数据概述
+
+
+本项目共获得`r prettier(sum(qc_stat[,3] / 1000000000),2)`G reads数据，测序Q30为`r prettier(mean(qc_stat[,5] * 100), 2)`%，GC含量为`r prettier(mean(qc_stat[,6] * 100), 2)`%，数据量达到合同要求。
+
+
+# 项目流程
+
+## 全基因组重测序实验流程
+
+样品基因组DNA检测合格后，利用超声波将DNA序列片段化形成随机片段，对片段化的DNA依次进行末端修复、3′端加A、连接测序接头后，再利用磁珠吸附富集长度为350bp左右的片段，经过PCR扩增形成测序文库。建好的文库先进行文库质检，质检合格的文库用`r platform`$\rm{^{TM}}$平台进行测序，测序策略为`r platform0` PE150，总测序读长为300bp。建库流程见图 \@ref(fig:library-plot)。
+
+
+```{r library-plot,fig.cap = "全基因组重测序实验建库流程"}
+include_graphics("static/images/library.png")
+```
+
+
+## 生物信息分析流程
+
+在`r platform`$\rm{^{TM}}$测序数据（Raw Data）下机之后，对下机数据进行质量控制，过滤其中低质量的数据，获得高质量的数据（Clean Data）。利用 BWA-MEME 软件（Jung and Han 2022）将 Clean Data 比对到参考基因组序列上，获得序列的位置归属（即 BAM 文件）。利用AIM-HII软件(Esher *et al.* 2015)和TDNAscan软件(Sun *et al.* 2019)来判断找到转基因后的样品是否转基因成功，插入位置等信息。整体的分析流程如图2-2所示。
+
+
+```{r pipeline-plot,fig.cap = "插入位点检测生信分析流程图",out.width="100%"}
+include_graphics("static/images/pipeline_tdna.png")
+```
+
+
+\clearpage
+
+\clearpage
+
+

@@ -1,0 +1,138 @@
+## CRISPR全基因组脱靶检测
+
+CRISPR在基因敲除、基因敲入、基因抑制和激活、多重编辑、功能基因组筛选等领域都有着卓越的成果。但CRISPR/Cas系统的广泛应用一直受到脱靶效应的阻碍，脱靶现象的存在很大程度上阻碍了CRISPR技术在生产实践中的应用，该现象可能会给宿主生物带来严重的问题。
+
+全基因组脱靶基因检测技术可全面检测到基因编辑导致潜在的脱靶位点情况。
+
+### sgRNA同源区域分析
+
+向导RNA（sgRNA）是结合引导Cas9核酸酶在基因组上进行靶向性切割的RNA序列，但由于其可能对相似序列进行切割，故存在潜在的脱靶风险。运用Crsipritz软件分析sgRNA在基因组上的同源区域。脱靶位点或靶点可能发生在这些区域上，故这些同源区域上的变异位点将作为候选脱靶位点进入后续分析。表\@ref(tab:sgrna-stat-table)为 sgRNA 同源区域信息统计表。
+
+
+```{r get-sgrna-stat-table}
+data <- read.delim('../file/homo_region.stat.xls',sep='\t',header=T,check.names = F)
+colnames(data) <- c("Bulge Size", "Mismatches", "Sites", "DNAs")
+show_data <- data %>%
+  tbl_prettier(c(0, 0, 0, 0))
+tempfn <- c(
+"Bulge Size：同源区域与sgRNA间的gap长度；",
+"Mismatches：同源区域与sgRNA间的错配数；",
+"Sites：同源区域数量；",
+"DNAs：同源区域序列比对次数。"
+)
+```
+```{r sgrna-stat-table-html, results="asis", eval=htmlfmt}
+dt_caption("sgRNA 同源区域信息统计表","sgrna-stat-table")
+datatable(show_data, rownames=FALSE,options = list(scrollX=T, columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r sgrna-stat-table, eval=pdffmt}
+show_data[, 1] <- gsub("_", "\\\\_", show_data[, 1])
+kbl(row.names=FALSE, show_data, "latex", caption="sgRNA 同源区域信息统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(show_data)),align="c"), escape=FALSE) %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+
+sgRNA 同源区域信息详细结果如表\@ref(tab:sgrna-detail-table)所示。
+
+```{r get-sgrna-detail-table}
+data <- read.delim('../file/homo_region.result.xls', sep = '\t', header = TRUE, check.names = FALSE)
+colnames(data) <- c("No", "Bulge Type", "crDNA", "DNA")
+show_data <- data[1:10, 1:4]  # 只保留前10行和前4列
+tempfn <- c(
+  "完整表格见结果文件04.crispr_off_target/homo_region.result.xls文件",
+  "No：记录编号；",
+  "Bulge Type：Bulge类型；",
+  "crDNA：给定的gRNA序列；",
+  "DNA：在该位点的DNA比对序列。"
+)
+```
+```{r sgrna-detail-table-html, results="asis", eval=htmlfmt}
+dt_caption("sgRNA 同源区域信息详细结果表","sgrna-detail-table")
+datatable(show_data, rownames=FALSE,options = list(scrollX=T, columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+```{r sgrna-detail-table, eval=pdffmt}
+show_data[, 1] <- gsub("_", "\\\\_", show_data[, 1])
+kbl(row.names=FALSE, show_data[1:10,1:4], "latex", caption="sgRNA 同源区域信息详细结果表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(show_data)[1:4]),align="c"), escape=FALSE) %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+
+### 区域内变异位点提取
+
+从做完变异检测的 vcf 中提取位于 sgRNA 同源区域上的变异检测位点，并进一步过滤，结果视为潜在的脱靶位点或靶点，结果如表\@ref(tab:crispr-detail-table)所示。
+
+```{r get-crispr-detail-table}
+data <- read.delim('../file/targe_info.xls',sep='\t',header=T,check.names = F)
+select_data <- data %>% 
+    select(CHROM, POS, case.GT, control.GT)
+colnames(select_data) <- c("Chr", "Pos", "Case GT", "Control GT")
+show_data <- select_data %>%
+  head(10) %>%
+  tbl_prettier(c(NA, 0, NA, NA))
+tempfn <- c(
+"完整表格见结果文件04.crispr_off_target/targe_info.xls文件",
+"Chr：染色体编号；",
+"Pos：染色体位置；",
+"Case GT：case样品的基因型；",
+"Control GT：control样品的基因型。"
+)
+```
+```{r crispr-detail-table-html, results="asis", eval=htmlfmt}
+dt_caption("潜在的在靶或脱靶位点结果表","crispr-detail-table")
+datatable(show_data, rownames=FALSE,options = list(scrollX=T, columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+```{r crispr-detail-table, eval=pdffmt}
+show_data[, 1] <- gsub("_", "\\\\_", show_data[, 1])
+show_data[, 2] <- gsub("_", "\\\\_", show_data[, 2])
+show_data[, 3] <- gsub("_", "\\\\_", show_data[, 3])
+show_data[, 4] <- gsub("_", "\\\\_", show_data[, 4])
+kbl(row.names=FALSE, show_data[,c(1,2,3,4)], "latex", caption="潜在的在靶或脱靶位点结果表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(show_data)[c(1,2,3,4)]),align="c"), escape=FALSE) %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+
+潜在脱靶位点统计结果如表\@ref(tab:crispr-stat-table)所示
+
+```{r get-crispr-stat-table}
+data <- read.delim('../file/targe_stat.xls',sep='\t',header=T,check.names = F)
+colnames(data) <- c("Total potential off-targets", "Potential SNPs", "Potential InDels", "Genes")
+show_data <- data %>%
+  tbl_prettier(c(0, 0, 0, 0))
+tempfn <- c(
+"Total potential off-targets：潜在脱靶位点总数；",
+"Potential SNPs：潜在脱靶SNP数量；",
+"Potential InDels：潜在脱靶InDel数量；",
+"Genes：注释上的基因数量。"
+)
+```
+```{r crispr-stat-table-html, results="asis", eval=htmlfmt}
+dt_caption("潜在脱靶位点统计","crispr-stat-table")
+datatable(show_data, rownames=FALSE,options = list(scrollX=T, columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r crispr-stat-table, eval=pdffmt}
+show_data[, 1] <- gsub("_", "\\\\_", show_data[, 1])
+kbl(row.names=FALSE, show_data, "latex", caption="潜在脱靶位点统计", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(show_data)),align="c"), escape=FALSE) %>%
+  kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>%
+  kbl_foot(tempfn) %>%
+  table_bline()
+```
+
+
+### 可视化
+
+Seq logo 展示了潜在脱靶位点所在的sgRNA同源区域序列的碱基组成。它以图形的方式依次绘出序列比对中各个位置上出现的碱基，每个位置上碱基的累积可以反映出该位置上碱基的一致性。每个碱基对应图形字符的大小与碱基在该位置上出现的频率成正比。结果如图 \@ref(fig:seq-logo-plot)所示。
+
+```{r seq-logo-plot, fig.cap = "潜在脱靶位点所在sgRNA同源区域碱基组成", out.width = "100%"}
+include_graphics("../file/homo_region_seqlogo.png")
+```
+
+横坐标是同源区域序列的碱基位置。纵坐标:“Bits” 代表香农熵(Shannon entropy)，是对位置无序程度进行衡量。在这里熵值越小，代表离散性越大，信息量越大。“Proportion” 代表相应碱基的构成比例。

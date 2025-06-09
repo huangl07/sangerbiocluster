@@ -1,0 +1,44 @@
+## 与参考基因组比对
+
+***
+
+&emsp;&emsp;Hisat2 是进行下一代测序序列比对的软件，可以将全基因组、转录组、外显子组数据与数据库的参考基因组进行比对，使用改进的BWT算法，能高效地利用Bowtie2将测序Reads比对到参考基因组上。Hisat会构建一个全基因组的索引(global FM index)，同时也会对基因组进行分割，构建大量的小索引（Local FM index） 。以人类基因组为例，它需要48,000个索引，每个索引代表~64,000 bp的基因组区域，具体步骤如下:首先基于global FM index比对，并发现剪切位点，然后将没有比对上的在基于Local FM index比对到剪切位点上。实现RNA-Seq读取的高效比对，特别是那些跨越多个外显子的读取。
+
+&emsp;&emsp;使用软件：Hisat2 (https://ccb.jhu.edu/software/hisat2/index.shtml)
+
+&emsp;&emsp;结果目录：**03Align**
+
+<img class="normal5" src='src/hisat2.png'>
+
+<p class="mark">图3.4.1 Hisat2分析流程</p>
+
+&emsp;&emsp;比对后的mapping比率统计结果见表3.4.1：
+
+<p class="mark">表3.4.1 Mapping比率统计</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/align_stat.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/align_stat.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+- Total_seq_num：总的序列数；
+
+- Mapped_seq_num：比对上基因组的序列数；
+
+- Mapping_rate：比对率；
+
+**参考文献：**
+
+- Daehwan Kim,	Ben Langmead, Steven L Salzberg. HISAT: a fast spliced aligner with low memory requirements. NATURE METHODS 2015;12:357-360.
+
+
+
+

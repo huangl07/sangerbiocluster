@@ -1,0 +1,94 @@
+### InDel检测
+
+InDel是指基因组中小片段的插入（Insertion）和缺失（Deletion）序列，相对于一个样本或参考基因组而言，另一个样本的基因组中有一定数量的核苷酸插入或缺失，同样是基因组上多态性最高的遗传变异之一。
+
+利用 GATK 的 Best Practices 流程处理比对结果（BAM 文件），利用 GATK 的 Haplotyper 方法进行 InDel 检测及过滤，过滤条件按照 GATK 推荐的参数进行，具体可见：（https://software.broadinstitute.org/gatk/documentation/article.php?id=3225）。与参考基因组进行比对，样品Indel统计结果见表\@ref(tab:indelstat-table)：
+
+
+```{r get-indelstat-table}
+indel_stat <- read.delim('info/indel_stat.xls',sep='\t',header=TRUE,check.names = FALSE)
+tempdf <- indel_stat %>% tbl_prettier(c(NA,0,0,0,0))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+"Sample ID：样品编号；",
+"Insertion Number：检测到的插入变异的位点个数；",
+"Deletion Number：检测到的缺失变异的位点个数；",
+"Heterozygosity Number：杂合分型的InDel的位点个数；",
+"Homozygosity Number：纯合分型的InDel位点总数。"
+)
+```
+
+```{r indelstat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("Indel数据统计表","indelstat-table")
+datatable(tempdf, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r indelstat-table,eval=pdffmt}
+    tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+    kbl(row.names=FALSE, tempdf, "latex",caption="Indel数据统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```
+
+### Indel功能注释
+
+采用SnpEff（Cingolani *et al.* 2012）程序结合本项目`r paste0(project_info[4],"（",project_info[5],"）")`基因组注释信息，对检测到的Indel进行功能注释，SnpEff会根据基因组的基因和功能区域的分布进行分析，对每个Indel所在的位置和功能进行统计，并对每个变异类型的功能进行统计。表\@ref(tab:indelannostat-table)为Indel位置分布信息统计表，表\@ref(tab:indeleffectstat-table)为Indel功效信息统计表。
+
+> 完整的Indel功能信息统计详见结题文件夹目录[data/04.snpIndel/indel/]下的indel_anno.stat文件。
+
+```{r get-indelannostat-table}
+indel_anno_stat <- read.delim('info/indel_anno.xls',sep='\t',header=T,check.names = F)
+tempdf <- indel_anno_stat 
+tempdf <- tempdf %>% tbl_prettier(c(NA,0,0,0,0,0,0))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+    "Sample ID：样品编号；",
+    "Exon Loss Variant：样本在外显子区域发生缺失的InDel个数；",
+    "Frameshift Variant：导致移码突变的InDel个数；",
+    "Intragenic Variant：在基因内非功能区的InDel个数；",
+    "Start Lost：由于InDel的突变导致启动子缺失的InDel位点个数及所占比例；",
+    "Stop Gained：由于InDel的突变导致终止子获得的InDel位点个数及所占比例；",
+    "Stop Lost：由于InDel的突变导致终止子缺失的InDel位点个数及所占比例。"
+)
+```
+
+```{r indelannostat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("全基因组区域Indel位置分布信息统计表","indelannostat-table")
+datatable(tempdf, rownames=FALSE,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r indelannostat-table,eval=pdffmt}
+tempdf[,1]=gsub("_","\\\\_",tempdf[,1])
+kbl(row.names=FALSE, tempdf, "latex", caption="全基因组区域Indel位置分布信息统计表", booktabs = TRUE, longtable = TRUE, linesep=' ',col.names=linebreak(gsub(" ","\n",colnames(tempdf)),align="c"),escape=FALSE) %>%
+kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+kbl_foot(tempfn) %>% table_bline()
+```
+
+```{r get-indeleffectstat-table}
+indel_anno_effstat <- read.delim('info/indel_anno_stat.xls',sep='\t',header=T,check.names = F)
+tempdf <- indel_anno_effstat %>% tbl_prettier(c(NA,0,0,0,0))
+tempdf <- tempdf[order(tempdf[,1]),]
+tempfn <- c(
+    "Sample ID：样品编号；",
+    "High：具有破坏性影响，可能导致蛋白质功能丧失；",
+    "Low：该类变异大部分无害，不太可能改变蛋白质；",
+    "Moderate：该类变异可能改变蛋白质的有效性；",
+    "Modifier：非编码变异或影响非编码基因的变异。"
+)
+```
+
+```{r indeleffectstat-table-html,eval=htmlfmt,results="asis"}
+dt_caption("全基因组区域Indel功效信息统计表","indeleffectstat-table")
+datatable(tempdf, rownames=FALSE,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))
+dt_foot(tempfn)
+```
+
+```{r indeleffectstat-table,eval=pdffmt}
+    kbl(row.names=FALSE, tempdf, "latex", caption="全基因组区域Indel功效信息统计表", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+    kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header"))%>%
+    kbl_foot(tempfn) %>% table_bline()
+```
+
+

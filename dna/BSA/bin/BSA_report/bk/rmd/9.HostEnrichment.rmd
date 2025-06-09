@@ -1,0 +1,83 @@
+## 差异表达circRNA host基因富集分析
+
+***
+
+### GO功能显著性富集分析
+
+&emsp;&emsp;GO (Gene Ontology, http://www.geneontology.org/) 是基因本体论联合会建立的数据库，其目的在于标准化不同数据库中的关于基因和基因产物的生物学术语，对基因和蛋白功能进行限定和描述。利用 GO 数据库，可以将基因按照它们参与的生物学过程、构成细胞的组分，实现的分子功能等进行分类。对差异基因进行GO功能显著性富集分析，可以说明差异基因的功能富集情况，在基因功能水平阐明样本间的差异。
+
+&emsp;&emsp;使用软件Goatools (https://github.com/tanghaibao/Goatools) 进行富集分析，使用方法为Fisher精确检验。为控制计算的假阳性率使用4种多重检验方法 (Bonferroni，Holm，Sidak 和false discovery rate) 对p值进行了校正，通常情况下，当经过校正的p值（p_fdr）≤0.05时，认为此GO功能存在显著富集情况。
+
+&emsp;&emsp;假设对于一个GO功能A，如果注释到该功能的基因数量如下表所示：
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('src/go.xls',sep='\t',header=T)///html
+datatable(data,rownames=FALSE,extensions=c('KeyTable','Buttons','FixedColumns'),options=list(keys=T,scrollX=T,dom = 'Bfrtip'))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('src/go.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+&emsp;&emsp;Fisher精确检验理论指出得到这一组数据的概率可以由超几何分布计算，公式如下:
+
+<img class="normal4" src='src/go.png'>
+
+&emsp;&emsp;使用Fisher精确检验得到的p值，分析时要采用多重检验方法对其进行校正，通常采用FDR (false discovery rate)筛选富集得到的GO功能。对于一组GO功能，如果需要检验的GO功能的数量用Length (p)表示，对p值的结果由低到高排序用rank(p)表示，对p值的FDR校正公式如下：
+
+<img class="normal3" src='src/go2.png'>
+
+&emsp;&emsp;分析软件：Goatools ( https://github.com/tanghaibao/Goatools )
+
+&emsp;&emsp;结果目录为**09DiffExpEnrichment**,目录中各文件说明如下：
+
+- **list.enrichment.detail.xls：**各分组差异基因GO功能显著性富集结果
+
+- **enrichment.detail.xls.go.pdf：**各分组差异基因GO功能富集分析柱状图：各分组差异基因GO功能富集分析
+
+柱状图，见图 3.12.1
+
+<img class="normal6" src='file/DE.list.go_enrichment.png'>
+
+<p class="mark"> 图3.12.1 差异表达基因GO富集柱状图</p>
+
+&emsp;&emsp;注：图中每个柱子为一个GO term，横坐标文字表示GO的名称和分类，所属分类描述如左上角所示。柱子的高度即纵坐标表示富集率，计算公式如下：EnrichmentRatio=SampleNumber/BackgroundNumber。颜色表示富集的显著性即FDR，颜色越深表示该GO term越显著富集，其中FDR<0.001的标记为***，FDR<0.01的标记为**，FDR<0.05的标记为*，右侧颜色梯度表示FDR大小。
+
+### KEGG 通路显著性富集分析
+
+&emsp;&emsp;KEGG (http://www.genome.jp/kegg) 是基因组破译方面的公共数据库。富集分析方法通常是分析一组基因在某个功能节点上是否出现过，原理是由单个基因的注释分析发展为基因集合的注释分析。富集分析提高了研究的可靠性，能够识别出与生物现象最相关的生物学过程。
+
+&emsp;&emsp;本次分析使用KOBAS ( http://kobas.cbi.pku.edu.cn/home.do ) 进行KEGG PATHWAY富集分析, 计算原理同GO功能富集分析，使用Fisher精确检验进行计算。为控制计算假阳性率，采用BH (FDR) 方法进行多重检验，计算公式与上节相同，经过校正的p值（Corrected P-Value）以0.05为阈值，满足此条件的KEGG通路定义为在差异表达基因中显著富集的KEGG通路。 
+
+&emsp;&emsp;分析软件：KOBAS ( http://kobas.cbi.pku.edu.cn/home.do ) 
+
+相关参数：
+
+-m f	(statistic method, f is fisher exact test)，表明采用fisher精确检验法进行统计；
+
+-n BH (false discovery rate (FDR) correction method:)，表明采用false discovery rate方法进行校验。
+
+
+结果目录为10Diff ExpEnrichment，目录中包含富集分析总表和各分组富集分析表格，各文件说明如下：
+
+- ***list.kegg_enrichment.xls.pathway_addclass.xls：**各分组差异基因KEGG富集分析结果
+
+- ***list.kegg_enrichment.xls.pathway.pdf：**各分组差异基因KEGG pathway富集分析柱状图，见图3.36.2
+
+KEGG数据库中某些disease通路没有ID号，用“none”表示。
+
+<img class="normal6" src='file/DE.kegg_enrichment.png'>
+
+<p class="mark"> 图3.12.2 差异表达基因KEGG富集柱状图</p>
+
+&emsp;&emsp;注：图中每个柱子为一个通路，横坐标文字表示通路的名称和分类，所属分类描述如左上角所示。柱子的高度即纵坐标表示富集率，计算公式如下：EnrichmentRatio=SampleNumber/BackgroundNumber。颜色表示富集的显著性即Pvalue，颜色越深表示该通路越显著富集，其中Pvalue<0.001的标记为***，Pvalue<0.01的标记为**，Pvalue<0.05的标记为*，右侧颜色梯度表示Pvalue大小。
+
+
+
+
+
+

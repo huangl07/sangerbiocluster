@@ -1,0 +1,86 @@
+此文件夹为候选区域内基因的富集分析结果，文件数量因分析结果存在差异，如下所述（如有缺少请第一时间联系本公司售后技术人员）：
+1. 08.enrich_结果说明文档.txt：       文件详细介绍说明
+2. index   snp-index分析方法得到的候选区域内基因的富集分析结果文件夹（注意：如snp-index分析无结果则无此文件夹）
+3. loess   loess分析方法得到的候选区域内基因的富集分析结果文件夹（注意：如snp-loess分析无结果则无此文件夹）
+4. ED   ED分析方法得到的候选区域内基因的富集分析结果文件夹（注意：如ED分析无结果则无此文件夹）
+5. Gprime   G统计分析方法得到的候选区域内基因的富集分析结果文件夹（注意：如G统计分析无结果则无此文件夹）
+6. DeepBSA_DL   DeepBSA_DL分析方法得到的候选区域内基因的富集分析结果文件夹（注意：如DeepBSA_DL分析无结果则无此文件夹）
+7. DeepBSA_K   DeepBSA_K分析方法得到的候选区域内基因的富集分析结果文件夹（注意：如DeepBSA_K分析无结果则无此文件夹）
+region文件夹
+
+分析方法文件夹说明，以下以index为例，其他分析方法同下：
+4.	index_KEGGenrichment.xls: KEGG富集结果表（all）
+5.	index_KEGGenrichment_0.05.xls: KEGG富集结果表（显著阈值在0.05之下）
+6.	index_KEGGenrichment.pdf/png: KEGG富集结果图
+7.	index_GOenrichment.xls: GO富集结果表（all）
+8.	index_GOenrichment_0.05.xls: GO富集结果表（显著阈值在0.05之下）
+9.	index_GOenrichment.pdf/png: GO富集结果图
+10. index.degfile.xls: 定位区域内基因信息表
+11. index.transcript.degfile.xls: 定位区域内转录本信息表
+12. index.genes_abstract.list.xls: 定位区域基因bed文件
+13. index.anno.xls: 定位区域内变异注释信息表
+
+index_KEGG/GOenrichment/_0.05.xls: kegg/go富集分析结果表
+ID： ID编号；
+Description： 数据库描述；
+GeneRatio： 通路中富集基因出现比例；
+BgRatio： 通路中background出现比例；
+pvalue： pvalue；
+p.adjust： 校正后的pvalue；
+geneID： 数据库中的编号；
+Count：	在样品中出现次数；
+
+index.anno.xls: 定位区域内变异注释信息表
+CHROM:染色体编号;
+POS:染色体上位置;
+REF:参考基因组的碱基;
+ALT:样品突变后的碱基;
+TYPE:变异类型;
+SAMPLE.GT:样品的基因型;
+SAMPLE.AD:各分型深度;
+allele: 突变类型;
+functional_region:变异所处区域;
+Putative_impact:功效影响;
+gene_name: 基因名;
+Gene_id:该位点相关基因id;
+Feature_type:序列特征,如genes、exons、UTRs、transcripts等;
+Feature_id:序列特征id;
+Transcript_biotype:TypeTranscript生物类型;
+Exon_rank:外显子序数:外显子序号(如:'1'表示第一个外显子，'2'表示第二个外显子，以此类推。);
+HGVS_c:面向cDNA的HGVS规则变异名（n.代表DNA序列，是因为假基因无法转录，所以无cDNA序列）;
+HGVS_p:面向蛋白的HGVS规则变异名;
+cDNA_position:在cDNA上的位置（位置/总长度）;
+CDS_position:在CDS上的位置（位置/总长度）;
+Protein_position:在蛋白上位置（位置/总长度）;
+Transcript_id:基因对应的转录本ID;
+NRID: 基因在NR数据库中的ID;
+NRANNO: 基因在NR数据库中的注释;
+UniID: 基因在Uniprot数据库中的ID;
+UniANNO: 基因在Uniprot数据库中的注释;
+KoID: 基因在KEGG Orthology数据库中的ID;
+Koanno: 基因在KEGG Orthology数据库中的注释;
+GOTERM: 基因在GO数据库数据库中的ID;
+GOANNO: 基因在GO数据库中的注释;
+EGGNOG: 基因在EGGNOG数据库数据库中的ID;
+EGGNOG_ANNO: 基因在EGGNOG数据库数据库中的注释;
+PfamID: 基因在Pfam数据库数据库中的ID;
+PfamAnno: 基因在Pfam数据库数据库中的注释。
+
+index.transcript.degfile.xls/index.degfile.xls:
+Gene_id: 基因编号;
+Transcript_id: 转录本编号;
+Chr: 染色体编号;
+Pos1: 基因起始位置;
+Pos2: 基因终止位置;
+NRID: 基因在NR数据库中的ID;
+NRANNO: 基因在NR数据库中的注释;
+UniID: 基因在Uniprot数据库中的ID;
+UniANNO: 基因在Uniprot数据库中的注释;
+KoID: 基因在KEGG Orthology数据库中的ID;
+Koanno: 基因在KEGG Orthology数据库中的注释;
+GOTERM: 基因在GO数据库数据库中的ID;
+GOANNO: 基因在GO数据库中的注释;
+EGGNOG: 基因在EGGNOG数据库数据库中的ID;
+EGGNOG_ANNO: 基因在EGGNOG数据库数据库中的注释;
+PfamID: 基因在Pfam数据库数据库中的ID;
+PfamAnno: 基因在Pfam数据库数据库中的注释。

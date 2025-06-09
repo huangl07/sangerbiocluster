@@ -1,0 +1,101 @@
+## QTL-seq 分析
+
+***
+
+### 亲本标记开发
+
+***
+
+<style>
+img.inline-img {
+    display:inline;
+    width:auto;
+}
+
+img.independent-img {
+    display:block;
+    width:auto;
+}
+</style>
+&emsp;&emsp;基于上述变异检测结果，筛选两个亲本间纯合差异的遗传标记（除 F1 群体）， 挑选 SNP 标记及 InDel 标记信息见下表。
+
+
+<p class='mark'>表 3-11 关联分析标记信息统计表</p>
+
+```{r echo=FALSE}///html
+library(DT)///html
+data <- read.delim('file/chr_snp_indel_stat.xls',sep='\t',header=T,check.names = F)///html
+datatable(data, rownames=F,options = list(scrollX=T,columnDefs = list(list(className = 'dt-center',targets='_all'))))///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(knitr)///pdf
+data <- read.delim('file/chr_snp_indel_stat.xls')///pdf
+kable(data, "html") %>%///pdf
+kable_styling(bootstrap_options=c("striped","hover","condensed"))///pdf
+```///pdf
+
+<p class='mark1'>注：</p>
+
+- <p class='mark1'>Chromosome ID：染色体编号；</p>
+
+- <p class='mark1'>SNP Number：过滤后对应染色体上 SNP 数目；</p>
+
+- <p class='mark1'>InDel Number：过滤后对应染色体上 InDel 数目。</p>
+
+### 子代标记Index频率计算
+
+***
+
+&emsp;&emsp;对开发所得到的亲本间 SNP 和 InDel 位点，以亲本 1 为参考，分别计算混池 1 和混池 2 中每个位点的 SNP-index 和 InDel-index 值。Index 值指在突变池和野生池中突变基因型占所有基因型中的深度比例，由于突变位点与周围标记具有连锁效应，在突变位点附近，混池 1 中的 Index 值更接近于 1，而混池中 2 的 Index 值更接近于 0 ；由于连锁效应较弱或不连锁的位点，呈现出随机分布，应符合孟德尔分离比例，正常位点 Index 值为 0.5；两混池间的 Index 差值关联的区域即是目标性状关联的候选区域。
+
+&emsp;&emsp;以突变型和野生型混池为例，QTL-seq 计算方法简述如下：
+
+&emsp;&emsp;Index(Mut)=DepM/(DepM+DepW) 
+
+&emsp;&emsp;Index(Wild)= DepW/(DepM+DepW) 
+
+&emsp;&emsp;ΔIndex=Index(Mut)-Index(Wild) 
+
+&emsp;&emsp;其中，DepM 和 DepW 分别为突变型和野生型的等位基因在突变池与野生池中的 Reads 数目。
+
+<img class="normal4" src="src/snpindex.png">
+
+<p class='mark'>图 3-5 Index 计算方法示意图</p>
+
+
+&emsp;&emsp;为了消除假阳性的位点，直观反映子代 SNP-index 在染色体上的分布情况。利用标记在基因组上的位置，采用滑窗的方法选择窗口和步长，将 Index 值进行拟合，消除类似随机扩增导致的差异位点。最终阈值是基于拟合后的混池深度 bootstrap 随机抽样 1000 次后取 p = Index_pvalue 得到的 Index 值。变异位点 Index 在全基因组范围内的分布如图 3-6 所示。
+
+&emsp;&emsp;此外我们还结合了 G 统计方法、欧式距离（ED）方法以及基于 SNP Index 的 loess 拟合曲线的三种方法进行 QTL 定位。其中 G 统计方法基于高通量、短读测序进行 QTL 定位的统计框架。该方法是基于标准统计量 G 的重新统计计算出的的 G’ 平滑版本，并考虑到由于分离子取样形成个体以及个体测序过程中引入的变异而导致的等位基因频率估计值的变化。通过模拟实验研究发现该方法可以用于检测到甚至是弱效应的 QTL。
+
+&emsp;&emsp;每个 SNP 数据的自然统计量即标准 G 统计量计算公式如下：
+
+<img src="src/gongshi.png" class="independent-img" />
+
+&emsp;&emsp;其中是$\widehat{n_{i}}$数的期望值（$n_{i}$表示从分离体序列中产生的等位基因$A_{0}$和$A_{1}$的计数）。无效假设是没有显著的 SNP 或 indel 定位到 QTL。这意味着可按照列联表的标准预期计数，例如，<img src="src/zhushi1.png" class="inline-img" />，如果无假设正确，则<img src="src/zhushi2.png" class="inline-img" />。如果假设失效，则<img src="src/zhushi3.png" class="inline-img" />（C 是覆盖度）。 
+
+&emsp;&emsp;G’ 是平滑版的 G 统计量计算是基于每个窗口的 G 值使用局部回归模型来进行拟合得到的值，最终筛选的阈值是 padjust Gprime_pvalue 对应的 G’值，具体计算参照（Magwene P M et al., 2011）。
+
+&emsp;&emsp;欧式距离（ED）方法基于两个混池间四种碱基频率差异计算欧式距离，以此衡量混池间的遗传差异，通过 ED_quantile 分位数作为阈值进行候选区域筛选。loess 方法是通过计算两个混池间的 SNP Index ,通过 loess 方法进行拟合，最终阈值是基于拟合后的混池深度 bootstrap 随机抽样 1000 次后取 p = loess_pvalue 得到的 loess 统计值。
+
+
+**重要提示：可通过下图">"标签切换为 G 统计结果、ED 结果以及 loess 结果**
+
+```{r echo=FALSE}///html
+library(slickR)///html
+state_plots <- list.files("file","*.index.png",full.names=TRUE)///html
+slickR(obj=state_plots,height=400,width='95%',)///html
+```///html
+
+```{r echo=FALSE}///pdf
+library(shiny)///pdf
+state_plots <- list.files("file","*.index.png",full.names=TRUE)///pdf
+img(src=state_plots[1])///pdf
+```///pdf
+
+<p class='mark'>图 3-6 BSA不同方法的曼哈顿结果图</p>
+
+<p class='mark1'>分别是 SNP-Index、G 统计、ED、loess 方法结果图；横轴：染色体长度（Mb）；纵轴分别是SNP/InDel-index、Gprime、ED、Loess 统计值；图中的点表示每个 SNP/InDel 对应的位置和4种方法计算的结果值，图中的黑线表示拟合的曲线，红色线表示阈值线。</p>
+
+
+

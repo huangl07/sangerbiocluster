@@ -1,0 +1,97 @@
+# 参考文献
+
+1. [Cingolani P. *et al.* A program for annotating and predicting the effects of single nucleotide polymorphisms, SnpEff: SNPs in the genome of Drosophila melanogaster strain w1118; iso-2; iso-3. Fly, 2012, 6, 2.](https://pubmed.ncbi.nlm.nih.gov/22728672/)
+
+2. [Youngmok J and Dongsu H. BWA-MEME: BWA-MEM emulated with a machine learning approach. bioinformatics, 2022, 38, 9.](https://academic.oup.com/bioinformatics/article/38/9/2404/6543607)
+
+3. [Chen S. *et al.* fastp: an ultra-fast all-in-one FASTQ preprocessor, Bioinformatics, 2018, 34, i884–i890.](https://doi.org/10.1093/bioinformatics/bty560)
+
+4. [Vander A. *et al.* From FastQ Data to High-Confidence Variant Calls: The Genome Analysis Toolkit Best Practices Pipeline. Curr Protoc Bioinformatics, 2013, 43, 11.10.1-11.10.33.](https://pubmed.ncbi.nlm.nih.gov/25431634/)
+
+5. [McKenna A. *et al.* The Genome Analysis Toolkit: a MapReduce framework for analyzing next-generation DNA sequencing data. Genome research, 2010;20(9): 1297- 1303.](https://pubmed.ncbi.nlm.nih.gov/20644199/)
+
+6. [Li H. *et al.* Genome Project Data Processing S: The Sequence Alignment/Map format and SAMtools. PubMed, 2009.](https://pubmed.ncbi.nlm.nih.gov/19505943/)
+
+7.  [Freed D. *et al.* The Sentieon Genomics Tools - A fast and accurate solution to variant calling from next-generation sequence data. Cold Spring Harbor Laboratory, 2017.](https://www.biorxiv.org/content/10.1101/115717v2.full)
+
+8.  [Untergasser A. *et al.* Primer3--new capabilities and interfaces. Nucleic Acids Res. 2012.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3424584/)
+
+\clearpage
+
+
+# 附录
+
+## 软件列表
+
+```{r software-info-table, echo=FALSE}
+software_info_df <- data.frame(
+    V1=c(
+        "原始数据质控",
+        "参考基因组比对",
+		"比对结果处理",
+        "SNP/InDel检测",
+        "变异功能注释",
+        "sgrna同源区域检测",
+        "引物设计"
+    ),
+    V2=c(
+        "Fastp",
+        "BWA-meme",
+		"Samtools",
+        "Sentieon",
+        "SnpEff",
+        "CRISPRitz",
+        "Primer3"
+    ),
+    V3=c(
+        "0.23.2",
+        "v1.0.6",
+		"1.15.1",
+        "202112.07",
+        "2.6.6",
+        "4.2.2",
+        "2.6.0"
+    )
+)
+colnames(software_info_df)<-c("步骤","应用软件","版本")
+if(htmlfmt){
+kable(software_info_df, "html", caption="Crispr脱靶率检测分析软件介绍") %>%
+	kable_styling(bootstrap_options=c("striped","hover","condensed"))
+}else{
+kbl(row.names=FALSE, software_info_df, "latex",  format.args = list(big.mark = ",",scientific = FALSE), caption="Crispr脱靶率检测分析软件介绍", booktabs = TRUE, longtable = TRUE, linesep=' ') %>%
+	kable_styling(repeat_header_text="(续)", latex_options=c("striped","scale_down","repeat_header")) %>% table_bline()
+}
+```
+
+
+## 相关软件下载链接如下：
+
+- fastp 0.23.2：https://github.com/OpenGene/fastp
+
+- BWA-MEME 1.0.6：https://github.com/kaist-ina/BWA-MEME
+
+- SAMtools 1.15.1：http://www.htslib.org/
+
+- Sentieon 202112.06：https://www.sentieon.com/products/
+
+- CRISPRitz 2.6.6：https://github.com/pinellolab/CRISPRitz
+
+- Primer3 2.6.0：https://primer3.org/releases.html
+
+## 附件说明及数据下载
+
+### 文件解压缩方法
+
+所有提供的文件均为 Linux 系统下的文件，压缩包使用 “tar -zcvf” 命令压缩， 以下为不同系统用户解压缩的方法：Unix/Linux/Mac 用户:  使用 tar -zcvf *.tar.gz 命令；Windows 用户：使用 WinRAR 软件解压缩
+
+### 文件打开或浏览方法
+
+如果在本附录中无特殊说明，所有提供的文件均为 Linux 系统下文本文件，Unix/Linux 用户可以使用 `more` 或 `less` 命令查看文本文件内容。 对于 Windows 用户，一般文本文件可以使用写字板或者 Excel 打开。推荐使用 [LTFviewer](https://pan.baidu.com/s/1SN_YLyVSOhIJGsLgA27-Wg?pwd=0ek1) 软件打开超过 10M 以上的文本文件，或选择 Unix/Linux/MacOS 系统在终端中打开相关文件。
+
+数据中可能包含部分图像文件，一般图像文件后缀名为 png、pdf、gif、tiff 等，对于图像文件， Windows 用户可以使用图片浏览器打开， Linux/Unix 用户使用 `display` 命令打开。
+
+后缀名为 svg 的文件为文本格式描述的图像文件， Windows 用户需要安装 Adobe Illustrator 软件打开。 Linux/Unix 用户可以使用 `rsvg-view` 命令查看。公司默认提供 pdf 格式的矢量图，可利用 Adobe Illustrator 软件对该格式图片进行编辑。 Linux 下的表格均为制表符（ Tab ）分割的文本，为了便于阅读，建议使用 Excel 或 OpenOffice 等办公软件用表格形式打开，打开时请用 “Tab 分割” 方式。
+
+```{r, include=pdffmt}
+knitr::asis_output('\\newpage\n\n\\newpage\n')
+```

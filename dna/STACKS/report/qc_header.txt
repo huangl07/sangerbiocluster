@@ -1,0 +1,1 @@
+#sampleID	rawreads	rawdata	rawq20	rawq30	rawGC	ada	cleanreads	cleandata	cleanq20	cleanq30	cleanGC
